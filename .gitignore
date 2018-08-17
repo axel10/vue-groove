@@ -2,6 +2,9 @@
 node_modules
 /dist
 bak
+test.txt
+error.log
+~$error.log
 
 # local env files
 .env.local
