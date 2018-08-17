@@ -5,6 +5,8 @@ bak
 test.txt
 error.log
 ~$error.log
+dev.bat
+build.bat
 
 # local env files
 .env.local
