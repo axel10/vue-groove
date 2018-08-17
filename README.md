@@ -1,4 +1,7 @@
-# vc_player
+# Groove Music Online
+
+Typescript+vue implementation of windows10 Groove music online version
+Preview:https://vcollection.org/vcplayer/
 
 ## Project setup
 ```

@@ -61,7 +61,7 @@
           </ul>
           <div class="github">
             <div class="content"
-                 @click="()=>{}">
+                 @click="toGithub">
                 <span class="icon">
                   <Icon type="logo-github"/>
                 </span>
@@ -166,6 +166,10 @@
       ];
       dropDownMenu(e, contextMenu);
     }
+
+    toGithub(){
+      window.open('https://github.com/axel10/Groove_online','_blank')
+    }
   }
 </script>
 
@@ -266,7 +270,7 @@
           }
         }
 
-        .github{
+        .github {
           margin-top: auto;
           height: 50px;
           width: 100%;
