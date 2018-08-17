@@ -1,0 +1,322 @@
+<template>
+  <div class="DirItem"  @click="handleSelect" @contextmenu="showDropDown">
+    <div class="checkboxArea" v-if="isSelectMode">
+      <div class="checkbox" :class="{'no-select':!selected}" @click="toggleSelect">
+        <Icon type="ios-checkmark" v-if="selected"/>
+      </div>
+    </div>
+
+    <div class="color-wrap" ref="colorWrap">
+        <div class="operation">
+          <div class="play" @click="playAll">
+            <Icon type="ios-play-outline"/>
+          </div>
+          <div class="add" @click="showAddToDropDown">
+            <Icon type="ios-add"/>
+          </div>
+        </div>
+
+        <div class="cover">
+          <div class="small-block"></div>
+          <div class="block"></div>
+          <div class="cd">
+            <Icon type="ios-list"/>
+          </div>
+      </div>
+    </div>
+    <h5 class="title">{{item.title}}</h5>
+    <p class="total">{{fileTotal}}首歌曲</p>
+  </div>
+</template>
+
+<script lang="ts">
+  import {Component, Prop, Vue} from "vue-property-decorator";
+  import {State, Mutation, Action, namespace} from "vuex-class";
+  import {dropDownMenu, editPlayListModal, fadeInFileContent} from "../utils/utils";
+  import {File} from "../store/modules/file";
+  import SelectItem from '../mixins/selectItem';
+
+  const playListModule = namespace("playList");
+
+  @Component({})
+  export default class DirItem extends SelectItem {
+    @Prop(Object) item;
+    @Prop(Array) selectedItems;
+    @playListModule.State playLists;
+
+
+    get isSelectMode() {
+      return this.selectedItems.length > 0;
+    }
+
+    get fileTotal() {
+      let total = 0
+      function calcTotal(content) {
+        content.forEach(o=>{
+          if (o.content) {
+            calcTotal(o.content)
+          }else{
+            total++
+          }
+        });
+      }
+      calcTotal(this.item.content)
+      return total
+    }
+
+    handleSelect(e) {
+      e.stopPropagation();
+      if (this.isSelectMode) {
+        this.toggleSelect(e)
+        return
+      }
+
+      this.$store.commit("file/setPath", this.item.title);
+      fadeInFileContent();
+    }
+
+    playAll(e) {
+      e.stopPropagation();
+      /*      let allFile = this.getAllFileByContent(this.item.content);
+            this.$store.dispatch("audio/play", allFile[0]);
+            this.$store.commit("playList/setPlayingList", allFile);*/
+      this.$store.dispatch("file/playDirs", [this.item]);
+    }
+
+    showAddToDropDown(e) {
+      e.stopPropagation();
+      const contextMenu: any = [];
+      contextMenu.push({
+        label: "添加到'正在播放'", callback: () => {
+          let allFile = this.getAllFileByContent(this.item.content);
+          this.$store.dispatch("playList/addToPlayingList", allFile);
+        }
+      });
+
+      contextMenu.push({split: true});
+      contextMenu.push({label: "新的播放列表", callback: this.showCreatePlayListModal});
+
+      if (this.playLists.length > 0) {
+        this.playLists.forEach(o => {
+          contextMenu.push({
+            label: o.title,
+            callback: () => {
+              this.$store.dispatch("playList/addToPlayList", {listId: o.id, ids: [this.item.id]});
+            }
+          });
+          console.log("error");
+        });
+      }
+      console.log(JSON.parse(JSON.stringify(contextMenu)));
+
+      dropDownMenu(e, contextMenu);
+    }
+
+    showDropDown(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const contextMenu: any = [{
+        label: "播放", callback: () => {
+          this.playAll(e);
+        }
+      }, {
+        label: "选择", callback: () => {
+          this.toggleSelect(e);
+        }
+      }];
+      dropDownMenu(e, contextMenu);
+    }
+
+
+    showCreatePlayListModal() {
+      editPlayListModal({isRename: false}).then(name => {
+        let allFile = this.getAllFileByContent(this.item.content);
+        this.$store.dispatch("playList/createPlayList", {name, fileIds: allFile.map(o => o.id)});
+      });
+    }
+
+
+    toggleSelect(e) {
+      e.stopPropagation();
+      if (this.selected) {
+        this.$emit("select", this.selectedItems.filter(o => o.id !== this.item.id));
+      } else {
+        this.$emit("select", this.selectedItems.concat([this.item]));
+      }
+    }
+
+    get selected() {
+      return this.selectedItems.findIndex(o => o.id === this.item.id) !== -1;
+    }
+
+    private getAllFileByContent(content: Array<File>) {
+      let tmp = [];
+
+      function pushItem(content) {
+        for (let i = 0; i < content.length; i++) {
+          if (content[i].content) {
+            pushItem(content[i].content);
+          } else {
+            tmp.push(content[i]);
+          }
+        }
+      }
+
+      pushItem(content);
+      return tmp;
+    }
+  }
+</script>
+
+<style scoped lang="scss">
+  .DirItem {
+
+    width: 160px;
+    height: 100%;
+    padding-bottom: 20px;
+    position: relative;
+
+    &:hover {
+      .cover {
+        box-shadow: rgba(0, 0, 0, .2) 0 20px 40px;
+      }
+      .operation div {
+        opacity: 1;
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    &.selected {
+      background-color: rgb(0, 90, 158);
+      p, h5 {
+        color: #fff;
+      }
+    }
+    .color-wrap {
+      position: relative;
+      width: 100%;
+      height: 160px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /*background-color: #4b5fff;*/
+      /*background-color: rgba(255,255,255,.5);*/
+      .cover {
+        width: 110px;
+        transition: box-shadow .3s;
+        .small-block, .block {
+          height: 4px;
+          margin: 0 auto;
+        }
+        .small-block {
+          width: 80%;
+          background-color: rgba(0, 0, 0, .2);
+        }
+        .block {
+          width: 90%;
+          background-color: rgba(0, 0, 0, .5);
+        }
+        .cd {
+          width: 110px;
+          height: 110px;
+          background-color: #eee;
+          font-size: 70px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+    .total {
+      color: #666;
+      margin-left: 8px;
+    }
+    h5 {
+      margin-left: 8px;
+
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-top: 5px;
+      margin-bottom: 0;
+      font-size: 16px;
+      font-weight: normal;
+    }
+
+    .checkboxArea {
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      z-index: 20;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      .checkbox {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 32px;
+        &.no-select {
+          border: 1px solid #fff;
+        }
+        &:hover {
+          &.no-select {
+            border: 1px solid #999;
+          }
+        }
+      }
+    }
+
+  }
+
+  .operation {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    height: 80px;
+    width: 100%;
+    margin: auto;
+    /*              display: flex;
+                  align-items: center;
+                  justify-content: center;*/
+    .play, .add {
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, .8);
+      color: #fff;
+      font-size: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      margin: auto;
+      transition: all .3s;
+      top: 0;
+      bottom: 0;
+      opacity: 0;
+      &:hover {
+        height: 60px;
+        width: 60px;
+      }
+    }
+    .play {
+      left: 0;
+      right: 60px;
+    }
+    .add {
+      left: 60px;
+      right: 0;
+    }
+  }
+
+
+</style>

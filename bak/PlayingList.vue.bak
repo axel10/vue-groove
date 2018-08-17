@@ -1,0 +1,96 @@
+<template>
+  <div :class="{'hide':!isShowList,'show':isShowList,'music-list':true,
+            'moveShow':moveShowList===true,'moveHide':moveShowList===false
+          }">
+
+    <div class="list">
+      <ul>
+        <li>
+          <div class="title">
+            <Icon type="ios-musical-note-outline"/>
+            123123
+          </div>
+          <div class="artist">123</div>
+          <div class="album">123</div>
+          <div class="year">123</div>
+          <div class="time">1.11</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+  import {Component, Vue} from 'vue-property-decorator';
+  import {State, Mutation, Action} from 'vuex-class'
+
+  @Component({
+    props: {
+      isShowList: Boolean,
+      moveShowList: Boolean
+    }
+  })
+  export default class PlayingList extends Vue {
+
+  }
+</script>
+
+<style scoped lang="scss">
+  .PlayingList {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    color: rgba(255, 255, 255, .7);
+    .list {
+      overflow-y: auto;
+      flex: 1;
+      width: 100%;
+      ul {
+        li {
+          display: flex;
+          align-items: center;
+          height: 40px;
+          font-size: 14px;
+          text-align: left;
+
+          .title {
+            font-weight: normal;
+            flex: 4;
+            box-sizing: border-box;
+            padding-left: 40px;
+            color: #fff;
+          }
+          .artist {
+            flex: 3;
+          }
+          .album {
+            flex: 3;
+          }
+          .year {
+            flex: 1;
+          }
+          .time {
+            width: 60px;
+          }
+          border-bottom: 1px solid rgba(255, 255, 255, .2);
+        }
+      }
+    }
+    &.hide {
+      /*animation: listHide .3s cubic-bezier(1, 0, 1, 1) forwards;*/
+      transform: translateY(90vh);
+    }
+    &.moveHide {
+      animation: listHide .3s cubic-bezier(1, 0, 1, 1) forwards;
+    }
+    &.show {
+      /*animation: listShow .4s cubic-bezier(1, .5, .5, 1) forwards;*/
+      transform: translateY(0);
+    }
+    &.moveShow {
+      animation: listShow .4s cubic-bezier(1, .5, .5, 1) forwards;
+    }
+  }
+
+</style>

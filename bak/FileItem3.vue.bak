@@ -1,0 +1,239 @@
+<template>
+  <div class="item FileItem" @click="play"  @contextmenu="showDropDown">
+
+    <div class="checkboxArea" v-if="isSelectMode">
+      <div class="checkbox" :class="{'no-select':!selected}" @click="(e)=>{this.toggleSelect(e)}">
+        <Icon type="ios-checkmark" v-if="selected"/>
+      </div>
+    </div>
+
+    <div class="cover">
+      <img :src="item.imgUrl" >
+      <div class="operation">
+        <div class="play" @click="play">
+          <Icon type="ios-play-outline"/>
+        </div>
+        <div class="add" @click="showDropDown">
+          <Icon type="ios-add"/>
+        </div>
+      </div>
+    </div>
+    <h5 :class="{'bold':item.imgUrl}">{{item.title}}</h5>
+    <p class="artist">{{item.p?item.p:''}}</p>
+  </div>
+</template>
+
+<script lang="ts">
+  import {Component, Prop, Vue} from "vue-property-decorator";
+  import {dropDownMenu, editPlayListModal, fadeInFileContent} from "../utils/utils";
+  import {namespace} from "vuex-class";
+  import selectItem from '../mixins/selectItem';
+  import SelectItem from '../mixins/selectItem';
+  import {File} from "../store/modules/file";
+
+  const playListModule = namespace("playList");
+
+  @Component({
+  })
+  export default class FileItem extends SelectItem<File> {
+
+    @Prop(Array) all;
+    @Prop(Boolean) isAddToRecent;
+    @playListModule.State playLists;
+    @playListModule.State playingList;
+
+    showCreatePlayListModal() {
+      editPlayListModal({isRename: false}).then(name => {
+        this.$store.dispatch("playList/createPlayList", {name, fileIds: [this.item.id]});
+      });
+    }
+
+    showDropDown(e) {
+      e.stopPropagation();
+      const contextMenu: any = [];
+
+      contextMenu.push({
+        label: "添加到'正在播放'", callback: () => {
+          this.$store.dispatch("playList/addToPlayingList", [this.item]);
+        }
+      });
+
+      contextMenu.push({split: true});
+      contextMenu.push({label: "新的播放列表", callback: this.showCreatePlayListModal});
+
+      if (this.playLists.length > 0) {
+        this.playLists.forEach(o => {
+          contextMenu.push({
+            label: o.title,
+            callback: () => {this.$store.dispatch("playList/addToPlayList", {listId: o.id, ids: [this.item.id]})}
+          });
+        });
+      }
+
+      dropDownMenu(e, contextMenu);
+    }
+
+    play(e) {
+      e.stopPropagation();
+      if (this.isSelectMode) {
+        this.toggleSelect(e)
+        return
+      }
+      this.$store.dispatch("audio/play", this.item);
+      if (this.all && !this.item.content) {
+        this.$store.commit("playList/setPlayingList", this.all);
+      }
+    }
+
+    showDropDown(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const contextMenu: any = [{
+        label: "播放", callback: () => {
+          this.play(e);
+        }
+      }, {
+        label: "选择", callback: () => {
+          this.toggleSelect(e);
+        }
+      }];
+      dropDownMenu(e, contextMenu);
+    }
+  }
+</script>
+
+<style scoped lang="scss">
+  .FileItem {
+    width: 160px;
+    height: 200px;
+    position: relative;
+
+    &:hover {
+      .cover{
+        box-shadow: rgba(0,0,0,.2) 0 20px 40px;
+      }
+
+      .operation div {
+
+        opacity: 1;
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    .checkboxArea {
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      z-index: 20;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      .checkbox {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 32px;
+        &.no-select {
+          border: 1px solid #fff;
+        }
+        &:hover {
+          &.no-select {
+            border: 1px solid #999;
+          }
+        }
+      }
+    }
+
+
+    .operation {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      height: 80px;
+      width: 100%;
+      margin: auto;
+      /*              display: flex;
+                    align-items: center;
+                    justify-content: center;*/
+      .play, .add {
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, .8);
+        color: #fff;
+        font-size: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        margin: auto;
+        transition: all .3s;
+        top: 0;
+        bottom: 0;
+        opacity: 0;
+        &:hover {
+          height: 60px;
+          width: 60px;
+        }
+      }
+      .play {
+        left: 0;
+        right: 40%;
+      }
+      .add {
+        left: 40%;
+        right: 0;
+      }
+    }
+    .cover {
+      transition: box-shadow .3s;
+
+      position: relative;
+      width: 160px;
+      height: 160px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #eee;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+      .dir-icon {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        img {
+          width: 30%;
+          height: 30%;
+        }
+      }
+    }
+    h5 {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-top: 5px;
+      margin-bottom: 0;
+      font-size: 16px;
+      font-weight: normal;
+
+      &.bold {
+        font-weight: bold;
+      }
+    }
+    .artist {
+      font-size: 12px;
+      color: #555;
+      line-height: 5px;
+      margin-top: 5px;
+    }
+
+  }
+</style>

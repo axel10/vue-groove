@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src="https://cdn.bootcss.com/vue/2.5.16/vue.min.js"></script>
+    <link rel="stylesheet" href="//unpkg.com/iview/dist/styles/iview.css">
+    <script src="//unpkg.com/iview/dist/iview.min.js"></script>
+    <script src="https://cdn.bootcss.com/lodash.js/4.17.10/lodash.min.js"></script>
+    <script src="https://cdn.bootcss.com/draggable/1.0.0-beta.7/draggable.bundle.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js"></script>
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <style>
+      .ivu-slider-button-wrap .ivu-tooltip{
+        line-height: 0;
+      }
+
+      body::-webkit-scrollbar{
+         z-index: 2000;
+       }
+      .draggable-mirror {
+        display: none;
+      }
+
+      ::-webkit-scrollbar{
+        background: transparent;
+        width: 3px;
+      }
+
+      ::-webkit-scrollbar-track{
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb{
+        background-color: #999;
+        border-radius: 2px;
+      }
+
+    </style>
+    <title>vc_player</title>
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but vc_player doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>

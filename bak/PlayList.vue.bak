@@ -1,0 +1,371 @@
+<template>
+  <div class="PlayList">
+    <div class="top">
+      <div class="left">
+        <div class="cover">
+          <div class="small-block"></div>
+          <div class="block"></div>
+          <div class="cd">
+            <img :src="topImgUrl" alt="" v-if="topImgUrl.length>0">
+            <Icon type="ios-list" v-if="topImgUrl.length===0"/>
+          </div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="title">{{distPlayList.title}}</div>
+        <div class="list-info">
+          <p>{{distPlayList.content.length}}首歌，{{totalMinute}}分钟</p>
+        </div>
+        <div class="operations">
+          <div class="play-all" @click="playAll"><span><Icon type="ios-play-outline"/></span>全部播放</div>
+          <div class="rename" @click="rename"><span><Icon type="ios-create-outline"/></span>重命名</div>
+          <div class="remove" @click="remove"><span><Icon type="ios-trash-outline"/></span>删除</div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom">
+
+      <div class="no-item" v-if="distPlayListContent.length===0">
+        <h4>播放列表没有音乐？</h4>
+        <div class="to-file" @click="$router.push('/')">
+          <div class="cd">
+            <img src="/cd.png" alt="">
+          </div>
+          <div class="info">
+            <p>从作品列表添加歌曲</p>
+            <p class="to-files">转到"作品列表"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="list" v-if="distPlayListContent.length>0">
+        <draggable v-model="distPlayListContent" :options="{animation:150}">
+          <PlayListContentItem v-for="(item,i) in distPlayListContent"
+                               :item="item"
+                               :index="i"
+                               :selectedFileIds="selectedFileIds"
+                               @select="(val)=>{selectedFileIds=val}"
+          ></PlayListContentItem>
+        </draggable>
+      </div>
+    </div>
+
+    <div class="select-tools" v-if="isSelectMode">
+      <div class="item cancel" @click="cancelSelect">
+        <p class="icon">
+          <Icon type="ios-list-box-outline"/>
+        </p>
+        <p>取消</p>
+      </div>
+      <div class=" split"></div>
+      <div class="item add-to" @click="showAddToMenu">
+        <p class="icon">
+          <Icon type="ios-add"/>
+        </p>
+        <p>添加到</p>
+      </div>
+      <div class="item remove">
+        <p class="icon">
+          <Icon type="ios-trash-outline"/>
+        </p>
+        <p>移除</p>
+      </div>
+      <div class="item select-all" @click="selectAll">
+        <p class="icon">
+          <Icon type="ios-checkmark-circle-outline"/>
+        </p>
+        <p>全选</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+  import {Component, Vue, Watch} from "vue-property-decorator";
+  import {State, Mutation, Action, namespace} from "vuex-class";
+  import PlayListContentItem from "../components/PlayListContentItem";
+  import draggable from "vuedraggable";
+  import {dropDownMenu, editPlayListModal} from "../utils/utils";
+  import {confirm} from "../utils/utils";
+
+  const playListModule = namespace("playList");
+  const fileModule = namespace("file");
+
+  @Component({
+    components: {PlayListContentItem, draggable}
+  })
+  export default class PlayList extends Vue {
+
+    @playListModule.State playLists;
+    @playListModule.State playingList;
+    @fileModule.State allFile;
+
+    selectedFileIds = [];
+
+    @Watch("selectedFileIds")
+    onSelectedFileIdsChanged(val) {
+      console.log(val);
+      if (val.length > 0) {
+        this.$store.commit("home/setIsHideBottom", true);
+      } else {
+        this.$store.commit("home/setIsHideBottom", false);
+      }
+    }
+
+    @Watch("$route")
+    onRouteChange() {
+      this.initContent()
+
+    }
+
+    // 字段同playList,Content中为具体的文件
+    distPlayList!: any = {};
+    distPlayListContent!: any = [];
+
+    public created() {
+      this.initContent()
+    }
+
+    get topImgUrl() {
+      return this.distPlayList.content.length ? this.distPlayList.content[0].imgUrl : "";
+    }
+
+    get totalMinute() {
+      if (!this.distPlayList) {
+      }
+      const sec = this.distPlayList.content.reduce((total, timeStr) => {
+        var timeArr = timeStr.time.split(":").map(o => parseInt(o));
+        return total + timeArr[0] * 60 + timeArr[1];
+      }, 0);
+      return Math.floor(sec / 60);
+    }
+
+    get isSelectMode() {
+      return this.selectedFileIds.length > 0;
+    }
+
+    initContent(){
+      const id = this.$route.params["id"];
+      const currentPlayList = this.playLists.find(o => o.id === id);
+      if (!currentPlayList || Object.keys(currentPlayList).length === 0) {
+        console.log(currentPlayList);
+        return;
+      }
+      const currentPlayListIds = currentPlayList.content;
+      const content = currentPlayListIds.map(o => {
+        return this.allFile.find(file => file.id === o);
+      }).filter(o => o);
+
+      // this.distPlayList = {...currentPlayList, content};
+      this.distPlayList = {...currentPlayList, content};
+      this.distPlayListContent = content;
+    }
+
+    cancelSelect() {
+      this.selectedFileIds = [];
+    }
+
+    selectAll() {
+      this.selectedFileIds = this.distPlayList.content.map(o => o.id);
+    }
+
+    showAddToMenu(e) {
+      const contextMenu!: any = [
+        {label: "正在播放", callback: this.$store.dispatch("playList/addToPlayingList", this.selectedFileIds)}
+      ];
+      dropDownMenu(e, contextMenu);
+    }
+
+    playAll() {
+      if (this.distPlayListContent.length === 0) {
+        return;
+      }
+      this.$store.commit("playList/setPlayingList", this.distPlayListContent);
+      this.$store.dispatch("audio/play", this.distPlayListContent[0]);
+    }
+
+    rename() {
+      editPlayListModal({isRename: true, oldName: this.distPlayList.title}).then(name => {
+        this.$store.dispatch("playList/renamePlayList", {name, id: this.distPlayList.id});
+      });
+    }
+
+    remove() {
+      // this.$store.dispatch('playList/removePlayList',{name,id:this.distPlayList.id})
+      confirm({title: "确定要删除吗?", info: "该播放列表下的所有条目都将被删除"}).then(() => {
+        // that.$store.commit("playList/removePlayList", that.distPlayList.id);
+        console.log(this);
+        this.$store.dispatch("playList/removePlayList", {id: this.distPlayList.id, context: this});
+      });
+    }
+  }
+</script>
+
+<style scoped lang="scss">
+  .PlayList {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    .top {
+      background-color: #2d7adc;
+      display: flex;
+      height: 300px;
+      box-sizing: border-box;
+      padding: 40px ;
+      .left {
+        /*width: 280px;*/
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .cover {
+          /*width: 200px;*/
+          height: 100%;
+          .small-block, .block {
+            height: 8px;
+            margin: 0 auto;
+          }
+          .small-block {
+            width: 80%;
+            background-color: rgba(255, 255, 255, .4);
+          }
+          .block {
+            width: 90%;
+            background-color: rgba(255, 255, 255, .7);
+          }
+          .cd {
+            width: 200px;
+            height: 200px;
+            background-color: #eee;
+            font-size: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            img {
+              width: 100%;
+              height: 100%;
+            }
+          }
+        }
+
+      }
+      .right {
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        box-sizing: border-box;
+        padding-left: 40px;
+        /*padding: 40px 40px 40px 20px;*/
+        text-align: left;
+        .title {
+          font-size: 26px;
+        }
+        .list-info {
+        }
+        .operations {
+          margin-top: auto;
+          div {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 20px;
+          }
+        }
+      }
+
+      .bottom {
+        padding: 25px 15px 0;
+        box-sizing: border-box;
+      }
+    }
+
+    .bottom {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+
+      .list {
+        flex: 1;
+        box-sizing: border-box;
+        padding: 30px 20px 0;
+        width: 100%;
+
+        overflow: auto;
+      }
+
+      .no-item {
+        margin-top: 40px;
+        align-self: flex-start;
+        margin-left: 40px;
+        text-align: left;
+        h4 {
+          font-weight: normal;
+          margin-bottom: 16px;
+          font-size: 20px;
+        }
+        .to-file {
+          display: flex;
+          .cd {
+            width: 50px;
+            height: 50px;
+            /*box-sizing: border-box;*/
+            /*padding: 10px;*/
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            img {
+              width: 50%;
+              height: 50%;
+            }
+          }
+          .info {
+            font-size: 16px;
+            .to-files {
+              color: rgb(0, 90, 158);
+              font-size: 14px;
+            }
+          }
+
+          &:hover {
+            opacity: .8;
+          }
+        }
+      }
+    }
+
+    .select-tools {
+      /*      position: absolute;
+            left: 0;
+            bottom: 0;*/
+      width: 100%;
+      height: 70px;
+      background-color: #fff;
+      display: flex;
+      justify-content: flex-end;
+      box-sizing: border-box;
+
+      .split {
+        width: 1px;
+        margin: 5px 10px;
+        background-color: #aaa;
+      }
+
+      .item {
+        width: 70px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        &:hover {
+          background-color: #ccc;
+        }
+        .icon {
+          font-size: 28px;
+        }
+      }
+    }
+
+  }
+</style>
