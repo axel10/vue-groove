@@ -5,8 +5,8 @@ import Home from './views/Home.vue';
 Vue.use(Router);
 
 export default new Router({
-  // mode:'history',
-  base:'/vcplayer',
+  mode:'history',
+  base:'/',
   routes: [
     {
       path: '/',
@@ -29,6 +29,11 @@ export default new Router({
           component: () => import('./views/Files.vue'),
         },
         {
+          path: '/path/:path',
+          name: 'file',
+          component: () => import('./views/Files.vue'),
+        },
+        {
           path: '/recentPlay',
           name: 'recentPlay',
           component: () => import('./views/RecentPlay.vue'),
@@ -40,6 +45,10 @@ export default new Router({
       name: 'playing',
       component: () => import('./views/Playing.vue'),
     },
+    {
+      path:'*',
+      redirect:'/'
+    }
 
 /*    {
       path: '/test',

@@ -3,15 +3,13 @@
     <div class="Playing">
       <div class="wrap" v-if="playingList.length!==0">
         <div class="header" ref="header">
-          <!--<router-link to="/">-->
-          <div class="back" @click="$router.go(-1)">
+          <div class="back" @click="goBack">
             <Icon type="ios-arrow-round-back"/>
           </div>
-          <!--</router-link>-->
         </div>
         <div class="main">
-          <PlayingToolBar :moveShowList="moveShowList" :isShowList="isShowList"
-                          @toggleList="toggleList"></PlayingToolBar>
+          <PlayingToolBar :moveShowList="moveShowList"
+                          @toggleList="toggleList" ref="playingToolBar"></PlayingToolBar>
 
           <div class="music-list" :class="{'hide':!isShowList,'show':isShowList,
             'moveShow':moveShowList===true,'moveHide':moveShowList===false
@@ -72,6 +70,12 @@
           </div>
         </div>
       </transition>
+
+      <transition name="big-cover">
+        <div class="big-cover" v-show="isMobile && !isShowList" ref="bigCover">
+          <img :src="getLargeImg(playingFile.imgUrl)" alt="">
+        </div>
+      </transition>
     </div>
   </transition>
 </template>
@@ -82,7 +86,14 @@
   import PlayingToolBar from "@/components/PlayingToolBar.vue";
   import PlayingListContentItem from "../components/PlayingListContentItem.vue";
   import CreatePlayListModal from "../components/CreatePlayListModal.vue";
-  import {dropDownMenu, editPlayListModal, getAddFileToContextMenuItems, guid, SortList} from "../utils/utils";
+  import {
+    dropDownMenu,
+    editPlayListModal,
+    getAddFileToContextMenuItems,
+    guid,
+    SortList,
+    getLargeImg
+  } from "../utils/utils";
   import {PlayList} from "../store/modules/playList";
   import {File} from "../store/modules/file";
   import SelectContainer from "../mixins/selectContainer";
@@ -97,6 +108,7 @@
   })
   export default class Playing extends SelectContainer {
     @homeModule.State playingFile!: File;
+    @homeModule.State isMobile!: boolean;
     @playingModule.State isShowList!: boolean;
     @playListModule.State playLists!: Array<PlayList>;
     @playListModule.State playingList!: Array<File>;
@@ -104,6 +116,7 @@
 
     selectedItems: Array<File> = [];
     guid: Function = guid;
+    getLargeImg: Function = getLargeImg;
 
     public created() {
       if (this.$route.params["light"] === "light") {
@@ -116,6 +129,11 @@
     }
 
     public mounted() {
+
+      setTimeout(()=>{
+        this.initBigCoverPosition()
+      })
+
       const list = <HTMLElement>this.$refs.list;
       const onEnd = (e: any) => {
         this.$store.commit("playList/sortPlayingListContent", {
@@ -123,7 +141,11 @@
           newIndex: e.data.newIndex
         });
       };
-      SortList(list, {onEnd});
+      SortList(list, {onEnd},{delay:400});
+    }
+
+    goBack(){
+      this.$router.go(-1)
     }
 
     randomPlayAll() {
@@ -146,12 +168,8 @@
     toggleList() {
       if (this.isShowList) {
         this.hideList();
-        this.$store.commit("home/setIsDark", false);
-        document!.querySelector(".arrow")!.className = "arrow up";
       } else {
         this.showList();
-        this.$store.commit("home/setIsDark", true);
-        document!.querySelector(".arrow")!.className = "arrow";
       }
     }
 
@@ -161,12 +179,35 @@
     showList() {
       this.moveShowList = true;
       this.$store.commit("playing/setShowList", true);
+      this.$store.commit("home/setIsDark", true);
+      document!.querySelector(".arrow")!.className = "arrow";
+
+      this.$router.replace('/playing/dark')
+
     }
 
     hideList() {
       this.moveShowList = false;
       this.$store.commit("playing/setShowList", false);
+      this.$store.commit("home/setIsDark", false);
+      document!.querySelector(".arrow")!.className = "arrow up";
       this.cancelSelect();
+      this.$router.replace('/playing/light')
+
+
+      setTimeout(()=>{
+        this.initBigCoverPosition()
+      })
+    }
+
+    initBigCoverPosition(){
+      const bigCover = this.$refs.bigCover as HTMLElement
+      const playingToolBar = this.$refs.playingToolBar as Vue
+      const firstEle = playingToolBar.$el.childNodes[0] as HTMLElement
+      const offsetTop = document.body.clientHeight-playingToolBar.$el.offsetHeight+parseInt(getComputedStyle(firstEle).marginTop)
+
+      const top:number = (offsetTop-bigCover.offsetHeight)/2
+      bigCover.style.top = top+'px'
     }
 
     cancelSelect() {
@@ -176,13 +217,7 @@
     removeSelectedItem() {
       const selectIds = this.selectedItems.map(o => o.id);
       this.$store.dispatch("playList/removePlayingList", selectIds);
-/*      if (selectIds.indexOf(this.playingFile.id) !== -1) {
-        this.$store.commit('home/setPlayingFile',this.playingList[0])
-      }*/
       this.selectedItems = [];
-/*      if (this.playing) {
-        this.$store.dispatch('audio/togglePlay')
-      }*/
     }
 
     selectAll() {
@@ -196,7 +231,7 @@
 <style scoped lang="scss">
 
   .playing-enter-active, .playing-leave-active {
-    transition: opacity .5s;
+    transition: opacity .6s;
   }
 
   .playing-enter, .playing-leave-to /* .fade-leave-active below version 2.1.8 */
@@ -265,8 +300,9 @@
           color: rgba(255, 255, 255, .7);
           .list {
             width: 100%;
-            overflow-y: auto;
+            overflow: hidden;
             outline: none;
+
           }
           &.hide {
             /*animation: listHide .3s cubic-bezier(1, 0, 1, 1) forwards;*/
@@ -373,10 +409,30 @@
       }
 
     }
+
+    .big-cover {
+      width: 60%;
+      /*height: 300px;*/
+      position: absolute;
+      left: 0;
+      right: 0;
+      /*bottom: 25%;*/
+      top: 0;
+      margin: auto;
+      transition: transform .5s,opacity .5s;
+      img{
+        width: 100%;
+      }
+    }
   }
 
   .noItem-enter, .noItem-leave-to {
     opacity: 0;
+  }
+
+  .big-cover-enter, .big-cover-leave-to {
+    opacity: 0;
+    transform: translateY(-100%);
   }
 
   @keyframes listHide {

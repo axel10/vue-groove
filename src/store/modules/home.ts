@@ -1,8 +1,6 @@
 import * as  _ from 'lodash'
 import {File} from "@/store/modules/file";
 import {ActionContextBasic} from "@/store";
-// @ts-ignore
-import config from "@/utils/config";
 
 const initState: IState = {
   playingFile:new File(),
@@ -10,7 +8,10 @@ const initState: IState = {
   playingCoverUrl: '',
   isHideBottom:false,
   isFold:false,
-  isInRecentPlay:false
+  isInRecentPlay:false,
+  isFullScreen:false,
+  currentTitle:'',
+  isMobile:false
 }
 
 export interface IState {
@@ -19,7 +20,10 @@ export interface IState {
   isDark:boolean,
   isHideBottom:boolean
   isFold: boolean
-  isInRecentPlay:boolean
+  isInRecentPlay:boolean,
+  isFullScreen:boolean,
+  currentTitle:string,
+  isMobile:boolean
 }
 
 export interface ISetPlayingFilePayload {
@@ -57,15 +61,15 @@ const actions = {
 
 
 const mutations = {
-  toggleFold(state: IState) {
+/*  toggleFold(state: IState) {
     state.isFold = !state.isFold
-  },
+  },*/
   setPlayingFile(state: IState,file:File) {
     state.playingFile = file
     localStorage.setItem('playingFile',JSON.stringify(file))
-
   },
   setIsDark(state:IState,b:boolean){
+    console.log(b);
     state.isDark = b
   },
   setIsHideBottom(state:IState,b:boolean){
@@ -73,6 +77,15 @@ const mutations = {
   },
   isInRecentPlay(state:IState,b:boolean){
     state.isInRecentPlay = b
+  },
+  setIsFullScreen(state:IState,b:boolean){
+    state.isFullScreen = b
+  },
+  setCurrentTitle(state:IState,title:string){
+    state.currentTitle = title
+  },
+  setIsMobile(state:IState,b:boolean){
+    state.isMobile= b
   }
 }
 

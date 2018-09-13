@@ -2,11 +2,10 @@
   <div class="Files">
     <div class="title">
       <div class="main-title">
-        <h4>浏览作品</h4>
+        <h4>{{title}}</h4>
       </div>
       <div class="tools">
         <span class="new-list" @click="$store.dispatch('file/randomPlayAll')">
-        <!--<span class="new-list" @click="randomPlayAll">-->
           <Icon style="font-size: 24px;margin-right: 10px" type="ios-shuffle"/>
           随机播放所有音乐
         </span>
@@ -19,11 +18,11 @@
       <ul>
         <li v-for="(item,i) in currentFiles">
           <FileItem
-                    :is-add-to-recent="true"
-                    :item="item"
-                    :selectedItems="selectedItems"
-                    @select="val=>selectedItems = val"
-                    :all="currentFiles">
+                  :is-add-to-recent="true"
+                  :item="item"
+                  :selectedItems="selectedItems"
+                  @select="val=>selectedItems = val"
+                  :all="currentFiles">
           </FileItem>
 
         </li>
@@ -40,14 +39,14 @@
       <li @click="playAll">
         <p>
           <!--<Icon type="ios-list-box-outline"/>-->
-          <Icon type="ios-play-outline" />
+          <Icon type="ios-play-outline"/>
         </p>
         <p>播放全部</p>
       </li>
       <li @click="showAddToPlayListMenu">
         <p>
           <!--<Icon type="ios-list-box-outline"/>-->
-          <Icon type="ios-add" />
+          <Icon type="ios-add"/>
         </p>
         <p>添加到</p>
       </li>
@@ -72,10 +71,10 @@
     dropDownMenu,
     fadeInFileContent,
     getAddFileToContextMenuItems,
-    playAllFile
+    playAllSelectFile
   } from "../utils/utils";
-  import SelectBottomTools from '../components/Operation/SelectBottomTools.vue';
-  import SelectContainer from '../mixins/selectContainer';
+  import SelectBottomTools from "../components/Operation/SelectBottomTools.vue";
+  import SelectContainer from "../mixins/selectContainer";
 
   const fileModule = namespace("file");
 
@@ -83,15 +82,22 @@
     components: {SelectBottomTools, FileItem}
   })
   export default class Files extends SelectContainer {
-    // @fileModule.Action('getFiles') public getFiles!:any
-    // @fileModule.Action init;
-    // @fileModule.Action getFiles;
-    // @fileModule.Action randomPlayAll;
-    @fileModule.State("files") files!:Array<File>;
-    @fileModule.State path!:Array<string>;
-    @fileModule.Getter currentFiles!:Array<File>;
+    @fileModule.State("files") files!: Array<File>;
+    @fileModule.State path!: Array<string>;
+    @fileModule.Getter currentFiles!: Array<File>;
 
-    selectedItems:Array<File> = [];
+    selectedItems: Array<File> = [];
+    title: string = "浏览作品";
+
+    public created() {
+      // this.init();
+      this.$store.dispatch("file/init");
+      this.$store.commit("home/setCurrentTitle", this.title);
+
+      if (this.$route.params["path"]) {
+        this.$store.commit('file/setPath',[this.$route.params["path"]])
+      }
+    }
 
     get isSelectMode() {
       return this.selectedItems.length > 0;
@@ -106,34 +112,22 @@
       fadeInFileContent();
     }
 
-    public created() {
-      // this.init();
-      this.$store.dispatch('file/init')
-    }
-
     playAll() {
-/*      this.$store.dispatch('file/playDirs',this.selectedItems)
-      this.selectedItems = []*/
-      playAllFile(this,this.selectedItems)
+      playAllSelectFile(this, this.selectedItems);
     }
 
-/*
-    getImgPath(title:string) {
-      const path = this.path.join("/");
-      return `${config.coverPath}${path}/${title}.jpg`;
-    }
-*/
 
     selectAll() {
       this.selectedItems = this.currentFiles;
     }
 
-    cancelSelect(){
-      this.selectedItems = []
+    cancelSelect() {
+      this.selectedItems = [];
     }
-    showAddToPlayListMenu(e:MouseEvent){
-      const contextMenu = getAddFileToContextMenuItems(this.selectedItems,this)
-      dropDownMenu(e,contextMenu)
+
+    showAddToPlayListMenu(e: MouseEvent) {
+      const contextMenu = getAddFileToContextMenuItems(this.selectedItems, this);
+      dropDownMenu(e, contextMenu);
     }
   }
 </script>
@@ -146,9 +140,7 @@
     align-items: flex-start;
     flex: 1;
     box-sizing: border-box;
-    padding-left: 18px;
-    padding-top: 40px;
-
+    padding: 40px 20px 0;
     .title {
       text-align: left;
       .main-title {

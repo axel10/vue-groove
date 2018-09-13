@@ -8,10 +8,9 @@ import Confirm from '@/components/Common/Confirm';
 import CreatePlayListModal from '@/components/CreatePlayListModal';
 
 // @ts-ignore
-import DropdownList from '@/components/DropdownList';
+import DropdownList from '@/components/Common/DropdownList';
 import store from '@/store/index';
 import {Sortable, Plugins} from '@shopify/draggable';
-import SelectItem from '@/mixins/selectItem';
 import SelectContainer from '@/mixins/selectContainer';
 
 
@@ -123,12 +122,6 @@ export function confirm(opt: confirmConfig) {
   }));
 }
 
-/*interface editPlayListModalConfig {
-  isRename?: boolean,
-  oldName?: string
-  onCancel?: Function
-}*/
-
 interface editPlayListModalConfig {
   isRename?: boolean
   oldName?: string
@@ -185,13 +178,22 @@ export interface DropDownMenuItem {
   label?: string,
   callback?: Function,
   split?: boolean,
-  isDisable?: boolean
+  isDisable?: boolean,
+  children?: Array<DropDownMenuItem>,
+  el?: any
 }
-
 
 export function dropDownMenu(e: Event, opts: Array<DropDownMenuItem>, onCancel?: Function) {   // 传递{split:true}为分割线
   let contain = document.createElement('div');
   document.body.appendChild(contain);
+
+  /*  opts.forEach(o=>{
+      if (o.el) {
+        o.el = new o.el({
+          store,
+        })
+      }
+    })*/
 
   function remove() {
     vm.$destroy();
@@ -250,11 +252,14 @@ export function toggleFullScreen() {
     (el.requestFullscreen && el.requestFullscreen()) ||
     (el['mozRequestFullScreen'] && el['mozRequestFullScreen']()) ||
     (el.webkitRequestFullscreen && el.webkitRequestFullscreen()) || (el['msRequestFullscreen'] && el['msRequestFullscreen']());
+    store.commit('home/setIsFullScreen', true);
 
   } else {	//退出全屏,三目运算符
     document.exitFullscreen ? document.exitFullscreen() :
       document['mozCancelFullScreen'] ? document['mozCancelFullScreen']() :
         document.webkitExitFullscreen ? document.webkitExitFullscreen() : '';
+    store.commit('home/setIsFullScreen', false);
+
   }
 }
 
@@ -317,7 +322,6 @@ export function getAddFileToContextMenuItems(files: Array<File>, context?: Selec
   const playLists = store.state.playList.playLists;
 
   if (playLists.length > 0) {
-    contextMenu.push({split: true});
     playLists.forEach(o => {
       contextMenu.push({
         label: o.title,
@@ -343,7 +347,7 @@ export function mapIdsToFiles(ids: Array<number>): Array<File> {
   var res: Array<File> = [];
   const allFile = store.state.file.allFile;
   ids.forEach(id => {
-    res.push(allFile.find(o => o.id === id)||new File());
+    res.push(allFile.find(o => o.id === id) || new File());
   });
   return res;
 }
@@ -356,25 +360,35 @@ export interface SortListHack {
 
 export function SortList(container: HTMLElement, hacks: SortListHack, opt?: any) {
   const {onStart, onSort, onEnd} = hacks;
-  if (!opt) {
-    opt = {
-      draggable: 'li',
-      // delay:300,
-      swapAnimation: {
-        duration: 200,
-        easingFunction: 'ease-in-out',
-        horizontal: true
-      },
-      plugins: [Plugins.SwapAnimation]
-    };
-  }
-  const sortable = new Sortable(container, opt);
+  const mergeOpt = {
+    draggable: 'li',
+    // delay:300,
+    swapAnimation: {
+      duration: 200,
+      easingFunction: 'ease-in-out',
+      horizontal: true,
+    },
+    plugins: [Plugins.SwapAnimation],
+    ...opt
+
+  };
+  const sortable = new Sortable(container, mergeOpt);
   if (onStart) sortable.on('sortable:start', onStart);
   if (onSort) sortable.on('sortable:sort', onSort);
   if (onEnd) sortable.on('sortable:stop', onEnd);
 }
 
-export function playAllFile(context: SelectContainer, files: Array<File>) {
+export function playAllSelectFile(context: SelectContainer, files: Array<File>) {
+
+  context.$store.dispatch('file/playDirs', context.selectedItems);
+  context.selectedItems = [];
+}
+
+export function playAllFile(files: File[]) {
+  store.dispatch('file/playDirs', files);
+}
+
+/*export function playAllSelectFile(context: SelectContainer, files: Array<File>) {
   files.sort(function (e1, e2) {
     if (e1.trck > e2.trck) return 1;
     if (e1.trck < e2.trck) return -1;
@@ -382,8 +396,21 @@ export function playAllFile(context: SelectContainer, files: Array<File>) {
   });
   context.$store.dispatch('file/playDirs', context.selectedItems);
   context.selectedItems = [];
-}
+}*/
 
 export function addFileToPlayList(context: SelectContainer, ids: Array<number>, listId: string) {
   context.$store.dispatch('playList/addToPlayList', {listId, ids});
+}
+
+export function getLargeImg(url: string) {
+  return url.replace('/small/', '/large/');
+}
+
+export function beginAddTime() {
+  const state = store.state.audio
+  clearInterval(state.timer)
+  const timer = setInterval(() => {
+    store.commit('audio/addCurrentTime');
+  }, 1000 / state.fps);
+  store.commit('audio/setTimer', timer);
 }

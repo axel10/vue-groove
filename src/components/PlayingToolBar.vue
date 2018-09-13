@@ -3,7 +3,7 @@
           'moveTop':moveShowList===true,'moveBottom':moveShowList===false}" ref="PlayingToolBar">
     <div class="file-info" ref="fileInfo">
       <div class="mask"></div>
-      <div class="cover">
+      <div class="cover" v-if="coverShow">
         <img :src="playingFile.imgUrl" alt="">
       </div>
       <div class="info">
@@ -18,22 +18,20 @@
       <div class="progress">
         <p class="current">{{currentTimeStr}}</p>
         <div class="slider">
-          <Slider :value="timePercent" @on-change="handleSelectTime" :tip-format="formatProgress"></Slider>
+          <!--<Slider :value="timePercent" @on-change="handleSelectTime" :tip-format="formatProgress"></Slider>-->
+          <TimeSlider></TimeSlider>
         </div>
         <p class="total">{{durationTimeStr}}</p>
       </div>
 
       <div class="buttons">
         <div class="left">
-          <!--<div class="operate random">
-            <Icon type="ios-shuffle"/>
-          </div>-->
+
           <Random class="operate"></Random>
           <div class="operate prev" @click="toPrev">
             <Icon type="ios-skip-backward-outline"/>
           </div>
           <div class="operate play" @click="togglePlay">
-            <!--<Icon type="ios-play-outline"/>-->
             <Icon v-if="!playing" type="ios-play-outline"/>
             <Icon v-if="playing" type="ios-pause-outline"/>
           </div>
@@ -41,22 +39,16 @@
             <Icon type="ios-skip-forward-outline"/>
           </div>
           <Loop class="operate loop"></Loop>
-          <!--<div class="operate repeat">
-            <Icon type="ios-repeat"/>
-          </div>-->
-
           <div class="operate volume" @click="showVolumeModal">
             <transition name="volume-modal">
               <div class="volume-modal" v-if="volumeModalShow" ref="volumeModalShow">
-                <div class="opts">
-                  <div class="icon">
-                    <!--<Icon type="ios-volume-down"/>-->
-                    <VolumeIcon :click-to-mute="true"></VolumeIcon>
-                  </div>
-                  <div class="slide">
-                    <Slider :value="volume" @on-input="handleChangeVolume"></Slider>
-                  </div>
-                </div>
+                <!--<div class="opts">-->
+                  <VolumeSlider>
+                    <div class="icon">
+                      <VolumeIcon :click-to-mute="true"></VolumeIcon>
+                    </div>
+                  </VolumeSlider>
+                <!--</div>-->
               </div>
             </transition>
             <VolumeIcon></VolumeIcon>
@@ -69,7 +61,6 @@
         </div>
         <div class="right">
           <div class="operate play-list" @click="toggleList">
-            <!--<div class="operate play-list" @click="$emit('toggleList')">-->
             <Icon type="ios-list"/>
           </div>
           <div class="operate full-screen" @click="toggleFullScreen">
@@ -81,7 +72,6 @@
 
 
     <div class="arrow" :class="{'up':$route.params['light']==='light'}" @click="$emit('toggleList')">
-      <!--<Icon type="ios-arrow-down"/>-->
       <img src="/res/vcplayer/arrow.svg" alt="">
     </div>
   </div>
@@ -89,27 +79,25 @@
 
 <script lang="ts">
   import {Component, Prop, Vue} from "vue-property-decorator";
-  import {State, Mutation, Action, namespace} from "vuex-class";
+  import {namespace} from "vuex-class";
   import {getTimeStr} from "../store/modules/audio";
   import {dropDownMenu, editPlayListModal, isInSelf, toggleFullScreen} from "../utils/utils";
-  import VolumeIcon from "./VolumeIcon.vue";
+  import VolumeIcon from "./Operation/VolumeIcon.vue";
   import Loop from "./Operation/Loop.vue";
   import Random from "./Operation/Random.vue";
   import {File} from "../store/modules/file";
+  import VolumeSlider from "./Operation/VolumeSlider.vue";
+  import TimeSlider from "./Operation/TimeSlider.vue";
 
   const audioModule = namespace("audio");
   const homeModule = namespace("home");
   const playListModule = namespace("playList");
+  const playingModule = namespace("playing");
 
   @Component({
-    components: {Random, Loop, VolumeIcon},
-    /*    props: {
-          isShowList: Boolean,
-          moveShowList: Boolean
-        }*/
+    components: {TimeSlider, VolumeSlider, Random, Loop, VolumeIcon},
   })
   export default class PlayingToolBar extends Vue {
-    @Prop(Boolean) isShowList !: boolean;
     @Prop(Boolean) moveShowList !: boolean;
 
     @audioModule.State playing!: boolean;
@@ -117,6 +105,7 @@
     @audioModule.State duration!: number;
     @audioModule.State volume!: number;
     @playListModule.State playingList!: Array<File>;
+    @playingModule.State isShowList!: boolean;
     @audioModule.Getter currentTimeStr!: string;
     @audioModule.Getter durationTimeStr!: string;
     @audioModule.Getter timePercent!: number;
@@ -124,25 +113,42 @@
     @audioModule.Mutation handleChangeVolume!: any;
     @homeModule.State playingFile !: any;
     @homeModule.State isDark!: boolean;
+    @homeModule.State isMobile!: boolean;
 
     @audioModule.Action toPrev!: any;
     @audioModule.Action toNext!: any;
 
     volumeModalShow: boolean = false;
 
-    // menuX = 0
-    // menuY = 0
-
     toggleFullScreen: Function = toggleFullScreen;
+    touchStartY: number = 0;
 
     public mounted() {
-      if (!this.isDark) {
-        window.addEventListener("mousemove", this.toMinListener);
+      if (!this.isDark && !this.isMobile) {
+        this.toMinListener();
       }
+      const selfEl: HTMLElement = this.$refs.PlayingToolBar as HTMLElement;
+      selfEl.addEventListener("touchstart", (evt: TouchEvent) => {
+        console.log(evt);
+        this.touchStartY = evt.changedTouches[0].clientY
+      });
+      selfEl.addEventListener("touchend", (evt: TouchEvent) => {
+        console.log(evt);
+        const endY = evt.changedTouches[0].clientY
+        if ((this.isShowList && endY - this.touchStartY >80) || (!this.isShowList && endY - this.touchStartY < -80)){
+          this.$emit("toggleList");
+        }
+      });
+    }
+
+    get coverShow() {
+      if (!this.isDark) {
+        return !this.isMobile;
+      }
+      return true;
     }
 
     toggleList() {
-
       if (this.isDark) {
         window.addEventListener("mousemove", this.toMinListener);
 
@@ -163,24 +169,23 @@
       if (this.isDark) return;
       const fileInfo = <HTMLElement>this.$refs.fileInfo;
       const operations = <HTMLElement>this.$refs.operations;
-      const header =<HTMLElement> document.querySelector('.Playing>.wrap>.header')
-      header.style.opacity = '0'
-      if (!fileInfo||!operations) return;
+      const header = <HTMLElement> document.querySelector(".Playing>.wrap>.header");
+      if (!fileInfo || !operations || !header) return;
+      header.style.opacity = "0";
+      if (!fileInfo || !operations) return;
       const operateHeight = operations.offsetHeight;
       fileInfo.style.transform = `translateY(${operateHeight}px)`;
       operations.style.visibility = "hidden";
-
       window.removeEventListener("mousemove", this.reduce);
       window.addEventListener("mousemove", this.reduce);
     }
 
     reduce() {
-
       const fileInfo = <HTMLElement>this.$refs.fileInfo;
       const operations = <HTMLElement>this.$refs.operations;
-      const header =<HTMLElement> document.querySelector('.Playing>.wrap>.header')
-      header.style.opacity = '1'
-      if (!fileInfo||!operations) return;
+      const header = <HTMLElement> document.querySelector(".Playing>.wrap>.header");
+      if (!fileInfo || !operations || !header) return;
+      header.style.opacity = "1";
       fileInfo.style.transform = `translateY(0)`;
       operations.style.visibility = "visible";
       clearTimeout(this.timer);
@@ -192,7 +197,15 @@
     showOperateMenu(e: MouseEvent) {
       dropDownMenu(e, [
         {label: "保存为播放列表", callback: this.saveToPlayList},
-        {label: "清空正在播放", callback: this.clearPlayingList}
+        {label: "清空正在播放", callback: this.clearPlayingList},
+        {
+          el: new Vue({
+            template: "<VolumeSlider><VolumeIcon style='font-size: 30px'></VolumeIcon></VolumeSlider>",
+
+            components: {VolumeSlider, VolumeIcon},
+            store: this.$store
+          })
+        }
       ]);
     }
 
@@ -203,8 +216,8 @@
     }
 
     clearPlayingList() {
-      this.$store.dispatch('audio/abort')
-      this.$store.commit('playList/setPlayingList',[])
+      this.$store.dispatch("audio/abort");
+      this.$store.commit("playList/setPlayingList", []);
     }
 
     showVolumeModal() {
@@ -309,10 +322,10 @@
         color: #fff;
       }
       .current {
-        margin-right: 10px;
+        margin-right: 20px;
       }
       .total {
-        margin-left: 10px;
+        margin-left: 20px;
       }
       .slider {
 
@@ -446,6 +459,7 @@
     align-items: center;
     position: absolute;
     top: -50px;
+    color: #000;
 
     .opts {
       width: 100%;

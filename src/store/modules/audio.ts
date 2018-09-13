@@ -1,10 +1,10 @@
 import * as  _ from 'lodash';
 import {ActionContextBasic} from '@/store';
 import {File} from './file';
+import {beginAddTime} from '@/utils/utils';
+import {LoopMode} from '@/utils/enum/LoopMode';
 
-export enum loopMode {
-  close = 0, loopAll = 1, loopSingle = 2
-}
+
 
 const initState: IState = {
   serverPath: '',
@@ -14,7 +14,7 @@ const initState: IState = {
   volume: 30,
   timer: 0,
   fps: 5,
-  loopMode: loopMode.close,
+  loopMode: LoopMode.close,
   isRandom: false,
   isMute: false
 };
@@ -29,7 +29,7 @@ export interface IState {
   volume: number,
   timer: number,
   fps: 5,
-  loopMode: loopMode,
+  loopMode: LoopMode,
   isRandom: boolean,
   isMute: boolean
 }
@@ -74,7 +74,7 @@ const actions = {
     }
 
     switch (state.loopMode) {
-      case loopMode.close:
+      case LoopMode.close:
         const playingFile = rootState.home.playingFile;
         const playingList = rootState.playList.playingList;
         const index = playingList.findIndex(o => o.id == playingFile.id);
@@ -85,10 +85,10 @@ const actions = {
           dispatch('play', playingList[index + 1]);
         }
         break;
-      case loopMode.loopAll:
+      case LoopMode.loopAll:
         dispatch('toNext');
         break;
-      case loopMode.loopSingle:
+      case LoopMode.loopSingle:
         dispatch('play', rootState.home.playingFile);
         break;
     }
@@ -107,6 +107,7 @@ const actions = {
       }, 1000 / state.fps);
       commit('setTimer', timer);
       player.play();
+
     };
 
     // 设置当前播放文件
@@ -131,7 +132,7 @@ const actions = {
 
     if (state.serverPath !== rootState.home.playingFile.musicUrl) {
       dispatch('play', rootState.home.playingFile);
-      return
+      return;
     }
 
     if (player.paused) {
@@ -184,9 +185,9 @@ const actions = {
     const index = Math.floor(Math.random() * playingList.length);
     dispatch('play', playingList[index]);
   },
-  stop({commit}:ActionContextBasic){
+  stop({commit}: ActionContextBasic) {
     const player = <HTMLAudioElement> document.getElementById('player');
-    player.pause()
+    player.pause();
     commit('setPlaying', false);
     clearInterval(state.timer);
   }
@@ -227,6 +228,14 @@ const mutations = {
     state.currentTime = state.duration * val / 100;
     const player = <HTMLAudioElement> document.getElementById('player');
     player.currentTime = state.currentTime;
+
+    if (state.playing) {
+      beginAddTime()
+    }
+  },
+  handleInputTime(state:IState){
+    clearInterval(state.timer)
+    console.log('clear');
   },
 
   handleChangeVolume(state: IState, val: number) {
@@ -242,14 +251,14 @@ const mutations = {
 
   switchLoopMode(state: IState) {
     switch (state.loopMode) {
-      case loopMode.close:
-        state.loopMode = loopMode.loopAll;
+      case LoopMode.close:
+        state.loopMode = LoopMode.loopAll;
         break;
-      case loopMode.loopAll:
-        state.loopMode = loopMode.loopSingle;
+      case LoopMode.loopAll:
+        state.loopMode = LoopMode.loopSingle;
         break;
-      case loopMode.loopSingle:
-        state.loopMode = loopMode.close;
+      case LoopMode.loopSingle:
+        state.loopMode = LoopMode.close;
         break;
     }
   },
@@ -259,6 +268,20 @@ const mutations = {
     state.isMute = !state.isMute;
     player.muted = state.isMute;
   },
+  addVolume(state: IState, num: number) {
+    const volume = state.volume;
+    if (volume + num > 100) {
+      state.volume = 100;
+      return;
+
+    }
+    if (volume + num < 0) {
+      state.volume = 0;
+      return;
+    }
+
+    state.volume += num;
+  }
 };
 
 export default {

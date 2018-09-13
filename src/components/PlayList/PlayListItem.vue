@@ -19,8 +19,9 @@
         <div class="small-block"></div>
         <div class="block"></div>
         <div class="cd">
-          <img :src="item.imgUrl" alt="" v-if="item.imgUrl" ref="cover">
-          <Icon type="ios-list" v-if="!item.imgUrl"/>
+          <!--<img :src="item.imgUrl" alt="" v-if="item.imgUrl" ref="cover">-->
+          <!--<Icon type="ios-list" v-if="!item.imgUrl"/>-->
+          <Icon type="ios-list" />
 
         </div>
       </div>
@@ -121,9 +122,10 @@
 
 <style scoped lang="scss">
   .PlayListItem {
-    width: 220px;
+    width: 245px;
     height: 100%;
-    padding-bottom: 20px;
+    padding: 7px 7px 30px;
+
     position: relative;
 
     &.selected {
@@ -133,6 +135,8 @@
       }
     }
     .color-wrap {
+      background: linear-gradient(rgba(0,0,0,.05),rgba(0,0,0,.3));
+
       position: relative;
       &:hover .operation div {
         opacity: 1;
@@ -216,18 +220,15 @@
     }
     .total {
       color: #666;
-      margin-left: 8px;
     }
     h5 {
-      margin-left: 8px;
-
+      font-weight: bold;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       margin-top: 5px;
       margin-bottom: 0;
       font-size: 16px;
-      font-weight: normal;
     }
 
     .checkbox-area {

@@ -1,5 +1,5 @@
 <template>
-  <div class="item FileItem" :class="{'selected':selected}" @click="handleSelect" @contextmenu="showDropDown">
+  <div class="item FileItem" :class="{'selected':selected,'file':!item.content,'dir':item.content}" @click="handleSelect" @contextmenu="showDropDown">
 
     <div class="checkbox-area" v-if="isSelectMode">
       <div class="checkbox" :class="{'no-select':!selected}">
@@ -53,7 +53,7 @@
 
 <script lang="ts">
   import {Component, Prop, Vue} from "vue-property-decorator";
-  import DropdownList from "@/components/DropdownList.vue";
+  import DropdownList from "@/components/Common/DropdownList.vue";
   import {dropDownMenu, editPlayListModal, fadeInFileContent, getAddFileToContextMenuItems} from "../utils/utils";
   import {namespace} from "vuex-class";
   import SelectItem from "../mixins/selectItem";
@@ -187,10 +187,23 @@
 </script>
 
 <style scoped lang="scss">
+
+
+
+
   .FileItem {
-    width: 164px;
+
     position: relative;
     padding: 7px 7px 30px;
+
+    $fileWidth:170px;
+    &.file{
+      width: $fileWidth;
+    }
+    &.dir{
+      width: 245px;
+      /*margin: 0 15px;*/
+    }
 
     &.selected {
       background-color: rgb(0, 90, 158);
@@ -213,10 +226,14 @@
 
     .top {
       position: relative;
+      background: linear-gradient(rgba(0,0,0,.05),rgba(0,0,0,.3));
+
       .file {
         .cover {
-          width: 150px;
-          height: 150px;
+          /*width: 100%;*/
+          /*height: 100%;*/
+          width: 156px;
+          height: 156px;
           transition: box-shadow .3s;
           position: relative;
           display: flex;
@@ -246,7 +263,7 @@
         .color-wrap {
           position: relative;
           width: 100%;
-          height: 160px;
+          height: 152px;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -293,7 +310,6 @@
         margin-top: 5px;
         margin-bottom: 0;
         font-size: 16px;
-        font-weight: normal;
 
         &.bold {
           font-weight: bold;
@@ -370,10 +386,12 @@
       }
       .play {
         left: 0;
-        right: 40%;
+        /*right: 40%;*/
+        right: 60px;
       }
       .add {
-        left: 40%;
+        /*left: 40%;*/
+        left: 60px;
         right: 0;
       }
     }

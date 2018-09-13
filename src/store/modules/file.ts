@@ -80,10 +80,10 @@ const actions = {
 
   init({commit, dispatch}: ActionContextBasic) {
     dispatch({type: 'getFiles'});
-    const path = sessionStorage.getItem('path') || '';
+/*    const path = sessionStorage.getItem('path') || '';
     if (path) {
       commit('setPath', JSON.parse(path));
-    }
+    }*/
   },
 
   getFiles({commit}: ActionContextBasic) {
@@ -109,6 +109,7 @@ const actions = {
 
   playDirs({dispatch, commit}: ActionContextBasic, dir: Array<File>) {
 
+    console.log(dir);
     if (!dir[0].content) {
       dispatch('audio/play', dir[0], {root: true});
       dispatch('playList/addToPlayingList',dir,{root:true})
@@ -155,7 +156,6 @@ const mutations = {
       state.path = fileName;
     }
     sessionStorage.setItem('path', JSON.stringify(state.path))
-
   },
   toPrev(state: IState) {
     if (state.path.length > 0) {

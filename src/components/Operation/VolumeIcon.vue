@@ -2,7 +2,7 @@
   <span :class="{'active':isMute}" @click="toggleMute">
       <Icon type="ios-volume-up" v-if="volume>70 && !isMute"/>
        <Icon type="ios-volume-down" v-if="volume>0&&volume<=70 && !isMute"/>
-       <Icon type="ios-volume-off" v-if="volume===0||isMute"/>
+       <Icon type="ios-volume-mute" v-if="volume===0||isMute"/>
   </span>
 </template>
 

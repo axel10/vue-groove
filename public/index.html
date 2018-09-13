@@ -12,8 +12,21 @@
     <script src="https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js"></script>
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <style>
-      .ivu-slider-button-wrap .ivu-tooltip{
+      html,body{
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+/*      .ivu-slider-button-wrap .ivu-tooltip{
         line-height: 0;
+      }*/
+
+      .ivu-tooltip-rel{
+        display: block!important;
+      }
+      .ivu-tooltip{
+        width: 18px;
+        height: 18px;
       }
 
       body::-webkit-scrollbar{

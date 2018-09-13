@@ -26,7 +26,6 @@
           bottom: 0;*/
     width: 100%;
     height: 70px;
-
     z-index: 100;
     position: fixed;
     bottom: 0;

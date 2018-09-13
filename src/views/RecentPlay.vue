@@ -2,7 +2,7 @@
   <div class="RecentPlay">
     <div class="title">
       <div class="main-title">
-        <h4>最近播放的内容</h4>
+        <h4>{{title}}</h4>
       </div>
       <div class="tools">
         <span class="new-list" @click="$store.dispatch('file/randomPlayAll')">
@@ -76,9 +76,12 @@
     @playListModule.State recentPlay !: Array<File>;
 
     selectedItems:Array<File> = []
+    title:string='最近播放的内容'
 
     public created() {
       this.$store.commit("home/isInRecentPlay", true);
+      this.$store.commit('home/setCurrentTitle',this.title)
+
     }
 
     public destroyed() {

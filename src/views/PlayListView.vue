@@ -44,14 +44,6 @@
 
       <ul class="list" ref="list" :class="{'hide':distPlayListContent.length<=0}"
           :style="{paddingBottom:isSelectMode?'70px':0}">
-        <!--        <draggable v-model="distPlayListContent" >
-                  <PlayListContentItem v-for="(item,i) in distPlayListContent"
-                                       :item="item"
-                                       :index="i"
-                                       :selectedItems="selectedItems"
-                                       @select="(val)=>{selectedItems=val}"
-                  ></PlayListContentItem>
-                </draggable>-->
         <li class="PlayListContentItem token" style="height: 50px;outline: none"></li>
         <PlayListContentItem v-for="(item,i) in distPlayListContent"
                              :item="item"
@@ -110,7 +102,7 @@
   import {dropDownMenu, editPlayListModal, guid} from "@/utils/utils";
   import {confirm} from "@/utils/utils";
   import {Sortable, Plugins} from "@shopify/draggable";
-  import {getAddFileToContextMenuItems, playAllFile, SortList} from "../utils/utils";
+  import {getAddFileToContextMenuItems, getLargeImg, playAllSelectFile, SortList} from "../utils/utils";
   import {PlayList} from "../store/modules/playList";
   import {File} from "../store/modules/file";
   import SelectContainer from "../mixins/selectContainer";
@@ -129,12 +121,12 @@
     components: {SelectBottomTools, PlayListContentItem}
   })
   export default class PlayListView extends SelectContainer {
-
     // @Prop(Object) item;
     @playListModule.State playLists!: Array<PlayList>;
     @playListModule.State playingList!: Array<File>;
     @fileModule.State allFile!: Array<File>;
     @homeModule.State isFold!: boolean;
+    @homeModule.State isMobile!: boolean;
 
     @Watch("selectedItems")
     onSelectedItemsChanged(val: Array<File>) {
@@ -148,7 +140,6 @@
     @Watch("$route")
     onRouteChange() {
       this.initContent();
-
       setTimeout(() => {
         const list = <HTMLElement>this.$refs.list;
         const top = <HTMLElement>this.$refs.top;
@@ -180,16 +171,23 @@
     distPlayListContent: Array<File> = [];
     selectedItems: Array<File> = [];
     guid: Function = guid;
+    title:string='播放列表'
 
     public created() {
       this.initContent();
+      this.$store.commit('home/setCurrentTitle',this.title)
+    }
 
+    public destroyed(){
+      const top = document.querySelector('.mobile-top') as HTMLElement
+      if (!top||!this.isMobile) return;
+      top.className+='mobile-top'
     }
 
     public mounted() {
+
+
       const list = <HTMLElement>this.$refs.list;
-
-
       const onStart = (e: any) => {
         if (e.data.startIndex === 0) {
           e.cancel();
@@ -206,23 +204,28 @@
           oldIndex: e.data.oldIndex - 1,
           newIndex: e.data.newIndex - 1
         });
-        // const items:Array<HTMLElement> = Array.prototype.slice.call(list.children)
 
         setTimeout(function () {
-          const items: Array<HTMLElement> = Array.prototype.slice.call(document.querySelectorAll(".PlayListContentItem"));
+          const items: Array<HTMLElement> = Array.prototype.slice.call(document.querySelectorAll(".PlayListItemBase"));
 
           items.forEach((o, i) => {
-            if (i === 0) return;
-            if (i % 2 === 1) {
-              o.className = "PlayListContentItem deep";
+            if (i % 2 === 0) {
+              o.className = "PlayListItemBase deep";
             } else {
-              o.className = "PlayListContentItem";
+              o.className = "PlayListItemBase";
             }
           });
         });
       };
 
-      SortList(list, {onStart, onSort, onEnd});
+      SortList(list, {onStart, onSort, onEnd},{delay:400});
+
+      if (this.isMobile){
+        const top = document.querySelector('.mobile-top') as HTMLElement
+        top.className+=' blue'
+        return
+      }
+
       const main = <HTMLElement>this.$refs.main;
       const top = <HTMLElement>this.$refs.top;
       const topHeight = top.offsetHeight;
@@ -259,14 +262,15 @@
 
 
     get topImgUrl() {
-      return this.distPlayList!.filesContent.length ? this.distPlayList!.filesContent[0].imgUrl.replace('/small/','/large/') : "";
+      return this.distPlayList!.filesContent.length ? getLargeImg(this.distPlayList!.filesContent[0].imgUrl) : "";
+      // return this.distPlayList!.filesContent.length ? this.distPlayList!.filesContent[0].imgUrl.replace('/small/','/large/') : "";
     }
 
     get totalMinute() {
       if (!this.distPlayList) {
       }
       const sec = this.distPlayList!.filesContent.reduce((total, timeStr) => {
-        var timeArr = timeStr.time.split(":").map(o => parseInt(o));
+        const timeArr = timeStr.time.split(":").map(o => parseInt(o));
         return total + timeArr[0] * 60 + timeArr[1];
       }, 0);
       return Math.floor(sec / 60);
@@ -311,16 +315,15 @@
     }
 
     playAll() {
-      /*      if (this.distPlayListContent.length === 0) {
-              return;
-            }
-            this.$store.commit("playList/setPlayingList", this.distPlayListContent);
-            this.$store.dispatch("audio/play", this.distPlayListContent[0]);*/
-      playAllFile(this, this.distPlayListContent);
+      if (!this.distPlayListContent.length) {
+        this.$Message.info('列表中还没有任何作品:(')
+        return
+      };
+      this.$store.dispatch('file/playDirs',this.distPlayListContent)
     }
 
     play() {
-      playAllFile(this, this.selectedItems);
+      playAllSelectFile(this, this.selectedItems);
     }
 
     rename() {

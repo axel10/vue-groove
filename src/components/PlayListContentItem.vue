@@ -36,7 +36,7 @@
 
   import {File} from "../store/modules/file";
   import {PlayList} from "../store/modules/playList";
-  import PlayListItemBase from "./Common/PlayListItemBase.vue";
+  import PlayListItemBase from "./PlayListItemBase.vue";
 
   const homeModule = namespace("home");
   const playingModule = namespace("playing");

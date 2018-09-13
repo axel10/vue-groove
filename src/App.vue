@@ -4,77 +4,88 @@
       <!--<canvas id="bgCanvas"></canvas>-->
       <div class="bg-img" ref="bg">
         <transition name="bgImg">
-          <img src="" alt="" v-show="bgToken && bgToken!==null" class="app-bg">
+          <!--<img src="" alt="" v-show="bgToken && bgToken!==null" class="app-bg">-->
+          <div v-show="bgToken && bgToken!==null" class="app-bg"></div>
         </transition>
         <transition name="bgImg">
-          <img src="" alt="" v-show="!bgToken && bgToken!==null" class="app-bg" >
+          <!--<img src="" alt="" v-show="!bgToken && bgToken!==null" class="app-bg" >-->
+          <div v-show="!bgToken && bgToken!==null" class="app-bg"></div>
         </transition>
       </div>
       <div class="mask" :class="{'dark':isDark}"></div>
     </div>
-    <router-view/>
+
+    <!--<keep-alive>-->
+      <router-view/>
+    <!--</keep-alive>-->
 
     <Audio></Audio>
   </div>
 </template>
 
 <script lang="ts">
-  import {Component, Watch, Vue} from 'vue-property-decorator'
+  import {Component, Watch, Vue} from "vue-property-decorator";
   import Audio from "./components/Audio.vue";
   import {namespace} from "vuex-class";
   import {File} from "./store/modules/file";
 
-  const homeModule = namespace('home')
+  const homeModule = namespace("home");
 
   @Component({
     components: {Audio}
   })
   export default class extends Vue {
 
-    @homeModule.State playingFile !:File
-    @homeModule.State isDark !:boolean
+    @homeModule.State playingFile !: File;
+    @homeModule.State isDark !: boolean;
 
     public created() {
-      this.$store.dispatch('home/init')
-    }
-
-    @Watch('$route')
-    onRouteChange(val:any, oldVal:any) {
-      if (!oldVal || !val) return
-      // 背景变黑复原
-      // this.$store.commit('home/setIsDark',false)
-
-      // 模糊度变换动画
-      if (val.name === 'playing' || oldVal.name === 'playing') {
-        var elNodes = document.querySelectorAll('.bg-img')
-        const els:Array<HTMLElement> = Array.prototype.slice.call(elNodes)
-        els.forEach(el=>{
-          el.className = 'bg-img no-blur'
-          setTimeout(() => {
-            el.className = 'bg-img'
-          }, 500)
-        })
+      this.$store.dispatch("home/init");
+      if (window.screen.width <= 450) {
+        this.$store.commit("home/setIsMobile", true);
       }
     }
 
-    @Watch('playingFile')
-    onPlayingFileChanged(val:File, oldVal:File) {
-      if (!val || !oldVal) return
-      if (val.imgUrl === oldVal.imgUrl) return
+    /*    @Watch('$route')
+        onRouteChange(val:any, oldVal:any) {
+          if (!oldVal || !val) return
+          // 背景变黑复原
+          // this.$store.commit('home/setIsDark',false)
+
+          // 模糊度变换动画
+          if (val.name === 'playing' || oldVal.name === 'playing') {
+            var elNodes = document.querySelectorAll('.bg-img')
+            const els:Array<HTMLElement> = Array.prototype.slice.call(elNodes)
+            els.forEach(el=>{
+              el.className = 'bg-img no-blur'
+              setTimeout(() => {
+                el.className = 'bg-img'
+              }, 500)
+            })
+          }
+        }*/
+
+    @Watch("playingFile")
+    onPlayingFileChanged(val: File, oldVal: File) {
+      if (!val || !oldVal) return;
+      if (val.imgUrl === oldVal.imgUrl) return;
       console.log(val);
-      var bgs:Array<HTMLImageElement> = Array.prototype.slice.call(document.querySelectorAll('.app-bg'))
-      if (this.bgToken === null) this.bgToken=false;
+      var bgs: Array<HTMLImageElement> = Array.prototype.slice.call(document.querySelectorAll(".app-bg"));
+      if (this.bgToken === null) this.bgToken = false;
 
       if (this.bgToken === false) {
-        bgs[0].src = val.imgUrl
-      }else{
-        bgs[1].src = val.imgUrl
+        // bgs[0].src = val.imgUrl;
+        bgs[0].style.backgroundImage = `url('${val.imgUrl}')`;
+      } else {
+        // bgs[1].src = val.imgUrl;
+        bgs[1].style.backgroundImage= `url('${val.imgUrl}')`;
+
       }
-      this.bgToken = !this.bgToken
+      this.bgToken = !this.bgToken;
       console.log(this.bgToken);
     }
 
-    bgToken:any = false
+    bgToken: any = false;
 
   }
 
@@ -125,7 +136,7 @@
       position: absolute;
       left: 0;
       top: 0;
-      &.dark{
+      &.dark {
         opacity: .85;
       }
     }
@@ -147,11 +158,27 @@
         top: 0;
         transition: opacity 1s;
       }
+
+      .app-bg{
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        transition: opacity 1s;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
     }
   }
 
-  .bgImg-enter,.bgImg-leave-to{
+  .bgImg-enter, .bgImg-leave-to {
     opacity: 0;
   }
 
+</style>
+
+<style lang="scss">
+  @import './mobile.scss';
 </style>

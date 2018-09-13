@@ -2,7 +2,17 @@
   <transition name="home">
     <div class="home">
       <div class="top">
-        <div class="side" :class="{'fold':isFold}">
+
+        <div class="mobile-top">
+          <div class="fold" @click="toggleSideShow">
+            <Icon type="ios-menu"/>
+          </div>
+          <div class="title">
+            <h2>{{currentTitle}}</h2>
+          </div>
+        </div>
+
+        <div class="side" :class="{'fold':isFold,'show':isSideShow}">
           <div class="title">
             <h2 v-if="!isFold">V player</h2>
           </div>
@@ -17,7 +27,8 @@
               >
                             <span class="icon">
                               <Icon :type="item.icon"/>
-                            </span><span class="text" v-if="!isFold">{{item.title}}</span>
+                            </span>
+                <span class="text" v-if="!isFold">{{item.title}}</span>
               </div>
             </li>
 
@@ -83,32 +94,27 @@
 </template>
 
 <script lang="ts">
-  import {Component, Vue} from "vue-property-decorator";
+  import {Component, Vue, Watch} from "vue-property-decorator";
   import {namespace} from "vuex-class";
   import Files from "@/views/Files.vue";
   import HomeBottom from "../components/HomeBottom.vue";
   import {PlayList} from "../store/modules/playList";
   import {dropDownMenu, editPlayListModal} from "../utils/utils";
-
-  // var a = (<div></div>)
+  import {confirm} from "@/utils/utils";
 
   const homeModule = namespace("home");
   const audioModule = namespace("audio");
-  const fileModule = namespace("file");
   const playListModule = namespace("playList");
-  import {confirm} from "@/utils/utils";
 
   @Component({
     components: {
-      // DropdownList,
       HomeBottom,
       Files
-    }
+    },
   })
   export default class Home extends Vue {
-    @homeModule.State isFold!: boolean;
     @homeModule.State isHideBottom!: boolean;
-    @homeModule.Mutation toggleFold!: any;
+    @homeModule.State currentTitle!: string;
     @audioModule.State playing!: boolean;
     @playListModule.State playLists!: Array<PlayList>;
 
@@ -118,23 +124,38 @@
       {icon: "ios-pulse-outline", title: "正在播放", name: "playing", params: {light: "dark"}},
     ];
 
+    @Watch('$route')
+    onRouteChanged(){
+      this.isSideShow = false
+    }
+
     get position() {
       const route = this.$route;
-
       if (route.params["id"]) {
         return route.params["id"];
       }
       return "";
     }
 
+    isSideShow: boolean = false;
+    isFold: boolean = false;
+
+    toggleFold() {
+      if (this.isSideShow) {
+        this.isSideShow = false;
+        return;
+      }
+      this.isFold = !this.isFold;
+    }
+
+    toggleSideShow() {
+      this.isSideShow = !this.isSideShow;
+    }
+
     showCreatePlayListModal() {
       editPlayListModal().then((name: any) => {
         this.$store.dispatch("playList/createPlayList", {name, fileIds: []});
       });
-    }
-
-    toWorks() {
-      this.$router.push("/");
     }
 
     toPlayList(item: PlayList) {
@@ -167,15 +188,19 @@
       dropDownMenu(e, contextMenu);
     }
 
-    toGithub(){
-      window.open('https://github.com/axel10/Groove_online','_blank')
+    toGithub() {
+      window.open("https://github.com/axel10/Groove_online", "_blank");
     }
   }
 </script>
 
 <style scoped lang="scss">
+  .mobile-top {
+    display: none;
+  }
+
   .home-enter-active, .home-leave-active {
-    transition: opacity .5s;
+    transition: opacity .6s;
   }
 
   .home-enter, .home-leave-to /* .fade-leave-active below version 2.1.8 */
@@ -234,7 +259,6 @@
             background-color: rgba(255, 255, 255, .5);
           }
         }
-
         .content {
           flex: 1;
           width: 100%;
@@ -286,7 +310,6 @@
               display: block;
               width: 100%;
             }
-
             .add {
               color: #000;
               font-size: 20px;
@@ -309,17 +332,14 @@
               width: 80%;
               margin: 0 auto;
             }
-
             box-sizing: border-box;
             font-size: 16px;
             width: 100%;
             height: 50px;
             display: flex;
             align-items: center;
-
           }
         }
-
       }
       .right {
         flex: 1;

@@ -1,5 +1,5 @@
 module.exports = {
-  baseUrl: './',
+  baseUrl: '/',
   configureWebpack: {
     externals: {
       'vue': 'Vue',
@@ -7,7 +7,25 @@ module.exports = {
       'iview': 'iview',
       '@shopify/draggable': 'Draggable',
       'vue-router': 'VueRouter'
+    },
+    resolve: {
+      alias: {
+        'vue$': 'vue/dist/vue.esm.js'
+      }
+    },
+    devServer:{
+      // historyApiFallback: true
     }
   },
-  productionSourceMap:false
+/*  configureWebpack: config=>{
+    console.log(config);
+    config.resolve.alias
+        .set('vue$','vue/dist/vue.esm.js')
+      .historyApiFallback({
+        rewrites: [
+          { from: /./, to: '/' }
+        ]
+      })
+  },*/
+  productionSourceMap:false,
 }

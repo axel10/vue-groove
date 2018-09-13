@@ -1,9 +1,9 @@
 <template>
-  <div class="HomeBottom">
+  <div class="HomeBottom" :style="{'background-color':background}">
     <div class="file-info" @click="$router.push('/playing/light')" v-if="playingFile.imgUrl">
       <div class="mask"></div>
       <div class="cover">
-        <img :src="playingFile.imgUrl"  alt="">
+        <img :src="playingFile.imgUrl" alt="">
       </div>
       <div class="info">
         <h5>
@@ -33,25 +33,26 @@
                   <Icon type="ios-repeat"/>
                 </div>-->
         <Loop class="round-btn loop"></Loop>
+
+        <div class="round-btn mobile-more" @click="showMobileMoreMenu">
+          <Icon type="ios-more"/>
+        </div>
       </div>
       <div class="progress">
         <p class="current">{{currentTimeStr}}</p>
         <div class="slider">
-          <Slider :value="timePercent" @on-change="handleSelectTime" :tip-format="formatProgress"></Slider>
+          <!--<Slider :value="timePercent" @on-change="handleSelectTime" :tip-format="formatProgress"></Slider>-->
+          <TimeSlider></TimeSlider>
         </div>
         <p class="total">{{durationTimeStr}}</p>
       </div>
     </div>
 
     <div class="right">
-      <!--      <div class="round-btn mute">
-              &lt;!&ndash;<Icon type="ios-volume-up"/>&ndash;&gt;
-              &lt;!&ndash;<Icon type="ios-volume-off" />&ndash;&gt;
-              <Icon type="ios-volume-down"/>
-            </div>-->
-      <VolumeIcon class="round-btn mute" :click-to-mute="true"></VolumeIcon>
       <div class="volume">
-        <Slider :value="volume" @on-input="handleChangeVolume"></Slider>
+        <VolumeSlider>
+          <VolumeIcon class="round-btn mute" :click-to-mute="true"></VolumeIcon>
+        </VolumeSlider>
       </div>
 
       <div class="round-btn more" @click="showMoreMenu">
@@ -67,8 +68,12 @@
   import {getTimeStr} from "../store/modules/audio";
   import Random from "./Operation/Random.vue";
   import Loop from "./Operation/Loop.vue";
-  import VolumeIcon from "./VolumeIcon.vue";
-  import {dropDownMenu, toggleFullScreen} from "../utils/utils";
+  import VolumeIcon from "./Operation/VolumeIcon.vue";
+  import {dropDownMenu, DropDownMenuItem, toggleFullScreen} from "../utils/utils";
+  import {File} from "../store/modules/file";
+  import VolumeSlider from "./Operation/VolumeSlider.vue";
+  import TimeSlider from "./Operation/TimeSlider.vue";
+  import {LoopMode} from "../utils/enum/LoopMode";
 
 
   const homeModule = namespace("home");
@@ -76,7 +81,7 @@
   const playListModule = namespace("playList");
 
   @Component({
-    components: {VolumeIcon, Loop, Random}
+    components: {TimeSlider, VolumeSlider, VolumeIcon, Loop, Random}
   })
   export default class HomeBottom extends Vue {
     @audioModule.State playing!: boolean;
@@ -84,16 +89,25 @@
     @audioModule.State duration!: number;
     @audioModule.State volume!: number;
     @audioModule.State isRandom!: boolean;
+    @audioModule.State loopMode!: LoopMode;
     @audioModule.Getter currentTimeStr!: string;
     @audioModule.Getter durationTimeStr!: string;
     @audioModule.Getter timePercent!: any;
     @audioModule.Action toPrev!: any;
     @audioModule.Action toNext!: any;
     @audioModule.Mutation handleSelectTime!: any;
-    @audioModule.Mutation handleChangeVolume!: any;
     @audioModule.Mutation toggleRandom!: any;
     @homeModule.State playingFile!: File;
+    @homeModule.State isFullScreen!: boolean;
     @playListModule.State playingList!: Array<File>;
+
+    get background() {
+      if (this.playingFile && this.playingFile.id) {
+        return "rgba(150, 150, 150, .5)";
+      } else {
+        return "rgba(27, 96, 147, 1)";
+      }
+    }
 
     formatProgress(val: number) {
       var sec = this.duration * (val / 100);
@@ -105,23 +119,89 @@
     }
 
     showMoreMenu(e: MouseEvent) {
-      const contextMenu: any = [
+
+      const contextMenu: Array<DropDownMenuItem> = [
         {
           label: "转到'正在播放'", callback: () => {
             this.$router.push("/playing/light");
           }, isDisable: this.playingList.length === 0
         },
         {
-          label: "全屏", callback: () => {
+          label: this.isFullScreen ? "取消全屏" : "全屏", callback: () => {
             toggleFullScreen();
-            this.$router.push("/playing/light");
+            setTimeout(() => {
+              console.log(this.isFullScreen);
+              if (this.isFullScreen) {
+                this.$router.push("/playing/light");
+              }
+            });
           }
         }, {
           label: "清空'正在播放'", callback: () => {
-            this.$store.dispatch('audio/abort')
-            this.$store.commit('playList/setPlayingList',[])
+            this.$store.dispatch("audio/abort");
+            this.$store.commit("playList/setPlayingList", []);
+          }
+        }/*, {
+          label: "test",
+          children: [
+            {label: "kakakak"}
+          ]
+        }*/
+      ];
+      dropDownMenu(e, contextMenu);
+    }
+
+    showMobileMoreMenu(e: MouseEvent) {
+
+      let loopLabel = "";
+      switch (this.loopMode) {
+        case LoopMode.close:
+          loopLabel = "循环播放全部";
+          break;
+        case LoopMode.loopAll:
+          loopLabel = "单曲循环";
+          break;
+        case LoopMode.loopSingle:
+          loopLabel = '关闭循环'
+          break
+      }
+
+      const contextMenu: Array<DropDownMenuItem> = [
+        {
+          label: "转到'正在播放'", callback: () => {
+            this.$router.push("/playing/light");
+          }, isDisable: this.playingList.length === 0
+        },
+        {
+          label: this.isFullScreen ? "取消全屏" : "全屏", callback: () => {
+            toggleFullScreen();
+            setTimeout(() => {
+              console.log(this.isFullScreen);
+              if (this.isFullScreen) {
+                this.$router.push("/playing/light");
+              }
+            });
+          }
+        }, {
+          label: "清空'正在播放'", callback: () => {
+            this.$store.dispatch("audio/abort");
+            this.$store.commit("playList/setPlayingList", []);
           }
         },
+        {
+          el: new Vue({
+            template: "<VolumeSlider><VolumeIcon style='font-size: 30px'></VolumeIcon></VolumeSlider>",
+            components: {VolumeSlider, VolumeIcon},
+            store: this.$store
+          })
+        },{
+          label:loopLabel,
+          callback:()=>{
+            this.$store.commit('audio/switchLoopMode')
+          }
+        }
+
+
       ];
       dropDownMenu(e, contextMenu);
     }
@@ -133,8 +213,9 @@
     height: 100px;
     display: flex;
     justify-content: center;
-    background-color: rgba(150, 150, 150, .5);
+    /*background-color: rgba(150, 150, 150, .5);*/
     position: relative;
+    transition: background-color 1s;
 
     .round-btn {
       border-radius: 50%;
@@ -143,8 +224,8 @@
       align-items: center;
       box-sizing: border-box;
       text-align: center;
-      width: 40px;
-      height: 40px;
+      width: 41px;
+      height: 41px;
       font-size: 26px;
       color: #fff;
       border: 2px solid rgba(255, 255, 255, 0);
@@ -159,6 +240,10 @@
         padding: 6px 7px 8px;
         /*padding: 7px;*/
 
+      }
+
+      &.mobile-more {
+        display: none;
       }
     }
 
@@ -258,10 +343,10 @@
           color: #fff;
         }
         .current {
-          margin-right: 10px;
+          margin-right: 20px;
         }
         .total {
-          margin-left: 10px;
+          margin-left: 20px;
         }
         .slider {
           flex: 1;
@@ -282,7 +367,7 @@
         font-size: 40px;
       }
       .volume {
-        width: 120px;
+        width: 180px;
       }
       .more {
         margin-left: 10px;
