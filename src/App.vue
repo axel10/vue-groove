@@ -69,7 +69,6 @@
     onPlayingFileChanged(val: File, oldVal: File) {
       if (!val || !oldVal) return;
       if (val.imgUrl === oldVal.imgUrl) return;
-      console.log(val);
       var bgs: Array<HTMLImageElement> = Array.prototype.slice.call(document.querySelectorAll(".app-bg"));
       if (this.bgToken === null) this.bgToken = false;
 
@@ -82,7 +81,6 @@
 
       }
       this.bgToken = !this.bgToken;
-      console.log(this.bgToken);
     }
 
     bgToken: any = false;

@@ -171,7 +171,6 @@
       const fileIds = this.selectedItems.reduce((res: Array<number>, item: PlayList) => {
         return res.concat(item.content);
       }, []);
-      console.log(fileIds);
       const files = mapIdsToFiles(fileIds);
       this.$store.dispatch("audio/play", files[0]);
       this.$store.dispatch("playList/addToPlayingList", files);

@@ -19,7 +19,6 @@
     @audioModule.Getter timePercent!: any;
 
     get disabled() {
-      console.log(this.duration);
       return this.duration == 0;
     }
 

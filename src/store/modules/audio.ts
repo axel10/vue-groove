@@ -235,7 +235,6 @@ const mutations = {
   },
   handleInputTime(state:IState){
     clearInterval(state.timer)
-    console.log('clear');
   },
 
   handleChangeVolume(state: IState, val: number) {

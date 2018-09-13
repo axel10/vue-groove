@@ -204,7 +204,7 @@
       const bigCover = this.$refs.bigCover as HTMLElement
       const playingToolBar = this.$refs.playingToolBar as Vue
       const firstEle = playingToolBar.$el.childNodes[0] as HTMLElement
-      const offsetTop = document.body.clientHeight-playingToolBar.$el.offsetHeight+parseInt(getComputedStyle(firstEle).marginTop)
+      const offsetTop = document.body.clientHeight-playingToolBar.$el.offsetHeight+parseInt(getComputedStyle(firstEle).marginTop||'0')
 
       const top:number = (offsetTop-bigCover.offsetHeight)/2
       bigCover.style.top = top+'px'

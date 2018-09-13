@@ -129,11 +129,9 @@
       }
       const selfEl: HTMLElement = this.$refs.PlayingToolBar as HTMLElement;
       selfEl.addEventListener("touchstart", (evt: TouchEvent) => {
-        console.log(evt);
         this.touchStartY = evt.changedTouches[0].clientY
       });
       selfEl.addEventListener("touchend", (evt: TouchEvent) => {
-        console.log(evt);
         const endY = evt.changedTouches[0].clientY
         if ((this.isShowList && endY - this.touchStartY >80) || (!this.isShowList && endY - this.touchStartY < -80)){
           this.$emit("toggleList");

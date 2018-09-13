@@ -109,7 +109,6 @@ const actions = {
 
   playDirs({dispatch, commit}: ActionContextBasic, dir: Array<File>) {
 
-    console.log(dir);
     if (!dir[0].content) {
       dispatch('audio/play', dir[0], {root: true});
       dispatch('playList/addToPlayingList',dir,{root:true})

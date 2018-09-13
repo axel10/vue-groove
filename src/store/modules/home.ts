@@ -69,7 +69,6 @@ const mutations = {
     localStorage.setItem('playingFile',JSON.stringify(file))
   },
   setIsDark(state:IState,b:boolean){
-    console.log(b);
     state.isDark = b
   },
   setIsHideBottom(state:IState,b:boolean){

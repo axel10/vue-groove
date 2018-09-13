@@ -130,7 +130,6 @@
           label: this.isFullScreen ? "取消全屏" : "全屏", callback: () => {
             toggleFullScreen();
             setTimeout(() => {
-              console.log(this.isFullScreen);
               if (this.isFullScreen) {
                 this.$router.push("/playing/light");
               }
@@ -176,7 +175,6 @@
           label: this.isFullScreen ? "取消全屏" : "全屏", callback: () => {
             toggleFullScreen();
             setTimeout(() => {
-              console.log(this.isFullScreen);
               if (this.isFullScreen) {
                 this.$router.push("/playing/light");
               }

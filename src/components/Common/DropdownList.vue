@@ -101,13 +101,11 @@
       if (item.children && item.children.length > 0 && (<HTMLElement>e.target).getElementsByTagName("ul").length === 0) {
 
         selfDom.onmouseout = function (e: MouseEvent) {
-          console.log((<HTMLElement>e.relatedTarget).parentElement);
           var ul = <HTMLElement>selfDom.getElementsByTagName("ul")[0];
           const targetEle = (<HTMLElement>e.relatedTarget).parentElement;
           if (targetEle === selfDom || targetEle === ul) {
             return;
           }
-          console.log(e);
           selfDom.removeChild(ul);
         };
 
