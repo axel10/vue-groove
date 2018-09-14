@@ -449,7 +449,7 @@
 
   .volume-modal {
     transition: all .3s;
-    width: 300px;
+    width: 240px;
     height: 50px;
     background-color: #fff;
     display: flex;
@@ -458,6 +458,9 @@
     position: absolute;
     top: -50px;
     color: #000;
+    box-sizing: border-box;
+    padding: 0 20px;
+    padding-right: 30px;
 
     .opts {
       width: 100%;

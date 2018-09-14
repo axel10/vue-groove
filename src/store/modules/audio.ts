@@ -3,7 +3,7 @@ import {ActionContextBasic} from '@/store';
 import {File} from './file';
 import {beginAddTime} from '@/utils/utils';
 import {LoopMode} from '@/utils/enum/LoopMode';
-
+import Vue from 'vue'
 
 
 const initState: IState = {
@@ -16,7 +16,8 @@ const initState: IState = {
   fps: 5,
   loopMode: LoopMode.close,
   isRandom: false,
-  isMute: false
+  isMute: false,
+  isLoading:false
 };
 
 const state: IState = _.cloneDeep(initState);
@@ -31,7 +32,8 @@ export interface IState {
   fps: 5,
   loopMode: LoopMode,
   isRandom: boolean,
-  isMute: boolean
+  isMute: boolean,
+  isLoading:boolean
 }
 
 
@@ -95,11 +97,16 @@ const actions = {
   },
 
   play({state, commit, rootState, dispatch}: ActionContextBasic, file: File) {
+    commit('setLoading',true)
     const musicPath = file.musicUrl;
     commit('initPlay', musicPath);
     const player = <HTMLAudioElement> document.getElementById('player');
     player.load();
     clearInterval(state.timer);
+    const msg = (new Vue()).$Message.loading({
+      content:'正在加载...',
+      duration:0
+    })
     player.onloadeddata = function () {
       commit('setMusicInfo');
       let timer = setInterval(() => {
@@ -107,9 +114,9 @@ const actions = {
       }, 1000 / state.fps);
       commit('setTimer', timer);
       player.play();
-
+      msg()
+      commit('setLoading',false)
     };
-
     // 设置当前播放文件
     dispatch('home/setPlayingFile', file, {root: true});
     if (!rootState.home.isInRecentPlay) {
@@ -125,6 +132,7 @@ const actions = {
   },
 
   togglePlay({commit, rootState, state, dispatch}: ActionContextBasic) {
+    if(state.isLoading) return
     if (rootState.playList.playingList.length == 0 || rootState.home.playingFile.id == 0) {
       return;
     }
@@ -212,7 +220,6 @@ const mutations = {
   setTimer(state: IState, timer: number) {
     state.timer = timer;
   },
-
   /**
    * 当前时间自增
    * @param state
@@ -272,14 +279,15 @@ const mutations = {
     if (volume + num > 100) {
       state.volume = 100;
       return;
-
     }
     if (volume + num < 0) {
       state.volume = 0;
       return;
     }
-
     state.volume += num;
+  },
+  setLoading(state:IState,isLoading:boolean){
+    state.isLoading = isLoading
   }
 };
 

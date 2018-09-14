@@ -32,8 +32,8 @@
     justify-content: center;
     align-items: center;
 
-    &.active {
+/*    &.active {
       background-color: rgba(0, 0, 0, .3);
-    }
+    }*/
   }
 </style>

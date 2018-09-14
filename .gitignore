@@ -1,12 +1,10 @@
 .DS_Store
 node_modules
 /dist
-bak
 test.txt
 error.log
 ~$error.log
-dev.bat
-build.bat
+test.html
 
 # local env files
 .env.local
@@ -25,3 +23,7 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+
+# command shortcut
+dev.bat
+build.bat
