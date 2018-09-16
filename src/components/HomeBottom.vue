@@ -116,6 +116,8 @@
 
     togglePlay() {
       this.$store.dispatch("audio/togglePlay");
+      console.log(this.currentTimeStr);
+      console.log(this.durationTimeStr);
     }
 
     showMoreMenu(e: MouseEvent) {

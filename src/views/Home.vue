@@ -87,7 +87,9 @@
 
       </div>
 
-      <HomeBottom v-if="!isHideBottom"/>
+      <div class="bottom">
+        <HomeBottom v-if="!isHideBottom"/>
+      </div>
 
     </div>
   </transition>
@@ -213,12 +215,10 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    position: absolute;
-    left: 0;
-    top: 0;
     .top {
       display: flex;
       flex: 1;
+      min-height: 0;
       .side {
         display: flex;
         flex-direction: column;
@@ -351,6 +351,10 @@
         flex: 1;
         background-color: #fff;
       }
+    }
+    .bottom{
+      height: 100px;
+
     }
 
   }

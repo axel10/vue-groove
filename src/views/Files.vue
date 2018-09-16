@@ -16,7 +16,7 @@
     </div>
     <div class="content fade-in">
       <ul>
-        <li v-for="(item,i) in currentFiles">
+        <li v-for="(item) in currentFiles">
           <FileItem
                   :is-add-to-recent="true"
                   :item="item"
@@ -61,13 +61,11 @@
 </template>
 
 <script lang="ts">
-  import {Component, Vue} from "vue-property-decorator";
-  import {State, Mutation, Action, namespace} from "vuex-class";
+  import {Component} from "vue-property-decorator";
+  import {namespace} from "vuex-class";
   import {File} from "../store/modules/file";
-  import config from "../utils/config";
   import FileItem from "../components/FileItem.vue";
   import {
-    addFileToPlayList,
     dropDownMenu,
     fadeInFileContent,
     getAddFileToContextMenuItems,
@@ -116,7 +114,6 @@
       playAllSelectFile(this, this.selectedItems);
     }
 
-
     selectAll() {
       this.selectedItems = this.currentFiles;
     }
@@ -141,6 +138,7 @@
     flex: 1;
     box-sizing: border-box;
     padding: 40px 20px 0;
+    min-height: 0;
     .title {
       text-align: left;
       .main-title {
@@ -193,8 +191,8 @@
     }
     .content {
       flex: 1;
-      overflow: auto;
-
+      /*overflow: auto;*/
+      min-height: 0;
       &.fade-in {
         /*animation: fadeIn .5s forwards ease-out;*/
         animation: fadeIn .5s forwards cubic-bezier(0, 1, 0, 1);

@@ -15,7 +15,7 @@
             'moveShow':moveShowList===true,'moveHide':moveShowList===false
           }">
             <ul class="list" ref="list">
-              <PlayingListContentItem v-for="(item,i) in playingList" :item="item"
+              <PlayingListContentItem v-for="(item) in playingList" :item="item"
                                       :isShowAdd='true'
                                       :selectedItems="selectedItems"
                                       :key="guid()"
@@ -114,6 +114,11 @@
     @playListModule.State playingList!: Array<File>;
     @audioModule.State playing!: boolean;
 
+    @Watch("playingFile")
+    onPlayingFileChanged() {
+      this.initBigCoverPosition()
+    }
+
     selectedItems: Array<File> = [];
     guid: Function = guid;
     getLargeImg: Function = getLargeImg;
@@ -130,9 +135,9 @@
 
     public mounted() {
 
-      setTimeout(()=>{
-        this.initBigCoverPosition()
-      })
+      setTimeout(() => {
+        this.initBigCoverPosition();
+      });
 
       const list = <HTMLElement>this.$refs.list;
       const onEnd = (e: any) => {
@@ -141,11 +146,11 @@
           newIndex: e.data.newIndex
         });
       };
-      SortList(list, {onEnd},{delay:400});
+      SortList(list, {onEnd}, {delay: 400});
     }
 
-    goBack(){
-      this.$router.go(-1)
+    goBack() {
+      this.$router.go(-1);
     }
 
     randomPlayAll() {
@@ -182,7 +187,7 @@
       this.$store.commit("home/setIsDark", true);
       document!.querySelector(".arrow")!.className = "arrow";
 
-      this.$router.replace('/playing/dark')
+      this.$router.replace("/playing/dark");
 
     }
 
@@ -192,22 +197,24 @@
       this.$store.commit("home/setIsDark", false);
       document!.querySelector(".arrow")!.className = "arrow up";
       this.cancelSelect();
-      this.$router.replace('/playing/light')
+      this.$router.replace("/playing/light");
 
 
-      setTimeout(()=>{
-        this.initBigCoverPosition()
-      })
+      setTimeout(() => {
+        this.initBigCoverPosition();
+      });
     }
 
-    initBigCoverPosition(){
-      const bigCover = this.$refs.bigCover as HTMLElement
-      const playingToolBar = this.$refs.playingToolBar as Vue
-      const firstEle = playingToolBar.$el.childNodes[0] as HTMLElement
-      const offsetTop = document.body.clientHeight-playingToolBar.$el.offsetHeight+parseInt(getComputedStyle(firstEle).marginTop||'0')
-
-      const top:number = (offsetTop-bigCover.offsetHeight)/2
-      bigCover.style.top = top+'px'
+    initBigCoverPosition() {
+      setTimeout(() => {
+        const coverHeight = document.body.clientWidth * 0.6;
+        const bigCover = this.$refs.bigCover as HTMLElement;
+        const playingToolBar = this.$refs.playingToolBar as Vue;
+        const firstEle = playingToolBar.$el.childNodes[0] as HTMLElement;
+        const offsetTop = document.body.clientHeight - playingToolBar.$el.offsetHeight + parseInt(getComputedStyle(firstEle).marginTop || "0");
+        const top: number = (offsetTop - coverHeight) / 2;
+        bigCover.style.top = top + "px";
+      });
     }
 
     cancelSelect() {
@@ -324,7 +331,7 @@
 
     .select-tools {
       position: absolute;
-      left: 0px;
+      left: 0;
       bottom: 0;
       width: 100%;
       height: 70px;
@@ -419,8 +426,8 @@
       /*bottom: 25%;*/
       top: 0;
       margin: auto;
-      transition: transform .5s,opacity .5s;
-      img{
+      transition: transform .5s, opacity .5s;
+      img {
         width: 100%;
       }
     }

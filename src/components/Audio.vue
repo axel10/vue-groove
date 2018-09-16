@@ -1,7 +1,7 @@
 <template>
   <div class="Audio">
     <audio id="player" loop="loop" >
-      <source :src="serverPath" type="audio/mpeg">
+      <source :src="serverPath" type="audio/mpeg"/>
     </audio>
   </div>
 </template>

@@ -1,7 +1,7 @@
 import * as  _ from 'lodash';
 import {ActionContextBasic} from '@/store';
 import {File} from './file';
-import {beginAddTime} from '@/utils/utils';
+import {beginAddTime, convertTimeStrToSecond} from '@/utils/utils';
 import {LoopMode} from '@/utils/enum/LoopMode';
 import Vue from 'vue'
 
@@ -11,6 +11,7 @@ const initState: IState = {
   playing: false,
   currentTime: 0,
   duration: 0,
+  durationStr:'',
   volume: 30,
   timer: 0,
   fps: 5,
@@ -33,7 +34,8 @@ export interface IState {
   loopMode: LoopMode,
   isRandom: boolean,
   isMute: boolean,
-  isLoading:boolean
+  isLoading:boolean,
+  durationStr:string
 }
 
 
@@ -46,11 +48,14 @@ export function getTimeStr(time: number) {
 
 const getters = {
   currentTimeStr(state: IState) {
+    // console.log(state.duration);
+    // console.log(getTimeStr(state.duration));
     return getTimeStr(state.currentTime > state.duration ? state.duration : state.currentTime);
   },
   durationTimeStr(state: IState) {
+    // console.log(state.duration);
+    // console.log(getTimeStr(state.duration));
     return getTimeStr(state.duration);
-
   },
   timePercent(state: IState) {
     return state.currentTime / state.duration * 100;
@@ -97,31 +102,35 @@ const actions = {
   },
 
   play({state, commit, rootState, dispatch}: ActionContextBasic, file: File) {
+    if(state.isLoading) return
     commit('setLoading',true)
     const musicPath = file.musicUrl;
     commit('initPlay', musicPath);
-    const player = <HTMLAudioElement> document.getElementById('player');
-    player.load();
-    clearInterval(state.timer);
-    const msg = (new Vue()).$Message.loading({
-      content:'正在加载...',
-      duration:0
+    setTimeout(()=>{
+      const player = <HTMLAudioElement> document.getElementById('player');
+      player.load();
+      clearInterval(state.timer);
+      const msg = (new Vue()).$Message.loading({
+        content:'正在加载...',
+        duration:0
+      })
+      player.onloadeddata = function () {
+        console.log(file.time);
+        commit('setMusicInfo',file.time);
+        let timer = setInterval(() => {
+          commit('addCurrentTime');
+        }, 1000 / state.fps);
+        commit('setTimer', timer);
+        player.play();
+        msg()
+        commit('setLoading',false)
+      };
+      // 设置当前播放文件
+      dispatch('home/setPlayingFile', file, {root: true});
+      if (!rootState.home.isInRecentPlay) {
+        dispatch('playList/addRecentPlay', file, {root: true});
+      }
     })
-    player.onloadeddata = function () {
-      commit('setMusicInfo');
-      let timer = setInterval(() => {
-        commit('addCurrentTime');
-      }, 1000 / state.fps);
-      commit('setTimer', timer);
-      player.play();
-      msg()
-      commit('setLoading',false)
-    };
-    // 设置当前播放文件
-    dispatch('home/setPlayingFile', file, {root: true});
-    if (!rootState.home.isInRecentPlay) {
-      dispatch('playList/addRecentPlay', file, {root: true});
-    }
   },
 
   abort({commit, dispatch}: ActionContextBasic) {
@@ -203,7 +212,9 @@ const actions = {
 
 const mutations = {
   initPlay(state: IState, path: string) {
+
     state.serverPath = path;
+    console.log(state.serverPath);
   },
   clearPlaying(state: IState) {
     clearInterval(state.timer);
@@ -211,9 +222,10 @@ const mutations = {
     state.currentTime = 0;
     state.serverPath = '';
   },
-  setMusicInfo() {
-    const player = <HTMLAudioElement> document.getElementById('player');
-    state.duration = player.duration;
+  setMusicInfo(state:IState,time:string) {
+    // const player = <HTMLAudioElement> document.getElementById('player');
+    // state.duration = player.duration;
+    state.duration = convertTimeStrToSecond(time)
     state.currentTime = 0;
     state.playing = true;
   },

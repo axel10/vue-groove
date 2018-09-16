@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop, Vue} from "vue-property-decorator";
+  import {Component, Prop} from "vue-property-decorator";
   import DropdownList from "@/components/Common/DropdownList.vue";
   import {dropDownMenu, editPlayListModal, fadeInFileContent, getAddFileToContextMenuItems} from "../utils/utils";
   import {namespace} from "vuex-class";
@@ -158,15 +158,19 @@
 
     play(e: MouseEvent) {
       e.stopPropagation();
-      this.$store.dispatch("audio/play", this.item);
-      if (this.all && !this.item.content) {
-        this.$store.commit("playList/setPlayingList", this.all);
-      }
+
       if (this.item.content) {
         let allFile = this.getAllFileByContent(this.item.content);
         this.$store.dispatch("audio/play", allFile[0]);
         this.$store.commit("playList/setPlayingList", allFile);
+        return
       }
+
+      this.$store.dispatch("audio/play", this.item);
+      if (this.all && !this.item.content) {
+        this.$store.commit("playList/setPlayingList", this.all);
+      }
+
     }
 
     handleSelect(e: MouseEvent) {
@@ -232,8 +236,8 @@
         .cover {
           /*width: 100%;*/
           /*height: 100%;*/
-          width: 156px;
-          height: 156px;
+          /*width: 156px;*/
+          /*height: 156px;*/
           transition: box-shadow .3s;
           position: relative;
           display: flex;

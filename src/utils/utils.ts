@@ -20,11 +20,10 @@ function _initCoverUrl(arr: Array<File>, path: Array<string>) {
       _initCoverUrl(arr[i].content || [], path.concat([arr[i].title]));
     } else {
       const imgUrl = `${config.coverPath}/small/${path.join('/')}/${arr[i].title}.jpg`;
-      const musicUrl = `${config.musicPath}${path.join('/')}/${arr[i].title}.mp3`;
+      const musicUrl = `${config.musicPath}${path.join('/')}/${arr[i].title}.${config.musicExt}`;
 
       arr[i].imgUrl = imgUrl;
       arr[i].musicUrl = musicUrl;
-
     }
   }
 }
@@ -81,7 +80,7 @@ interface confirmConfig {
 }
 
 export function confirm(opt: confirmConfig) {
-  return new Promise(((resolve, reject) => {
+  return new Promise(((resolve) => {
     let confirm = Vue.extend(Confirm);
     let contain = document.createElement('div');
     document.body.appendChild(contain);
@@ -132,7 +131,7 @@ export function editPlayListModal(opt?: editPlayListModalConfig) {
   if (!opt) {
     opt = {};
   }
-  return new Promise(((resolve, reject) => {
+  return new Promise(((resolve) => {
     let contain = document.createElement('div');
     document.body.appendChild(contain);
 
@@ -186,18 +185,10 @@ export interface DropDownMenuItem {
 export function dropDownMenu(e: Event, opts: Array<DropDownMenuItem>, onCancel?: Function) {   // 传递{split:true}为分割线
   let contain = document.createElement('div');
   document.body.appendChild(contain);
-
-  /*  opts.forEach(o=>{
-      if (o.el) {
-        o.el = new o.el({
-          store,
-        })
-      }
-    })*/
-
   function remove() {
     vm.$destroy();
     document.body.removeChild(vm.$el);
+    onCancel&&onCancel()
   }
 
   var vm = new DropdownList({
@@ -378,15 +369,15 @@ export function SortList(container: HTMLElement, hacks: SortListHack, opt?: any)
   if (onEnd) sortable.on('sortable:stop', onEnd);
 }
 
-export function playAllSelectFile(context: SelectContainer, files: Array<File>) {
+export function playAllSelectFile(context: SelectContainer) {
 
   context.$store.dispatch('file/playDirs', context.selectedItems);
   context.selectedItems = [];
 }
 
-export function playAllFile(files: File[]) {
+/*export function playAllFile(files: File[]) {
   store.dispatch('file/playDirs', files);
-}
+}*/
 
 /*export function playAllSelectFile(context: SelectContainer, files: Array<File>) {
   files.sort(function (e1, e2) {
@@ -407,10 +398,15 @@ export function getLargeImg(url: string) {
 }
 
 export function beginAddTime() {
-  const state = store.state.audio
-  clearInterval(state.timer)
+  const state = store.state.audio;
+  clearInterval(state.timer);
   const timer = setInterval(() => {
     store.commit('audio/addCurrentTime');
   }, 1000 / state.fps);
   store.commit('audio/setTimer', timer);
+}
+
+export function convertTimeStrToSecond(timeStr: string): number {
+  const time = timeStr.split(':').map(o => parseInt(o));
+  return time[0] * 60 + time[1];
 }
