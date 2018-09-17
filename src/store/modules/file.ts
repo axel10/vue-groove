@@ -27,27 +27,27 @@ export interface IState {
 
 export class File extends BaseItem {
   title: string;
-  content: Array<File> ;
+  content: Array<File>;
   p: string;
   cd_title: string;
   id: number;
-  trck: number;
+  // trck: number;
   sort: number;
   imgUrl: string;
   musicUrl: string;
-  time!:string
+  time!: string;
 
-  constructor(){
-    super()
-    this.title=''
-    this.content=[]
-    this.p=''
-    this.cd_title=''
-    this.id=0
-    this.trck=0
-    this.sort=0
-    this.imgUrl=''
-    this.musicUrl=''
+  constructor() {
+    super();
+    this.title = '';
+    this.content = [];
+    this.p = '';
+    this.cd_title = '';
+    this.id = 0;
+    // this.trck=0
+    this.sort = 0;
+    this.imgUrl = '';
+    this.musicUrl = '';
   }
 }
 
@@ -71,6 +71,9 @@ const getters = {
           files = filesTmp;
         }
       }
+      filesTmp.sort((a, b) => {
+        return a.sort-b.sort
+      });
       return filesTmp;
     }
   },
@@ -80,10 +83,10 @@ const actions = {
 
   init({commit, dispatch}: ActionContextBasic) {
     dispatch({type: 'getFiles'});
-/*    const path = sessionStorage.getItem('path') || '';
-    if (path) {
-      commit('setPath', JSON.parse(path));
-    }*/
+    /*    const path = sessionStorage.getItem('path') || '';
+        if (path) {
+          commit('setPath', JSON.parse(path));
+        }*/
   },
 
   getFiles({commit}: ActionContextBasic) {
@@ -111,11 +114,11 @@ const actions = {
 
     if (!dir[0].content) {
       dispatch('audio/play', dir[0], {root: true});
-      dispatch('playList/addToPlayingList',dir,{root:true})
-      return
+      dispatch('playList/addToPlayingList', dir, {root: true});
+      return;
     }
 
-    let allFile = dir.reduce((res:Array<File>, item) => {
+    let allFile = dir.reduce((res: Array<File>, item) => {
       return res.concat(getAllFileByContent(item.content));
     }, []);
     dispatch('audio/play', allFile[0], {root: true});
@@ -124,9 +127,9 @@ const actions = {
 };
 
 function getAllFileByContent(content: Array<File>) {
-  let tmp:Array<File> = [];
+  let tmp: Array<File> = [];
 
-  function pushItem(content:Array<File>) {
+  function pushItem(content: Array<File>) {
     for (let i = 0; i < content.length; i++) {
       if (content[i].content) {
         pushItem(content[i].content);
@@ -154,7 +157,7 @@ const mutations = {
     if (typeof fileName === 'object') {
       state.path = fileName;
     }
-    sessionStorage.setItem('path', JSON.stringify(state.path))
+    sessionStorage.setItem('path', JSON.stringify(state.path));
   },
   toPrev(state: IState) {
     if (state.path.length > 0) {

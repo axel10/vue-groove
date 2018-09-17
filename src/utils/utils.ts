@@ -48,13 +48,7 @@ export function convertFilesToLinearArray(arr: Array<File>) {
   return tmp;
 }
 
-/**
- *
- * @param node 事件的node
- * @param target 要判断的组件自身
- * @returns {boolean}
- */
-export function isInSelf(node: HTMLElement, target: HTMLElement): boolean {
+/*export function isInSelf(node: HTMLElement, target: HTMLElement): boolean {
   if (node === target) {
     return true;
   }
@@ -63,8 +57,20 @@ export function isInSelf(node: HTMLElement, target: HTMLElement): boolean {
   } else {
     return false;
   }
-}
+}*/
 
+
+export function isInSelf (node: HTMLElement, className: string): boolean {
+  if (node == document.body) return false;
+  if (node.className.indexOf(className) !== -1) {
+    return true;
+  }
+  if (node.parentNode) {
+    return isInSelf(<HTMLElement>node.parentNode, className);
+  } else {
+    return false;
+  }
+}
 
 export function guid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {

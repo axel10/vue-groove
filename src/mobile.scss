@@ -123,8 +123,10 @@
       height: 60px !important;
       margin-bottom: 18px;
       .cover {
-        height: 90px !important;
-        width: 90px !important;
+        height: 70px !important;
+        width: 70px !important;
+        //position: relative;
+        //bottom: 10px;
       }
       .info {
         justify-content: space-between !important;
@@ -155,10 +157,33 @@
     .music-list {
       & > ul > li > .PlayListContentItem {
         padding-left: 0;
-        .artist, .operation, .time {
+        border-bottom: 0!important;
+        .artist, .operation {
           display: none;
         }
+        .time{
+          text-align: right;
+          position: absolute;
+          right: 0;
+        }
       }
+    }
+  }
+  .PlayListItemBase > div {
+    flex-direction: column!important;
+    justify-content: center!important;
+    align-items: flex-start!important;
+    font-size: 12px!important;
+
+    .title{
+      padding-left: 0!important;
+      width: 70% !important;
+      flex: 	0 1 auto!important;
+
+    }
+    .album{
+      width: 70% !important;
+      flex: 	0 1 auto!important;
     }
   }
   .PlayList {
@@ -178,11 +203,18 @@
         & > li {
           padding-left: 1rem;
           box-sizing: border-box;
+/*          &:hover{
+            background-color: #3591e2!important;
+            &>.PlayListContentItem{
+              color: #ffffff;
+            }
+          }*/
           &.deep {
             background-color: #fff !important;
           }
           & > .PlayListContentItem {
             padding-left: 0;
+            background-color: transparent!important;
             .artist, .operation, .album {
               display: none !important;
             }

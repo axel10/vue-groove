@@ -4,7 +4,7 @@
       <div class="top">
 
         <div class="mobile-top">
-          <div class="fold" @click="toggleSideShow">
+          <div class="fold" @click="ShowSide">
             <Icon type="ios-menu"/>
           </div>
           <div class="title">
@@ -101,7 +101,7 @@
   import Files from "@/views/Files.vue";
   import HomeBottom from "../components/HomeBottom.vue";
   import {PlayList} from "../store/modules/playList";
-  import {dropDownMenu, editPlayListModal} from "../utils/utils";
+  import {dropDownMenu, editPlayListModal, isInSelf} from "../utils/utils";
   import {confirm} from "@/utils/utils";
 
   const homeModule = namespace("home");
@@ -145,13 +145,24 @@
     toggleFold() {
       if (this.isSideShow) {
         this.isSideShow = false;
+        document.body.removeEventListener('click',this.hideMobileSide)
         return;
       }
       this.isFold = !this.isFold;
     }
 
-    toggleSideShow() {
-      this.isSideShow = !this.isSideShow;
+    hideMobileSide(e:MouseEvent){
+      e.stopPropagation()
+      if(!isInSelf(e.target as HTMLElement,'side')){
+        this.isSideShow = false;
+      }
+    }
+
+    ShowSide(e:MouseEvent) {
+      e.stopPropagation()
+      document.body.addEventListener('click',this.hideMobileSide)
+      this.isSideShow = true;
+      // this.isSideShow = !this.isSideShow;
     }
 
     showCreatePlayListModal() {

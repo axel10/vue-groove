@@ -17,7 +17,17 @@
 
 <style lang="scss">
   .PlayListItemBase {
+    padding: 0 20px;
+    outline: none;
+    &:hover {
+      color: #fff;
+      background-color: rgba(255,255,255,.1);
+      & > .operation {
+        opacity: 1;
+      }
+    }
     &>div{
+      position: relative;
       outline: none;
       display: flex;
       align-items: center;
@@ -27,13 +37,7 @@
       color: #ccc;
       box-sizing: border-box;
       padding-left: 20px;
-      &:hover {
-        color: #fff;
-        background-color: rgba(255,255,255,.1);
-        & > .operation {
-          opacity: 1;
-        }
-      }
+
 
       &.playing {
         color: #4cbafa;
@@ -72,12 +76,18 @@
         flex: 4;
         box-sizing: border-box;
         padding-left: 10px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
       .artist {
         flex: 3;
       }
       .album {
         flex: 3;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
       .year {
         flex: 1;

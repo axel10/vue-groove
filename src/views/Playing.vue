@@ -247,7 +247,7 @@
   }
 
   .Playing {
-    padding: 0 20px;
+    /*padding: 0 20px;*/
     box-sizing: border-box;
     width: 100%;
     height: 100%;
@@ -299,6 +299,7 @@
         max-height: 100%;
 
         .music-list {
+
           width: 100%;
           flex: 1;
           overflow-y: auto;

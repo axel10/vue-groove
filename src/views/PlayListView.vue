@@ -323,7 +323,7 @@
     }
 
     play() {
-      playAllSelectFile(this, this.selectedItems);
+      playAllSelectFile(this);
     }
 
     rename() {

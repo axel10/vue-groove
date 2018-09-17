@@ -14,10 +14,10 @@
     </div>
 
     <div class="center">
+      <div>
+        <i class="ios-play-outline"></i>
+      </div>
       <div class="buttons">
-        <!--        <div class="round-btn random"  :class="{'active':isRandom}" @click="toggleRandom">
-                  <Icon type="ios-shuffle"/>
-                </div>-->
         <Random class="round-btn"></Random>
         <div class="round-btn prev" @click="toPrev">
           <Icon type="ios-skip-backward-outline"/>
@@ -29,9 +29,6 @@
         <div class="round-btn next" @click="toNext">
           <Icon type="ios-skip-forward-outline"/>
         </div>
-        <!--        <div class="round-btn repeat">
-                  <Icon type="ios-repeat"/>
-                </div>-->
         <Loop class="round-btn loop"></Loop>
 
         <div class="round-btn mobile-more" @click="showMobileMoreMenu">
@@ -41,7 +38,6 @@
       <div class="progress">
         <p class="current">{{currentTimeStr}}</p>
         <div class="slider">
-          <!--<Slider :value="timePercent" @on-change="handleSelectTime" :tip-format="formatProgress"></Slider>-->
           <TimeSlider></TimeSlider>
         </div>
         <p class="total">{{durationTimeStr}}</p>
@@ -116,8 +112,6 @@
 
     togglePlay() {
       this.$store.dispatch("audio/togglePlay");
-      console.log(this.currentTimeStr);
-      console.log(this.durationTimeStr);
     }
 
     showMoreMenu(e: MouseEvent) {

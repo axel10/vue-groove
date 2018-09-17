@@ -115,7 +115,6 @@ const actions = {
         duration:0
       })
       player.onloadeddata = function () {
-        console.log(file.time);
         commit('setMusicInfo',file.time);
         let timer = setInterval(() => {
           commit('addCurrentTime');
@@ -212,9 +211,7 @@ const actions = {
 
 const mutations = {
   initPlay(state: IState, path: string) {
-
     state.serverPath = path;
-    console.log(state.serverPath);
   },
   clearPlaying(state: IState) {
     clearInterval(state.timer);

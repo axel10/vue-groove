@@ -226,7 +226,7 @@
 
       function hideVolumeModal(e: MouseEvent) {
 
-        if (!isInSelf(<HTMLElement>e.target, <HTMLElement>that.$refs.volumeModalShow)) {
+        if (!isInSelf(<HTMLElement>e.target, 'volume-modal')) {
           e.stopPropagation();
           that.volumeModalShow = false;
           document.removeEventListener("click", hideVolumeModal, true);
@@ -275,6 +275,7 @@
   }
 
   .PlayingToolBar {
+    padding: 0 20px;
 
     .file-info {
       margin-top: 44px;
@@ -285,6 +286,8 @@
       .cover {
         width: 120px;
         height: 120px;
+        flex-shrink: 0;
+
         img {
           width: 100%;
           height: 100%;
@@ -297,12 +300,19 @@
         padding-right: 6px;
         text-align: left;
         margin-left: 10px;
+        min-width: 0;
         h5 {
           font-size: 30px;
+          overflow: hidden;
+          text-overflow:ellipsis;
+          white-space: nowrap;
         }
         p {
           margin: 0;
           font-size: 18px;
+          overflow: hidden;
+          text-overflow:ellipsis;
+          white-space: nowrap;
         }
       }
     }

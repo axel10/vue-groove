@@ -106,12 +106,18 @@
         this.$Message.info("已经是根目录了");
         return;
       }
+
+
       this.$store.commit("file/toPrev");
       fadeInFileContent();
+
+      const pathArr = this.$route.params['path'].split('/')
+      pathArr.pop()
+      this.$router.push(pathArr.length?`/path/${pathArr.join('/')}`:'/')
     }
 
     playAll() {
-      playAllSelectFile(this, this.selectedItems);
+      playAllSelectFile(this);
     }
 
     selectAll() {
@@ -193,6 +199,7 @@
       flex: 1;
       /*overflow: auto;*/
       min-height: 0;
+      width: 100%;
       &.fade-in {
         /*animation: fadeIn .5s forwards ease-out;*/
         animation: fadeIn .5s forwards cubic-bezier(0, 1, 0, 1);
