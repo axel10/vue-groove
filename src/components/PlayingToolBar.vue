@@ -63,13 +63,16 @@
           <div class="operate play-list" @click="toggleList">
             <Icon type="ios-list"/>
           </div>
-          <div class="operate full-screen" @click="toggleFullScreen">
+          <div class="operate full-screen" v-if="!isFullScreen" @click="fullScreen">
             <Icon type="ios-resize"/>
           </div>
+          <div class="operate full-screen" v-if="isFullScreen" @click="exitFullScreen">
+            <Icon type="md-contract" />
+          </div>
+          <!--<Icon type="md-contract" />-->
         </div>
       </div>
     </div>
-
 
     <div class="arrow" :class="{'up':$route.params['light']==='light'}" @click="$emit('toggleList')">
       <img src="/res/vcplayer/arrow.svg" alt="">
@@ -81,7 +84,7 @@
   import {Component, Prop, Vue} from "vue-property-decorator";
   import {namespace} from "vuex-class";
   import {getTimeStr} from "../store/modules/audio";
-  import {dropDownMenu, editPlayListModal, isInSelf, toggleFullScreen} from "../utils/utils";
+  import {dropDownMenu, editPlayListModal, isFullScreen, isInSelf, toggleFullScreen,exitFullScreen,fullScreen} from "../utils/utils";
   import VolumeIcon from "./Operation/VolumeIcon.vue";
   import Loop from "./Operation/Loop.vue";
   import Random from "./Operation/Random.vue";
@@ -114,13 +117,16 @@
     @homeModule.State playingFile !: any;
     @homeModule.State isDark!: boolean;
     @homeModule.State isMobile!: boolean;
+    @homeModule.State isFullScreen!: boolean;
 
     @audioModule.Action toPrev!: any;
     @audioModule.Action toNext!: any;
 
     volumeModalShow: boolean = false;
 
-    toggleFullScreen: Function = toggleFullScreen;
+    // toggleFullScreen: Function = toggleFullScreen;
+    exitFullScreen:Function = exitFullScreen;
+    fullScreen:Function = fullScreen;
     touchStartY: number = 0;
 
     public mounted() {
@@ -195,6 +201,17 @@
     showOperateMenu(e: MouseEvent) {
       dropDownMenu(e, [
         {label: "保存为播放列表", callback: this.saveToPlayList},
+        {
+          label: isFullScreen() ? "取消全屏" : "全屏", callback: () => {
+            isFullScreen()?exitFullScreen():fullScreen()
+/*            toggleFullScreen();
+            setTimeout(() => {
+              if (isFullScreen()) {
+                this.$router.push("/playing/light");
+              }
+            });*/
+          }
+        },
         {label: "清空正在播放", callback: this.clearPlayingList},
         {
           el: new Vue({

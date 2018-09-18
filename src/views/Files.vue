@@ -61,7 +61,7 @@
 </template>
 
 <script lang="ts">
-  import {Component} from "vue-property-decorator";
+  import {Component, Watch} from "vue-property-decorator";
   import {namespace} from "vuex-class";
   import {File} from "../store/modules/file";
   import FileItem from "../components/FileItem.vue";
@@ -93,8 +93,17 @@
       this.$store.commit("home/setCurrentTitle", this.title);
 
       if (this.$route.params["path"]) {
-        this.$store.commit('file/setPath',[this.$route.params["path"]])
+        this.$store.commit('file/setPath',this.$route.params["path"].split('.'))
       }
+    }
+
+    @Watch('$route')
+    onRouteChanged(){
+      const pathStr = this.$route.params['path']
+      const paths = pathStr?pathStr.split('.'):[]
+      this.$store.commit('file/setPath',paths)
+      fadeInFileContent();
+
     }
 
     get isSelectMode() {
@@ -107,13 +116,12 @@
         return;
       }
 
-
-      this.$store.commit("file/toPrev");
+      // this.$store.commit("file/toPrev");
       fadeInFileContent();
 
-      const pathArr = this.$route.params['path'].split('/')
+      const pathArr = this.$route.params['path'].split('.')
       pathArr.pop()
-      this.$router.push(pathArr.length?`/path/${pathArr.join('/')}`:'/')
+      this.$router.push(pathArr.length?`/path/${pathArr.join('.')}`:'/')
     }
 
     playAll() {

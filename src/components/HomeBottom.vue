@@ -65,7 +65,14 @@
   import Random from "./Operation/Random.vue";
   import Loop from "./Operation/Loop.vue";
   import VolumeIcon from "./Operation/VolumeIcon.vue";
-  import {dropDownMenu, DropDownMenuItem, toggleFullScreen} from "../utils/utils";
+  import {
+    dropDownMenu,
+    DropDownMenuItem,
+    exitFullScreen,
+    fullScreen,
+    isFullScreen,
+    toggleFullScreen
+  } from "../utils/utils";
   import {File} from "../store/modules/file";
   import VolumeSlider from "./Operation/VolumeSlider.vue";
   import TimeSlider from "./Operation/TimeSlider.vue";
@@ -94,7 +101,7 @@
     @audioModule.Mutation handleSelectTime!: any;
     @audioModule.Mutation toggleRandom!: any;
     @homeModule.State playingFile!: File;
-    @homeModule.State isFullScreen!: boolean;
+    // @homeModule.State isFullScreen!: boolean;
     @playListModule.State playingList!: Array<File>;
 
     get background() {
@@ -115,6 +122,7 @@
     }
 
     showMoreMenu(e: MouseEvent) {
+      console.log(isFullScreen());
 
       const contextMenu: Array<DropDownMenuItem> = [
         {
@@ -123,13 +131,15 @@
           }, isDisable: this.playingList.length === 0
         },
         {
-          label: this.isFullScreen ? "取消全屏" : "全屏", callback: () => {
-            toggleFullScreen();
-            setTimeout(() => {
-              if (this.isFullScreen) {
-                this.$router.push("/playing/light");
-              }
-            });
+          label: isFullScreen() ? "取消全屏" : "全屏", callback: () => {
+            if (isFullScreen()) {
+              exitFullScreen()
+
+            }else {
+              fullScreen()
+              this.$router.push("/playing/light");
+
+            }
           }
         }, {
           label: "清空'正在播放'", callback: () => {
@@ -168,13 +178,13 @@
           }, isDisable: this.playingList.length === 0
         },
         {
-          label: this.isFullScreen ? "取消全屏" : "全屏", callback: () => {
-            toggleFullScreen();
-            setTimeout(() => {
-              if (this.isFullScreen) {
-                this.$router.push("/playing/light");
-              }
-            });
+          label: isFullScreen() ? "取消全屏" : "全屏", callback: () => {
+            if (isFullScreen()) {
+              exitFullScreen()
+            }else {
+              fullScreen()
+              this.$router.push("/playing/light");
+            }
           }
         }, {
           label: "清空'正在播放'", callback: () => {

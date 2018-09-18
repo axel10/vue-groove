@@ -179,14 +179,11 @@
         return;
       }
       if (this.item.content) {
-        // this.$store.commit("file/setPath", this.item.title);
-/*        const currentPath = this.$route.params['path']?this.$route.params['path']:''
-        console.log(this.$route.params['path']);
-        this.$router.push(`/path/${currentPath}/${this.item.title}`)*/
+
         const currentPath = this.$route.params['path']
-        const url = currentPath?`/path/${currentPath}/${this.item.title}`:`/path/${this.item.title}`
+        const url = currentPath?`/path/${currentPath}.${this.item.title}`:`/path/${this.item.title}`
         this.$router.push(url)
-        this.$store.commit("file/setPath", this.item.title);
+        // this.$store.commit("file/setPath", this.item.title);
         fadeInFileContent();
       } else {
         this.play(e);

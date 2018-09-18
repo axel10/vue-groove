@@ -16,7 +16,7 @@
     </div>
 
     <!--<keep-alive>-->
-      <router-view/>
+    <router-view/>
     <!--</keep-alive>-->
 
     <Audio></Audio>
@@ -28,6 +28,7 @@
   import Audio from "./components/Audio.vue";
   import {namespace} from "vuex-class";
   import {File} from "./store/modules/file";
+  import {isFullScreen} from "./utils/utils";
 
   const homeModule = namespace("home");
 
@@ -44,6 +45,11 @@
       if (window.screen.width <= 450) {
         this.$store.commit("home/setIsMobile", true);
       }
+
+      const that = this;
+      window.onresize = function () {
+        that.$store.commit("home/setIsFullScreen", isFullScreen());
+      };
     }
 
     /*    @Watch('$route')
@@ -77,7 +83,7 @@
         bgs[0].style.backgroundImage = `url('${val.imgUrl}')`;
       } else {
         // bgs[1].src = val.imgUrl;
-        bgs[1].style.backgroundImage= `url('${val.imgUrl}')`;
+        bgs[1].style.backgroundImage = `url('${val.imgUrl}')`;
 
       }
       this.bgToken = !this.bgToken;
@@ -157,7 +163,7 @@
         transition: opacity 1s;
       }
 
-      .app-bg{
+      .app-bg {
         width: 100%;
         height: 100%;
         background-size: cover;

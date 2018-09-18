@@ -21,7 +21,6 @@ const getters = {}
 const actions = {
   testAction({dispatch,commit}:ActionContextBasic){
     commit('add')
-    // console.log(context);
   }
 }
 

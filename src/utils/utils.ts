@@ -242,7 +242,7 @@ export function unionFiles(arr1: Array<File>, arr2: Array<File>) {
 
 
 export function toggleFullScreen() {
-  var document: any = window.document;
+  const document: any = window.document;
   const el = document.body;
   const isFullscreen = document.fullScreen || document['mozFullScreen'] || document.webkitIsFullScreen;
   if (!isFullscreen) {//进入全屏,多重短路表达式
@@ -256,8 +256,27 @@ export function toggleFullScreen() {
       document['mozCancelFullScreen'] ? document['mozCancelFullScreen']() :
         document.webkitExitFullscreen ? document.webkitExitFullscreen() : '';
     store.commit('home/setIsFullScreen', false);
-
   }
+}
+
+export function fullScreen() {
+  const el:any = document.body;
+  (el.requestFullscreen && el.requestFullscreen()) ||
+  (el['mozRequestFullScreen'] && el['mozRequestFullScreen']()) ||
+  (el.webkitRequestFullscreen && el.webkitRequestFullscreen()) || (el['msRequestFullscreen'] && el['msRequestFullscreen']());
+  store.commit('home/setIsFullScreen', true);
+}
+
+export function exitFullScreen() {
+  const document: any = window.document;
+  document.exitFullscreen ? document.exitFullscreen() :
+    document['mozCancelFullScreen'] ? document['mozCancelFullScreen']() :
+      document.webkitExitFullscreen ? document.webkitExitFullscreen() : '';
+}
+
+export function isFullScreen() {
+  const document: any = window.document;
+  return document.fullScreen || document['mozFullScreen'] || document.webkitIsFullScreen;
 }
 
 export function fadeInFileContent() {
@@ -416,3 +435,4 @@ export function convertTimeStrToSecond(timeStr: string): number {
   const time = timeStr.split(':').map(o => parseInt(o));
   return time[0] * 60 + time[1];
 }
+

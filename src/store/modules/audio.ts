@@ -49,13 +49,9 @@ export function getTimeStr(time: number) {
 
 const getters = {
   currentTimeStr(state: IState) {
-    // console.log(state.duration);
-    // console.log(getTimeStr(state.duration));
     return getTimeStr(state.currentTime > state.duration ? state.duration : state.currentTime);
   },
   durationTimeStr(state: IState) {
-    // console.log(state.duration);
-    // console.log(getTimeStr(state.duration));
     return getTimeStr(state.duration);
   },
   timePercent(state: IState) {

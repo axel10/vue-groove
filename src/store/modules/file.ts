@@ -83,10 +83,6 @@ const actions = {
 
   init({commit, dispatch}: ActionContextBasic) {
     dispatch({type: 'getFiles'});
-    /*    const path = sessionStorage.getItem('path') || '';
-        if (path) {
-          commit('setPath', JSON.parse(path));
-        }*/
   },
 
   getFiles({commit}: ActionContextBasic) {
@@ -149,14 +145,9 @@ const mutations = {
     state.allFile = convertFilesToLinearArray(files);
     state.files = files;
   },
-  setPath(state: IState, fileName: any) {
-    if (typeof fileName === 'string') {
-      state.path.push(fileName);
-    }
-    if (typeof fileName === 'object') {
-      state.path = fileName;
-    }
-    sessionStorage.setItem('path', JSON.stringify(state.path));
+  setPath(state: IState, paths: string[]) {
+    state.path = paths;
+    // sessionStorage.setItem('path', JSON.stringify(state.path));
   },
   toPrev(state: IState) {
     if (state.path.length > 0) {

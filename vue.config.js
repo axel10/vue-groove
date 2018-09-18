@@ -17,15 +17,6 @@ module.exports = {
       // historyApiFallback: true
     }
   },
-/*  configureWebpack: config=>{
-    console.log(config);
-    config.resolve.alias
-        .set('vue$','vue/dist/vue.esm.js')
-      .historyApiFallback({
-        rewrites: [
-          { from: /./, to: '/' }
-        ]
-      })
-  },*/
+
   productionSourceMap:false,
 }
