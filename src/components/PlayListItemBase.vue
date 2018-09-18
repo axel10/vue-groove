@@ -17,7 +17,8 @@
 
 <style lang="scss">
   .PlayListItemBase {
-    padding: 0 20px;
+    /*padding: 0 20px;*/
+    margin: 0 20px;
     outline: none;
     &:hover {
       color: #fff;

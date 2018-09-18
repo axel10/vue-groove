@@ -14,10 +14,10 @@ import {Sortable, Plugins} from '@shopify/draggable';
 import SelectContainer from '@/mixins/selectContainer';
 
 
-function _initCoverUrl(arr: Array<File>, path: Array<string>) {
+function _initResourceUrl(arr: Array<File>, path: Array<string>) {
   for (let i = 0; i < arr.length; i++) {
     if (arr[i].content) {
-      _initCoverUrl(arr[i].content || [], path.concat([arr[i].title]));
+      _initResourceUrl(arr[i].content || [], path.concat([arr[i].title]));
     } else {
       const imgUrl = `${config.coverPath}/small/${path.join('/')}/${arr[i].title}.jpg`;
       const musicUrl = `${config.musicPath}${path.join('/')}/${arr[i].title}.${config.musicExt}`;
@@ -29,7 +29,7 @@ function _initCoverUrl(arr: Array<File>, path: Array<string>) {
 }
 
 export function initResourceUrl(arr: Array<File>) {
-  _initCoverUrl(arr, []);
+  _initResourceUrl(arr, []);
 }
 
 function _convertFilesToLinearArray(arr: Array<File>, tmp: Array<File>) {

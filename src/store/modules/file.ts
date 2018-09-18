@@ -128,7 +128,6 @@ const actions = {
 
 function getAllFileByContent(content: Array<File>) {
   let tmp: Array<File> = [];
-
   function pushItem(content: Array<File>) {
     for (let i = 0; i < content.length; i++) {
       if (content[i].content) {

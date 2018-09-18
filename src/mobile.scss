@@ -169,21 +169,25 @@
       }
     }
   }
-  .PlayListItemBase > div {
-    flex-direction: column!important;
-    justify-content: center!important;
-    align-items: flex-start!important;
-    font-size: 12px!important;
+  .PlayListItemBase {
+    margin: 0!important;
+    padding: 0 20px!important;
+    div {
+      flex-direction: column!important;
+      justify-content: center!important;
+      align-items: flex-start!important;
+      font-size: 12px!important;
 
-    .title{
-      padding-left: 0!important;
-      width: 70% !important;
-      flex: 	0 1 auto!important;
+      .title{
+        padding-left: 0!important;
+        width: 70% !important;
+        flex: 	0 1 auto!important;
 
-    }
-    .album{
-      width: 70% !important;
-      flex: 	0 1 auto!important;
+      }
+      .album{
+        width: 70% !important;
+        flex: 	0 1 auto!important;
+      }
     }
   }
   .PlayList {
@@ -207,6 +211,7 @@
             background-color: #3591e2!important;
             &>.PlayListContentItem{
               color: #ffffff;
+            }
             }
           }*/
           &.deep {
@@ -285,6 +290,14 @@
     &::-webkit-scrollbar-thumb {
       background-color: #999;
       border-radius: 0 !important;
+    }
+  }
+
+  .PlayingToolBar{
+    .operations{
+      .progress{
+        padding: 0!important;
+      }
     }
   }
 

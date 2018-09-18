@@ -4,6 +4,7 @@ import {File} from './file';
 import {beginAddTime, convertTimeStrToSecond} from '@/utils/utils';
 import {LoopMode} from '@/utils/enum/LoopMode';
 import Vue from 'vue'
+import config from '@/utils/config';
 
 
 const initState: IState = {
@@ -104,7 +105,7 @@ const actions = {
   play({state, commit, rootState, dispatch}: ActionContextBasic, file: File) {
     if(state.isLoading) return
     commit('setLoading',true)
-    const musicPath = file.musicUrl;
+    const musicPath = file.musicUrl.endsWith(config.musicExt)?file.musicUrl:file.musicUrl.split('.')[0]+`.${config.musicExt}`;
     commit('initPlay', musicPath);
     setTimeout(()=>{
       const player = <HTMLAudioElement> document.getElementById('player');
