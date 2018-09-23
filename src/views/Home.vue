@@ -167,7 +167,7 @@
 
     showCreatePlayListModal() {
       editPlayListModal().then((name: any) => {
-        this.$store.dispatch("playList/createPlayList", {name, fileIds: []});
+        this.$store.dispatch("playList/createPlayList", {name, content: []});
       });
     }
 
@@ -201,7 +201,7 @@
       dropDownMenu(e, contextMenu);
     }
 
-    toGithub() {
+     toGithub() {
       window.open("https://github.com/axel10/Groove_online", "_blank");
     }
   }

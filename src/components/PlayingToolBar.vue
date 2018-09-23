@@ -91,6 +91,7 @@
   import {File} from "../store/modules/file";
   import VolumeSlider from "./Operation/VolumeSlider.vue";
   import TimeSlider from "./Operation/TimeSlider.vue";
+  import {PlayListContentDataItem} from '../store/modules/playList';
 
   const audioModule = namespace("audio");
   const homeModule = namespace("home");
@@ -199,34 +200,32 @@
     timer: number = 0;
 
     showOperateMenu(e: MouseEvent) {
-      dropDownMenu(e, [
+      const options = [
         {label: "保存为播放列表", callback: this.saveToPlayList},
         {
           label: isFullScreen() ? "取消全屏" : "全屏", callback: () => {
             isFullScreen()?exitFullScreen():fullScreen()
-/*            toggleFullScreen();
-            setTimeout(() => {
-              if (isFullScreen()) {
-                this.$router.push("/playing/light");
-              }
-            });*/
           }
         },
-        {label: "清空正在播放", callback: this.clearPlayingList},
-        {
+        {label: "清空正在播放", callback: this.clearPlayingList}
+      ]
+      if (this.isMobile) {
+        const volume:any = {
           el: new Vue({
             template: "<VolumeSlider><VolumeIcon style='font-size: 30px'></VolumeIcon></VolumeSlider>",
-
             components: {VolumeSlider, VolumeIcon},
             store: this.$store
           })
         }
-      ]);
+        options.push(volume)
+      }
+      dropDownMenu(e, options);
     }
 
     saveToPlayList() {
       editPlayListModal({isRename: false}).then(name => {
-        this.$store.dispatch("playList/createPlayList", {name, fileIds: this.playingList.map((o: File) => o.id)});
+        // this.$store.dispatch("playList/createPlayList", {name, fileIds: this.playingList.map((o: File) => o.id)});
+        this.$store.dispatch("playList/createPlayList", {name, content:this.playingList.map((o:File)=>{return new PlayListContentDataItem(o.title,o.p)})});
       });
     }
 

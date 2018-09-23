@@ -16,7 +16,7 @@
 
     <div class="content">
       <ul>
-        <li v-for="(item,i) in distAllPlayList">
+        <li v-for="(item) in distAllPlayList">
           <PlayListItem
                   :item="item"
                   :selectedItems="selectedItems"
@@ -26,23 +26,23 @@
       </ul>
     </div>
 
-<!--    <div class="noPlayList">
-      <div class="info">
-        <h5>添加一些播放列表</h5>
-        <p>以下是添加方法</p>
+    <!--    <div class="noPlayList">
+          <div class="info">
+            <h5>添加一些播放列表</h5>
+            <p>以下是添加方法</p>
 
-        <div class="add">
-          <div class="left">
-            <Icon  type="ios-add"/>
-          </div>
-          <div class="right">
-            <p>新的播放列表</p>
-            <p>新建播放列表</p>
-          </div>
-        </div>
+            <div class="add">
+              <div class="left">
+                <Icon  type="ios-add"/>
+              </div>
+              <div class="right">
+                <p>新的播放列表</p>
+                <p>新建播放列表</p>
+              </div>
+            </div>
 
-      </div>
-    </div>-->
+          </div>
+        </div>-->
 
     <div class="no-item" v-if="distAllPlayList.length===0">
       <h4>添加一些播放列表</h4>
@@ -93,9 +93,9 @@
   import {Component, Vue, Watch} from "vue-property-decorator";
   import {namespace} from "vuex-class";
   import PlayListItem from "../components/PlayList/PlayListItem.vue";
-  import {editPlayListModal, confirm, mapIdsToFiles} from "../utils/utils";
+  import {editPlayListModal, confirm, mapDataItemsToFiles} from "../utils/utils";
   import SelectBottomTools from "../components/Operation/SelectBottomTools.vue";
-  import {PlayList} from "../store/modules/playList";
+  import {PlayList, PlayListContentDataItem} from "../store/modules/playList";
   import {File} from "../store/modules/file";
 
 
@@ -125,14 +125,15 @@
     }
 
     get distAllPlayList() {
-      return this.playLists.map(o => {
-        const firstFileId = o.content[0];
-        if (!firstFileId) {
+      return this.playLists.map((o: PlayList) => {
+        const firstDataItem: PlayListContentDataItem = o.content[0];
+        if (!firstDataItem) {
           return {...o, imgUrl: "", total: 0};
         }
         let firstFile!: File;
-        if (firstFileId) {
-          firstFile = this.allFile.find(file => file.id === firstFileId) || new File();
+        if (firstDataItem) {
+          // firstFile = this.allFile.find(file => file.id === firstFileId) || new File();
+          firstFile = this.allFile.find(file => file.title === firstDataItem.title && file.p === firstDataItem.p) || new File();
         }
         // const firstFile!:File = firstFileId === undefined ? new File() : this.allFile.find(file => file.id === firstFileId);
         const imgUrl = firstFile.imgUrl ? firstFile.imgUrl : "";
@@ -148,7 +149,7 @@
 
     showCreatePlayListModal() {
       editPlayListModal().then(name => {
-        this.$store.dispatch("playList/createPlayList", {name, fileIds: []});
+        this.$store.dispatch("playList/createPlayList", {name, content: []});
       });
     }
 
@@ -168,10 +169,11 @@
     }
 
     playAll() {
-      const fileIds = this.selectedItems.reduce((res: Array<number>, item: PlayList) => {
+      const dataItems = this.selectedItems.reduce((res: Array<PlayListContentDataItem>, item: PlayList) => {
+        // return res.concat(item.content);
         return res.concat(item.content);
       }, []);
-      const files = mapIdsToFiles(fileIds);
+      const files = mapDataItemsToFiles(dataItems);
       this.$store.dispatch("audio/play", files[0]);
       this.$store.dispatch("playList/addToPlayingList", files);
       this.cancelSelect();

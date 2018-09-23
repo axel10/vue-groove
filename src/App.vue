@@ -29,6 +29,7 @@
   import {namespace} from "vuex-class";
   import {File} from "./store/modules/file";
   import {isFullScreen} from "./utils/utils";
+  import Notice from '@/utils/Notice';
 
   const homeModule = namespace("home");
 
@@ -45,6 +46,8 @@
       if (window.screen.width <= 450) {
         this.$store.commit("home/setIsMobile", true);
       }
+
+      Notice.open({title:'注意',desc:'为了获得最佳欣赏体验，请前往<a href="https://vcollection.org" target="_blank">V collection官网</a>获取完整版V collection。',duration:9999})
 
       const that = this;
       window.onresize = function () {
@@ -147,8 +150,8 @@
     .bg-img {
       /*background-color: #000;*/
       width: 110%;
-      height: 110%;
-      filter: blur(35px) saturate(100%);
+      height: 120%;
+      filter: blur(35px) saturate(130%);
       transition: all 1s cubic-bezier(0, 1, 1, 1);
       transform: translateX(-5%) translateY(-5%);
 

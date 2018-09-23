@@ -5,6 +5,7 @@ import {beginAddTime, convertTimeStrToSecond} from '@/utils/utils';
 import {LoopMode} from '@/utils/enum/LoopMode';
 import Vue from 'vue'
 import config from '@/utils/config';
+import {LocalStorageKeys} from '@/utils/enum/LocalStorageKeys';
 
 
 const initState: IState = {
@@ -210,6 +211,9 @@ const mutations = {
   initPlay(state: IState, path: string) {
     state.serverPath = path;
   },
+  initVolume(state:IState,vol:number){
+    state.volume = vol
+  },
   clearPlaying(state: IState) {
     clearInterval(state.timer);
     state.duration = 0;
@@ -255,6 +259,7 @@ const mutations = {
     state.volume = val;
     const player = <HTMLAudioElement> document.getElementById('player');
     player.volume = state.volume / 100;
+    localStorage.setItem(LocalStorageKeys.volume,val.toString())
   },
 
   toggleRandom(state: IState) {

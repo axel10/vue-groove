@@ -5,7 +5,7 @@ export default {
   getFiles(){
     return request.get('/data/result.json')
   },
-  getMusic(path){
+  getMusic(path:string){
     return request.get(path)
   }
 }

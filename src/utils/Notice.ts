@@ -2,7 +2,8 @@ import Vue from 'vue'
 
 interface openOpt {
   title:string,
-  desc?:string
+  desc?:string,
+  duration?:number
 }
 export default {
   open(opt:openOpt){

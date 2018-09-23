@@ -1,6 +1,7 @@
 import * as  _ from 'lodash'
 import {File} from "@/store/modules/file";
 import {ActionContextBasic} from "@/store";
+import {LocalStorageKeys} from '@/utils/enum/LocalStorageKeys';
 
 const initState: IState = {
   playingFile:new File(),
@@ -39,18 +40,21 @@ const actions = {
 
   init({commit,dispatch}:ActionContextBasic){
     dispatch('file/init',{},{root:true})
-    const recentPlay = JSON.parse(localStorage.getItem('recentPlay')||'[]')
-    const playingList = JSON.parse(localStorage.getItem('playingList')||'[]')
-    const playLists= JSON.parse(localStorage.getItem('playLists')||'[]')
-    const playingFile= JSON.parse(localStorage.getItem('playingFile')||'{}')
-
+    const recentPlay = JSON.parse(localStorage.getItem(LocalStorageKeys.recentPlay)||'[]')
+    const playingList = JSON.parse(localStorage.getItem(LocalStorageKeys.playingList)||'[]')
+    const playLists= JSON.parse(localStorage.getItem(LocalStorageKeys.playLists)||'[]')
+    const playingFile= JSON.parse(localStorage.getItem(LocalStorageKeys.playingFile)||'{}')
+    const volume = parseInt(localStorage.getItem(LocalStorageKeys.volume)||'')
+    console.log(volume);
     commit('playList/setRecentPlay',recentPlay,{root:true})
     commit('playList/setPlayingList',playingList,{root:true})
     commit('playList/setPlayLists',playLists,{root:true})
     if (playingFile.id){
       commit('setPlayingFile',playingFile)
     }
-
+    if (!isNaN(volume)) {
+      commit('audio/initVolume',volume,{root:true})
+    }
   },
 
   setPlayingFile({commit,rootState}:ActionContextBasic,file:File){

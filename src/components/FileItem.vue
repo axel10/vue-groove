@@ -58,7 +58,7 @@
   import {namespace} from "vuex-class";
   import SelectItem from "../mixins/selectItem";
   import {File} from "../store/modules/file";
-  import {PlayList} from "../store/modules/playList";
+  import {PlayList, PlayListContentDataItem} from "../store/modules/playList";
 
   const playListModule = namespace("playList");
 
@@ -100,9 +100,10 @@
       editPlayListModal({isRename: false}).then(name => {
         if (this.item.content) {
           let allFile = this.getAllFileByContent(this.item.content);
-          this.$store.dispatch("playList/createPlayList", {name, fileIds: allFile.map(o => o.id)});
+          this.$store.dispatch("playList/createPlayList", {name, content: allFile.map(o => {return new PlayListContentDataItem(o.title,o.p)})});
         } else {
-          this.$store.dispatch("playList/createPlayList", {name, fileIds: [this.item.id]});
+          // this.$store.dispatch("playList/createPlayList", {name, fileIds: [this.item.id]});
+          this.$store.dispatch("playList/createPlayList", {name, content:[new PlayListContentDataItem(this.item.title,this.item.p)]});
         }
       });
     }

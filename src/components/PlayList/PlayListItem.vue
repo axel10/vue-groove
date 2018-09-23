@@ -69,7 +69,8 @@
       }
       const ids = this.item.content;
       const files = ids.map(o => {
-        return this.allFile.find((file: File) => file.id === o);
+        // return this.allFile.find((file: File) => file.id === o);
+        return this.allFile.find((file: File) => file.title === o.title && file.p === o.p );
       });
 
       this.$store.commit("playList/setPlayingList", files);

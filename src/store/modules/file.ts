@@ -1,7 +1,6 @@
 import * as  _ from 'lodash';
 import {ActionContextBasic} from '@/store';
-// @ts-ignore
-import mainApi from '@/api/main';
+import mainApi from '../../api/main';
 import {convertFilesToLinearArray, initResourceUrl} from '@/utils/utils';
 import {BaseItem} from '@/mixins/selectItem';
 

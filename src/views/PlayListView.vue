@@ -103,7 +103,7 @@
   import {confirm} from "@/utils/utils";
   import {Sortable, Plugins} from "@shopify/draggable";
   import {getAddFileToContextMenuItems, getLargeImg, playAllSelectFile, SortList} from "../utils/utils";
-  import {PlayList} from "../store/modules/playList";
+  import {PlayList, PlayListContentDataItem} from "../store/modules/playList";
   import {File} from "../store/modules/file";
   import SelectContainer from "../mixins/selectContainer";
   import SelectBottomTools from "../components/Operation/SelectBottomTools.vue";
@@ -162,26 +162,28 @@
     onDistPlayListContentChanged(val: Array<File>) {
       this.$store.commit("playList/setPlayListContent", {
         listId: this.distPlayList!.id,
-        content: val.map((o: File) => o.id)
+        // content: val.map((o: File) => o.id)
+        content: val.map((o: File) => new PlayListContentDataItem(o.title,o.p))
       });
     }
 
     // 字段同playList,Content中为具体的文件
-    distPlayList: distPlayList | null = null;
+    // distPlayList: distPlayList | null = null;
+    distPlayList!: distPlayList;
     distPlayListContent: Array<File> = [];
     selectedItems: Array<File> = [];
     guid: Function = guid;
-    title:string='播放列表'
+    title: string = "播放列表";
 
     public created() {
       this.initContent();
-      this.$store.commit('home/setCurrentTitle',this.title)
+      this.$store.commit("home/setCurrentTitle", this.title);
     }
 
-    public destroyed(){
-      const top = document.querySelector('.mobile-top') as HTMLElement
-      if (!top||!this.isMobile) return;
-      top.className+='mobile-top'
+    public destroyed() {
+      const top = document.querySelector(".mobile-top") as HTMLElement;
+      if (!top || !this.isMobile) return;
+      top.className += "mobile-top";
     }
 
     public mounted() {
@@ -218,12 +220,12 @@
         });
       };
 
-      SortList(list, {onStart, onSort, onEnd},{delay:400});
+      SortList(list, {onStart, onSort, onEnd}, {delay: 400});
 
-      if (this.isMobile){
-        const top = document.querySelector('.mobile-top') as HTMLElement
-        top.className+=' blue'
-        return
+      if (this.isMobile) {
+        const top = document.querySelector(".mobile-top") as HTMLElement;
+        top.className += " blue";
+        return;
       }
 
       const main = <HTMLElement>this.$refs.main;
@@ -267,8 +269,10 @@
     }
 
     get totalMinute() {
-      if (!this.distPlayList) {
+      if (!Object.keys(this.distPlayList).length) {
+        return 0
       }
+      console.log(JSON.parse(JSON.stringify(this.distPlayList)));
       const sec = this.distPlayList!.filesContent.reduce((total, timeStr) => {
         const timeArr = timeStr.time.split(":").map(o => parseInt(o));
         return total + timeArr[0] * 60 + timeArr[1];
@@ -282,12 +286,16 @@
       if (!currentPlayList || Object.keys(currentPlayList).length === 0) {
         return;
       }
-      const currentPlayListIds: Array<number> = currentPlayList.content;
-      const content: Array<File> = currentPlayListIds.map(o => {
-        return this.allFile.find((file: File) => file.id === o) || new File();
+      const playListContentData: Array<PlayListContentDataItem> = currentPlayList.content;
+      /*      const content: Array<File> = currentPlayListContent.map(o => {
+              return this.allFile.find((file: File) => file.id === o) || new File();
+            }).filter(o => o) || [];*/
+      console.log(this.allFile);
+      const content: Array<File> = playListContentData.map(o => {
+        return this.allFile.find((file: File) => file.title === o.title && file.p === o.p) || new File();
       }).filter(o => o) || [];
 
-      // this.distPlayList = {...currentPlayList, content};
+
       this.distPlayList = {...currentPlayList, filesContent: content};
       this.distPlayListContent = content;
     }
@@ -301,7 +309,7 @@
     }
 
     showAddToMenu(e: MouseEvent) {
-      let contextMenu: any = getAddFileToContextMenuItems(this.selectedItems,this);
+      let contextMenu: any = getAddFileToContextMenuItems(this.selectedItems, this);
       dropDownMenu(e, contextMenu);
     }
 
@@ -311,15 +319,16 @@
         ids: this.selectedItems.map(o => o.id)
       });
       this.distPlayListContent = this.distPlayListContent.filter(o => this.selectedItems.map(o => o.id).indexOf(o.id) === -1);
-      this.selectedItems = []
+      this.selectedItems = [];
     }
 
     playAll() {
       if (!this.distPlayListContent.length) {
-        this.$Message.info('列表中还没有任何作品:(')
-        return
-      };
-      this.$store.dispatch('file/playDirs',this.distPlayListContent)
+        this.$Message.info("列表中还没有任何作品:(");
+        return;
+      }
+      ;
+      this.$store.dispatch("file/playDirs", this.distPlayListContent);
     }
 
     play() {

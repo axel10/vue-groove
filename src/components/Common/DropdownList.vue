@@ -14,8 +14,7 @@
 
 <script lang="ts">
   import {Component, Prop, Vue, Watch} from "vue-property-decorator";
-  import * as _ from "lodash";
-  import {DropDownMenuItem} from "../../utils/utils";
+  import {DropDownMenuItem, getOffsetLeft, getOffsetTop} from "../../utils/utils";
 
   @Component({})
   export default class DropdownList extends Vue {
@@ -41,19 +40,6 @@
         setTimeout(() => {
           const screenW = document.body.clientWidth;
           const screenH = document.body.clientHeight;
-          /*          const itemsClone = _.clone(this.items);
-
-                    itemsClone.sort(function (e1, e2) {
-                      if (!e1.label || !e2.label) return 0;
-                      if (e1.label.length > e2.label.length) {
-                        return -1;
-                      }
-                      if (e1.label.length === e2.label.length) {
-                        return 0;
-                      }
-                      return 1;
-                    });*/
-
           const selfWidth: number = this.$el.offsetWidth + 10;
 
           const selfHeight = this.$el.offsetHeight;
@@ -87,15 +73,7 @@
       const that = this;
       var selfDom = <HTMLElement>e.target;
 
-      var getOffset = class {
-        static top(obj: HTMLElement):number {
-          return obj.offsetTop + (obj.offsetParent ? this.top(<HTMLElement>obj.offsetParent) : 0);
-        }
 
-        static left(obj: HTMLElement):number {
-          return obj.offsetLeft + (obj.offsetParent ? this.left(<HTMLElement>obj.offsetParent) : 0);
-        }
-      };
 
 
       if (item.children && item.children.length > 0 && (<HTMLElement>e.target).getElementsByTagName("ul").length === 0) {
@@ -136,11 +114,11 @@
 
         selfDom.appendChild(ul);
 
-        if (getOffset.left(selfDom) + selfDom.offsetWidth + ul.offsetWidth > document.body.clientWidth) {
+        if (getOffsetLeft(selfDom) + selfDom.offsetWidth + ul.offsetWidth > document.body.clientWidth) {
           x = -ul.offsetWidth;
         }
-        if (getOffset.top(ul) + ul.offsetHeight > document.body.clientHeight) {
-          y = -(ul.offsetHeight - (document.body.clientHeight - getOffset.top(ul)));
+        if (getOffsetTop(ul) + ul.offsetHeight > document.body.clientHeight) {
+          y = -(ul.offsetHeight - (document.body.clientHeight - getOffsetTop(ul)));
         }
 
         ul.style.left = x + "px";
@@ -153,7 +131,7 @@
     show: boolean = false;
 
 
-    execCallback(item: DropDownMenuItem) {
+     execCallback(item: DropDownMenuItem) {
       if (typeof item.callback === "function" && !item.isDisable) {
         item.callback();
       }

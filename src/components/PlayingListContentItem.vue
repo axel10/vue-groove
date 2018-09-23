@@ -33,7 +33,7 @@
   import {State, Mutation, Action, namespace} from "vuex-class";
   import {dropDownMenu, editPlayListModal, getAddFileToContextMenuItems} from "../utils/utils";
   import {File} from "../store/modules/file";
-  import {PlayList} from "../store/modules/playList";
+  import {PlayList, PlayListContentDataItem} from "../store/modules/playList";
   import SelectItem from '../mixins/selectItem';
   import PlayListItemBase from './PlayListItemBase.vue';
 
@@ -116,7 +116,8 @@
 
     showCreatePlayListModal() {
       editPlayListModal({isRename: false}).then(name => {
-        this.$store.dispatch("playList/createPlayList", {name, fileIds: [this.item.id]});
+        // this.$store.dispatch("playList/createPlayList", {name, fileIds: [this.item.id]});
+        this.$store.dispatch("playList/createPlayList", {name, content:new PlayListContentDataItem(this.item.title,this.item.p)});
       });
     }
 

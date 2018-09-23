@@ -117,7 +117,7 @@
       return getTimeStr(sec);
     }
 
-    togglePlay() {
+    public togglePlay() {
       this.$store.dispatch("audio/togglePlay");
     }
 
@@ -204,8 +204,6 @@
             this.$store.commit('audio/switchLoopMode')
           }
         }
-
-
       ];
       dropDownMenu(e, contextMenu);
     }

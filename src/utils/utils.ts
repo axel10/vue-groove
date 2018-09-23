@@ -12,6 +12,7 @@ import DropdownList from '@/components/Common/DropdownList';
 import store from '@/store/index';
 import {Sortable, Plugins} from '@shopify/draggable';
 import SelectContainer from '@/mixins/selectContainer';
+import { PlayListContentDataItem} from '@/store/modules/playList';
 
 
 function _initResourceUrl(arr: Array<File>, path: Array<string>) {
@@ -60,7 +61,7 @@ export function convertFilesToLinearArray(arr: Array<File>) {
 }*/
 
 
-export function isInSelf (node: HTMLElement, className: string): boolean {
+export function isInSelf(node: HTMLElement, className: string): boolean {
   if (node == document.body) return false;
   if (node.className.indexOf(className) !== -1) {
     return true;
@@ -191,10 +192,11 @@ export interface DropDownMenuItem {
 export function dropDownMenu(e: Event, opts: Array<DropDownMenuItem>, onCancel?: Function) {   // 传递{split:true}为分割线
   let contain = document.createElement('div');
   document.body.appendChild(contain);
+
   function remove() {
     vm.$destroy();
     document.body.removeChild(vm.$el);
-    onCancel&&onCancel()
+    onCancel && onCancel();
   }
 
   var vm = new DropdownList({
@@ -209,15 +211,16 @@ export function dropDownMenu(e: Event, opts: Array<DropDownMenuItem>, onCancel?:
   vm.show = true;
 }
 
-export function union(arr1: Array<any>, arr2: Array<any>) {
+export function union(arr1: Array<PlayListContentDataItem>, arr2: Array<PlayListContentDataItem>) {
   var arr = [];
   for (let i = 0; i < arr1.length; i++) {
-    if (arr.indexOf(arr1[i]) === -1) {
+    // if (arr.indexOf(arr1[i]) === -1) {
+      if (arr.findIndex(o=>o.title===arr1[i].title&&o.p===arr1[i].p) === -1) {
       arr.push(arr1[i]);
     }
   }
   for (let i = 0; i < arr2.length; i++) {
-    if (arr.indexOf(arr2[i]) === -1) {
+    if (arr.findIndex(o=>o.title===arr2[i].title&&o.p===arr2[i].p) === -1) {
       arr.push(arr2[i]);
     }
   }
@@ -260,7 +263,7 @@ export function toggleFullScreen() {
 }
 
 export function fullScreen() {
-  const el:any = document.body;
+  const el: any = document.body;
   (el.requestFullscreen && el.requestFullscreen()) ||
   (el['mozRequestFullScreen'] && el['mozRequestFullScreen']()) ||
   (el.webkitRequestFullscreen && el.webkitRequestFullscreen()) || (el['msRequestFullscreen'] && el['msRequestFullscreen']());
@@ -327,7 +330,11 @@ export function getAddFileToContextMenuItems(files: Array<File>, context?: Selec
   contextMenu.push({
     label: '新的播放列表', callback: () => {
       editPlayListModal().then(name => {
-        store.dispatch('playList/createPlayList', {name, fileIds: files.map(o => o.id)});
+        // store.dispatch('playList/createPlayList', {name, fileIds: files.map(o => o.id)});
+        store.dispatch('playList/createPlayList', {
+          name,
+          content: files.map((o: File) => new PlayListContentDataItem(o.title, o.p))
+        });
         if (context) {
           context.selectedItems = [];
         }
@@ -344,7 +351,8 @@ export function getAddFileToContextMenuItems(files: Array<File>, context?: Selec
         callback: () => {
           store.dispatch('playList/addToPlayList', {
             listId: o.id,
-            ids: files.map(o => o.id)
+            // ids: files.map(o => o.id)
+            content: files.map(o => new PlayListContentDataItem(o.title,o.p))
           });
           if (context) {
             context.selectedItems = [];
@@ -358,12 +366,13 @@ export function getAddFileToContextMenuItems(files: Array<File>, context?: Selec
 }
 
 
-export function mapIdsToFiles(ids: Array<number>): Array<File> {
+export function mapDataItemsToFiles(items: Array<PlayListContentDataItem>): Array<File> {
   // return store.state.file.allFile.filter(o => ids.indexOf(o.id) !== -1);
   var res: Array<File> = [];
   const allFile = store.state.file.allFile;
-  ids.forEach(id => {
-    res.push(allFile.find(o => o.id === id) || new File());
+  items.forEach(item => {
+    // res.push(allFile.find(o => o.id === id) || new File());
+    res.push(allFile.find(o => o.title === item.title && o.p === item.p) || new File());
   });
   return res;
 }
@@ -414,9 +423,9 @@ export function playAllSelectFile(context: SelectContainer) {
   context.selectedItems = [];
 }*/
 
-export function addFileToPlayList(context: SelectContainer, ids: Array<number>, listId: string) {
-  context.$store.dispatch('playList/addToPlayList', {listId, ids});
-}
+/*export function addFileToPlayList(context: SelectContainer, content: Array<PlayListContentDataItem>, listId: string) {
+  context.$store.dispatch('playList/addToPlayList', {listId, content:});
+}*/
 
 export function getLargeImg(url: string) {
   return url.replace('/small/', '/large/');
@@ -436,3 +445,10 @@ export function convertTimeStrToSecond(timeStr: string): number {
   return time[0] * 60 + time[1];
 }
 
+export function getOffsetTop(obj: HTMLElement): number {
+  return obj.offsetTop + (obj.offsetParent ? getOffsetTop(<HTMLElement>obj.offsetParent) : 0);
+}
+
+export function getOffsetLeft(obj: HTMLElement): number {
+  return obj.offsetLeft + (obj.offsetParent ? getOffsetLeft(<HTMLElement>obj.offsetParent) : 0);
+}

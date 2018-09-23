@@ -1,12 +1,13 @@
-import { shallowMount } from '@vue/test-utils';
-import HelloWorld from '@/components/HelloWorld.vue';
+import {mount, shallowMount} from '@vue/test-utils';
+import HomeBottom from '@/components/HomeBottom.vue'
 
-describe('HelloWorld.vue', () => {
-  it('renders props.msg when passed', () => {
-    const msg = 'new message';
-    const wrapper = shallowMount(HelloWorld, {
-      propsData: { msg },
-    });
-    expect(wrapper.text()).toMatch(msg);
+
+describe('DropDown', function () {
+  it('should dropDown show', function () {
+    const wrapper = mount(HomeBottom)
+    const fn = jest.fn(x=>x)
+    wrapper.setMethods({togglePlay:fn})
+    wrapper.find('.play').trigger('click')
+    expect(fn).toBeCalled()
   });
 });

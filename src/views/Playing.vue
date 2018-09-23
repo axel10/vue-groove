@@ -94,7 +94,7 @@
     SortList,
     getLargeImg
   } from "../utils/utils";
-  import {PlayList} from "../store/modules/playList";
+  import {PlayList, PlayListContentDataItem} from "../store/modules/playList";
   import {File} from "../store/modules/file";
   import SelectContainer from "../mixins/selectContainer";
 
@@ -166,7 +166,8 @@
 
     showCreatePlayListModal() {
       editPlayListModal().then((name: any) => {
-        this.$store.dispatch("playList/createPlayList", {name, fileIds: this.selectedItems.map(o => o.id)});
+        // this.$store.dispatch("playList/createPlayList", {name, fileIds: this.selectedItems.map(o => o.id)});
+        this.$store.dispatch("playList/createPlayList", {name, content:this.selectedItems.map(o => {return new PlayListContentDataItem(o.title,o.p)})});
       });
     }
 
@@ -210,6 +211,7 @@
         const coverHeight = document.body.clientWidth * 0.6;
         const bigCover = this.$refs.bigCover as HTMLElement;
         const playingToolBar = this.$refs.playingToolBar as Vue;
+        if (!playingToolBar || !bigCover) return;
         const firstEle = playingToolBar.$el.childNodes[0] as HTMLElement;
         const offsetTop = document.body.clientHeight - playingToolBar.$el.offsetHeight + parseInt(getComputedStyle(firstEle).marginTop || "0");
         const top: number = (offsetTop - coverHeight) / 2;
