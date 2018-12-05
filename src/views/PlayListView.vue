@@ -290,9 +290,8 @@
       /*      const content: Array<File> = currentPlayListContent.map(o => {
               return this.allFile.find((file: File) => file.id === o) || new File();
             }).filter(o => o) || [];*/
-      console.log(this.allFile);
-      const content: Array<File> = playListContentData.map(o => {
-        return this.allFile.find((file: File) => file.title === o.title && file.p === o.p) || new File();
+      const content: any = playListContentData.map(o => {
+        return this.allFile.find((file: File) => file.title === o.title && file.p === o.p);
       }).filter(o => o) || [];
 
 

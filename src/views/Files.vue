@@ -103,7 +103,6 @@
       const paths = pathStr?pathStr.split('.'):[]
       this.$store.commit('file/setPath',paths)
       fadeInFileContent();
-
     }
 
     get isSelectMode() {

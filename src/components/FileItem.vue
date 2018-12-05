@@ -1,5 +1,6 @@
 <template>
-  <div class="item FileItem" :class="{'selected':selected,'file':!item.content,'dir':item.content}" @click="handleSelect" @contextmenu="showDropDown">
+  <div class="item FileItem" :class="{'selected':selected,'file':!item.content,'dir':item.content}"
+       @click="handleSelect" @contextmenu="showDropDown">
 
     <div class="checkbox-area" v-if="isSelectMode">
       <div class="checkbox" :class="{'no-select':!selected}">
@@ -7,10 +8,10 @@
       </div>
     </div>
 
-    <div class="top">
+    <div :class="{top:true,'no-bg':isDir}">
       <div class="file" v-if="!item.content">
         <div class="cover">
-          <img :src="item.imgUrl" v-if="item.imgUrl">
+          <img :src="item.imgUrl" v-if="item.imgUrl" @load="showCover">
           <div class="dir-icon" v-if="!item.imgUrl">
             <img src="/res/vcplayer/cd.png">
           </div>
@@ -75,6 +76,14 @@
     @playListModule.State playLists !: Array<PlayList>;
     @playListModule.State playingList !: Array<File>;
 
+    showCover(e:Event) {
+      const target = e.target as HTMLElement
+      target.classList.add('show')
+    }
+
+    get isDir():boolean {
+      return this.all && !!this.all.length;
+    }
 
     get fileTotal() {
       if (!this.item.content) {
@@ -100,10 +109,17 @@
       editPlayListModal({isRename: false}).then(name => {
         if (this.item.content) {
           let allFile = this.getAllFileByContent(this.item.content);
-          this.$store.dispatch("playList/createPlayList", {name, content: allFile.map(o => {return new PlayListContentDataItem(o.title,o.p)})});
+          this.$store.dispatch("playList/createPlayList", {
+            name, content: allFile.map(o => {
+              return new PlayListContentDataItem(o.title, o.p);
+            })
+          });
         } else {
           // this.$store.dispatch("playList/createPlayList", {name, fileIds: [this.item.id]});
-          this.$store.dispatch("playList/createPlayList", {name, content:[new PlayListContentDataItem(this.item.title,this.item.p)]});
+          this.$store.dispatch("playList/createPlayList", {
+            name,
+            content: [new PlayListContentDataItem(this.item.title, this.item.p)]
+          });
         }
       });
     }
@@ -164,7 +180,7 @@
         let allFile = this.getAllFileByContent(this.item.content);
         this.$store.dispatch("audio/play", allFile[0]);
         this.$store.commit("playList/setPlayingList", allFile);
-        return
+        return;
       }
 
       this.$store.dispatch("audio/play", this.item);
@@ -181,9 +197,9 @@
       }
       if (this.item.content) {
 
-        const currentPath = this.$route.params['path']
-        const url = currentPath?`/path/${currentPath}.${this.item.title}`:`/path/${this.item.title}`
-        this.$router.push(url)
+        const currentPath = this.$route.params["path"];
+        const url = currentPath ? `/path/${currentPath}.${this.item.title}` : `/path/${this.item.title}`;
+        this.$router.push(url);
         // this.$store.commit("file/setPath", this.item.title);
         fadeInFileContent();
       } else {
@@ -196,24 +212,25 @@
 <style scoped lang="scss">
 
 
-
-
   .FileItem {
 
     position: relative;
     padding: 7px 7px 30px;
 
-    $fileWidth:170px;
-    &.file{
+    $fileWidth: 170px;
+
+    &.file {
       width: $fileWidth;
     }
-    &.dir{
+
+    &.dir {
       width: 245px;
       /*margin: 0 15px;*/
     }
 
     &.selected {
       background-color: rgb(0, 90, 158);
+
       p, h5 {
         color: #fff !important;
       }
@@ -224,6 +241,7 @@
       .cover {
         box-shadow: rgba(0, 0, 0, .2) 0 20px 40px;
       }
+
       .operation div {
         opacity: 1;
         width: 50px;
@@ -233,30 +251,41 @@
 
     .top {
       position: relative;
-      background: linear-gradient(rgba(0,0,0,.05),rgba(0,0,0,.3));
+      background: linear-gradient(rgba(0, 0, 0, .05), rgba(0, 0, 0, .3));
+      $coverSize: 10rem;
+      width: $coverSize;
+      height: $coverSize;
+
+      &.no-bg{
+        background: none;
+      }
 
       .file {
         .cover {
-          /*width: 100%;*/
-          /*height: 100%;*/
-          /*width: 156px;*/
-          /*height: 156px;*/
           transition: box-shadow .3s;
           position: relative;
           display: flex;
           justify-content: center;
           align-items: center;
           background-color: #eee;
+
           img {
             width: 100%;
             height: 100%;
+            transition: opacity .2s;
+            opacity: 0;
+            &.show{
+              opacity: 1;
+            }
           }
+
           .dir-icon {
             width: 100%;
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
+
             img {
               width: 30%;
               height: 30%;
@@ -279,18 +308,22 @@
           .cover {
             width: 110px;
             transition: box-shadow .3s;
+
             .small-block, .block {
               height: 4px;
               margin: 0 auto;
             }
+
             .small-block {
               width: 80%;
               background-color: rgba(0, 0, 0, .2);
             }
+
             .block {
               width: 90%;
               background-color: rgba(0, 0, 0, .5);
             }
+
             .cd {
               width: 110px;
               height: 110px;
@@ -299,6 +332,7 @@
               display: flex;
               justify-content: center;
               align-items: center;
+
               img {
                 width: 100%;
                 height: 100%;
@@ -322,12 +356,14 @@
           font-weight: bold;
         }
       }
+
       .artist {
         font-size: 12px;
         color: #555;
         line-height: 5px;
         margin-top: 5px;
       }
+
       .total {
         color: #666;
       }
@@ -343,6 +379,7 @@
       z-index: 20;
       background-color: #fff;
       border: 1px solid #ccc;
+
       .checkbox {
         width: 20px;
         height: 20px;
@@ -350,9 +387,11 @@
         justify-content: center;
         align-items: center;
         font-size: 32px;
+
         &.no-select {
           border: 1px solid #fff;
         }
+
         &:hover {
           &.no-select {
             border: 1px solid #999;
@@ -360,6 +399,7 @@
         }
       }
     }
+
     .operation {
       position: absolute;
       top: 0;
@@ -386,16 +426,19 @@
         top: 0;
         bottom: 0;
         opacity: 0;
+
         &:hover {
           height: 60px;
           width: 60px;
         }
       }
+
       .play {
         left: 0;
         /*right: 40%;*/
         right: 60px;
       }
+
       .add {
         /*left: 40%;*/
         left: 60px;
