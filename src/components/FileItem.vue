@@ -361,7 +361,6 @@
       .artist {
         font-size: 12px;
         color: #555;
-        line-height: 5px;
         margin-top: 5px;
       }
 
