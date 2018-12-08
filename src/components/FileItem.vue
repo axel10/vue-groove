@@ -133,7 +133,7 @@
 
     }
 
-    showDropDown(e: MouseEvent) {
+    showDropDown(e) {
       e.preventDefault();
       e.stopPropagation();
       const contextMenu: any = [{
@@ -215,7 +215,7 @@
   .FileItem {
 
     position: relative;
-    padding: 7px 7px 30px;
+    padding: 7px 7px 1rem;
 
     $fileWidth: 170px;
 
@@ -253,8 +253,8 @@
       position: relative;
       background: linear-gradient(rgba(0, 0, 0, .05), rgba(0, 0, 0, .3));
       $coverSize: 10rem;
-      width: $coverSize;
-      height: $coverSize;
+/*      width: $coverSize;
+      height: $coverSize;*/
 
       &.no-bg{
         background: none;
@@ -367,7 +367,6 @@
       .total {
         color: #666;
       }
-
     }
 
     .checkbox-area {

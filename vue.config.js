@@ -1,5 +1,8 @@
 module.exports = {
   baseUrl: '/',
+  chainWebpack:(config)=>{
+    config.plugins.delete('fork-ts-checker')
+  },
   configureWebpack: {
     externals: {
       'vue': 'Vue',
@@ -15,7 +18,10 @@ module.exports = {
     },
     devServer:{
       // historyApiFallback: true
-    }
+      overlay:{
+        warnings:false
+      },
+    },
   },
 
   productionSourceMap:false,
