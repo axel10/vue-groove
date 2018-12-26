@@ -211,6 +211,7 @@
 
 <style scoped lang="scss">
 
+  $coverSize: 10rem;
 
   .FileItem {
 
@@ -252,9 +253,9 @@
     .top {
       position: relative;
       background: linear-gradient(rgba(0, 0, 0, .05), rgba(0, 0, 0, .3));
-      $coverSize: 10rem;
 /*      width: $coverSize;
       height: $coverSize;*/
+
 
       &.no-bg{
         background: none;
@@ -344,7 +345,9 @@
     }
 
     .bottom {
-      width: 10rem;
+      width: 100%;
+      text-align: center;
+
       h5 {
         overflow: hidden;
         white-space: nowrap;
@@ -362,6 +365,9 @@
         font-size: 12px;
         color: #555;
         margin-top: 5px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
 
       .total {
@@ -434,7 +440,6 @@
 
       .play {
         left: 0;
-        /*right: 40%;*/
         right: 60px;
       }
 

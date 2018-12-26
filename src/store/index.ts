@@ -3,7 +3,7 @@ import Vue from 'vue'
 import Vuex, { Commit, Dispatch } from 'vuex'
 import test from './modules/test'
 import playing from './modules/playing'
-import home from '@/store/modules/home';
+import home from '@/store/modules/home'
 import audio from '@/store/modules/audio'
 import file from '@/store/modules/file'
 import playList from '@/store/modules/playList'
@@ -19,23 +19,23 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules: {
-    test,playing,home,audio,file,playList
+    test, playing, home, audio, file, playList,
   },
-  strict:true
+  strict: true,
 })
 
 
 export interface ActionContextBasic {
   commit: Commit,
   dispatch: Dispatch,
-  rootState:RootState,
-  state:any
+  rootState: RootState,
+  state: any
 }
 
 export interface RootState {
-  audio:IAudioState,
-  file:IFileState,
-  home:IHomeState,
-  playing:IPlayingState,
-  playList:IPlayListState
+  audio: IAudioState,
+  file: IFileState,
+  home: IHomeState,
+  playing: IPlayingState,
+  playList: IPlayListState
 }

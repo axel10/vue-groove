@@ -23,7 +23,7 @@
               </div>-->
       </div>
       <div class="artist">{{item.p}}</div>
-      <div class="album">{{item.cd_title}}</div>
+      <div class="album">{{item.cdTitle}}</div>
       <div class="time">{{item.time}}</div>
     </div>
   </PlayListItemBase>

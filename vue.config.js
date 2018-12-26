@@ -16,12 +16,12 @@ module.exports = {
         'vue$': 'vue/dist/vue.esm.js'
       }
     },
-    devServer:{
+/*    devServer:{
       // historyApiFallback: true
       overlay:{
         warnings:false
       },
-    },
+    },*/
   },
 
   productionSourceMap:false,

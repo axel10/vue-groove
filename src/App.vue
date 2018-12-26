@@ -20,6 +20,12 @@
     <!--</keep-alive>-->
 
     <Audio></Audio>
+
+    <transition name="loading-mask">
+      <div class="loading-mask" v-if="!loaded">
+        <img src="/res/vcplayer/groove.png" alt="">
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -40,6 +46,7 @@
 
     @homeModule.State playingFile !: File;
     @homeModule.State isDark !: boolean;
+    @homeModule.State loaded !:boolean
 
     public created() {
       this.$store.dispatch("home/init");
@@ -184,6 +191,48 @@
     opacity: 0;
   }
 
+
+
+</style>
+
+<style lang="scss" scoped>
+  .loading-mask{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    background-color: #fff;
+    z-index: 1000000;
+    transition: opacity .3s;
+    img{
+      width: 8rem;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      margin: auto;
+      /*animation: fadeIn .6s forwards;*/
+      transform:  translateY(-50%);
+
+    }
+  }
+
+  @keyframes fadeIn {
+    0%{
+      opacity: 0;
+      transform:  translateY(-40%);
+    }
+    100%{
+      opacity: 1;
+      transform:  translateY(-50%);
+    }
+  }
+
+  .loading-mask-leave-to{
+    opacity: 0;
+  }
 </style>
 
 <style lang="scss">

@@ -115,6 +115,8 @@
         return;
       }
 
+      this.cancelSelect()
+
       // this.$store.commit("file/toPrev");
       fadeInFileContent();
 
@@ -220,6 +222,7 @@
           margin-bottom: 10px;
           display: inline-block;
           margin-right: 8px;
+          width: 11rem;
         }
       }
     }
