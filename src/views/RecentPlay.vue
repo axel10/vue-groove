@@ -107,6 +107,7 @@
   }
 </script>
 
+<!--
 <style scoped lang="scss">
   .RecentPlay {
     background-color: #fff;
@@ -184,4 +185,4 @@
       }
     }
   }
-</style>
+</style>-->

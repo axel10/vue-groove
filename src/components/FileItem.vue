@@ -10,7 +10,7 @@
 
     <div :class="{top:true,'no-bg':isDir}">
       <div class="file" v-if="!item.content">
-        <div class="cover">
+        <div class="cover" ref="cover" :style="{'height':coverSize+'px'}">
           <img :src="item.imgUrl" v-if="item.imgUrl" @load="showCover">
           <div class="dir-icon" v-if="!item.imgUrl">
             <img src="/res/vcplayer/cd.png">
@@ -75,6 +75,12 @@
     @Prop(Boolean) isAddToRecent !: boolean;
     @playListModule.State playLists !: Array<PlayList>;
     @playListModule.State playingList !: Array<File>;
+
+    coverSize:number=0
+
+    mounted(){
+      this.coverSize = this.$refs['cover']?(this.$refs['cover'] as HTMLElement).offsetWidth:0
+    }
 
     showCover(e:Event) {
       const target = e.target as HTMLElement
@@ -200,6 +206,8 @@
         const currentPath = this.$route.params["path"];
         const url = currentPath ? `/path/${currentPath}.${this.item.title}` : `/path/${this.item.title}`;
         this.$router.push(url);
+        document.querySelector('#router-content').scrollTo(0,0)
+
         // this.$store.commit("file/setPath", this.item.title);
         fadeInFileContent();
       } else {
@@ -349,6 +357,7 @@
       text-align: center;
 
       h5 {
+        text-align: center;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;

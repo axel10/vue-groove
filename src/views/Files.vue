@@ -9,7 +9,7 @@
           <Icon style="font-size: 24px;margin-right: 10px" type="ios-shuffle"/>
           随机播放所有音乐
         </span>
-        <span style="margin-left: 20px" @click="toPrev">
+        <span style="margin-left: 20px" @click="toPrev" :class="{'disabled':isInRoot}">
           返回上一级
         </span>
       </div>
@@ -94,6 +94,8 @@
 
       if (this.$route.params["path"]) {
         this.$store.commit('file/setPath',this.$route.params["path"].split('.'))
+      }else {
+        this.$store.commit('file/setPath',[])
       }
     }
 
@@ -109,9 +111,12 @@
       return this.selectedItems.length > 0;
     }
 
+    get isInRoot():boolean{
+      return !this.$route.params["path"]
+    }
+
     toPrev() {
       if (this.path.length === 0) {
-        this.$Message.info("已经是根目录了");
         return;
       }
 
@@ -144,8 +149,8 @@
   }
 </script>
 
-<style scoped lang="scss">
-  .Files {
+<style lang="scss">
+  .Files,.RecentPlay {
     background-color: #fff;
     display: flex;
     flex-direction: column;
@@ -179,6 +184,11 @@
         display: flex;
         align-items: center;
         margin-bottom: 6px;
+
+        .disabled{
+          color: #ccc;
+        }
+
         .new-list, .paths {
           font-size: 12px;
           display: inline-flex;

@@ -81,7 +81,7 @@
           </div>
         </div>
 
-        <div class="right">
+        <div class="right" id="router-content">
           <router-view/>
         </div>
 

@@ -10,12 +10,15 @@
     display: none !important;
   }
 
-  .Files {
+  .Files,.RecentPlay {
     padding: 40px .8rem 0;
 
-    & > .content > ul > li {
-      margin-right: 0 !important;
-      width: 48%;
+    & > .content > ul {
+      justify-content: space-between;
+      &> li {
+        margin-right: 0 !important;
+        width: 48% !important;
+      }
     }
 
     .FileItem {
@@ -24,15 +27,11 @@
         width: $coverSize !important;
         height: $coverSize !important;*/
       }
-
       &.dir {
         margin: 0 !important;
-
         & > .color-wrap {
           height: 138px !important;
         }
-
-        //width: 175px!important;
       }
 
       &.file, &.dir {
