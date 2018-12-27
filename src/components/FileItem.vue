@@ -53,7 +53,7 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop} from "vue-property-decorator";
+  import {Component, Prop, Watch} from "vue-property-decorator"
   import DropdownList from "@/components/Common/DropdownList.vue";
   import {dropDownMenu, editPlayListModal, fadeInFileContent, getAddFileToContextMenuItems} from "../utils/utils";
   import {namespace} from "vuex-class";
@@ -79,7 +79,16 @@
     coverSize:number=0
 
     mounted(){
+      console.log(this.$el.offsetWidth)
       this.coverSize = this.$refs['cover']?(this.$refs['cover'] as HTMLElement).offsetWidth:0
+    }
+
+    @Watch('$route')
+    public onRouteChanged(){
+      setTimeout(()=>{
+        this.coverSize = this.$refs['cover']?(this.$refs['cover'] as HTMLElement).offsetWidth:0
+        console.log(this.coverSize)
+      })
     }
 
     showCover(e:Event) {
