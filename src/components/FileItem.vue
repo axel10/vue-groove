@@ -79,7 +79,6 @@
     coverSize:number=0
 
     mounted(){
-      console.log(this.$el.offsetWidth)
       this.coverSize = this.$refs['cover']?(this.$refs['cover'] as HTMLElement).offsetWidth:0
     }
 
@@ -87,7 +86,6 @@
     public onRouteChanged(){
       setTimeout(()=>{
         this.coverSize = this.$refs['cover']?(this.$refs['cover'] as HTMLElement).offsetWidth:0
-        console.log(this.coverSize)
       })
     }
 
@@ -285,7 +283,6 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          background-color: #eee;
 
           img {
             width: 100%;

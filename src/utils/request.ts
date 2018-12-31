@@ -1,11 +1,11 @@
-import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios, {AxiosRequestConfig, AxiosResponse} from 'axios'
 import * as qs from 'qs'
 
 export class NetWorkError extends Error {
   public response!: AxiosResponse
 }
 
-function checkStatus(response:AxiosResponse) {
+function checkStatus(response: AxiosResponse) {
   if (response.status >= 200 && response.status < 300) {
     return response
   }
@@ -34,13 +34,13 @@ export default {
       .then(checkStatus)
       .then(data => data.data)
   },*/
-  get (url: string, data: object = {}, params: AxiosRequestConfig = {}) {
+  get(url: string, data: object = {}, params: AxiosRequestConfig = {}) {
     url = Object.keys(data).length ? url + `?${qs.stringify(data)}` : url
     return axios.get(url, { ...params })
       .then(checkStatus)
       .then((o: AxiosResponse) => o.data)
   },
-  post (url: string, data: object = {}, config: AxiosRequestConfig = {}) {
+  post(url: string, data: object = {}, config: AxiosRequestConfig = {}) {
     return axios.post(url, qs.stringify({ ...data }), config)
       .then(checkStatus)
       .then((o: AxiosResponse) => o.data)

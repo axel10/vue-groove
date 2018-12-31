@@ -46,11 +46,12 @@ const actions = {
     const playingList = JSON.parse(localStorage.getItem(LocalStorageKeys.playingList) || '[]')
     const playLists = JSON.parse(localStorage.getItem(LocalStorageKeys.playLists) || '[]')
     const playingFile = JSON.parse(localStorage.getItem(LocalStorageKeys.playingFile) || '{}')
+
     const volume = parseInt(localStorage.getItem(LocalStorageKeys.volume) || '', 10)
     commit('playList/setRecentPlay', recentPlay, {root: true})
     commit('playList/setPlayingList', playingList, {root: true})
     commit('playList/setPlayLists', playLists, {root: true})
-    if (playingFile.id) {
+    if (playingFile.title) {
       commit('setPlayingFile', playingFile)
     }
     if (!isNaN(volume)) {
@@ -63,7 +64,6 @@ const actions = {
   },
 }
 const setData: any = (state: IState, {key, val}) => {
-  console.log(key, val)
   state[key] = val
 }
 

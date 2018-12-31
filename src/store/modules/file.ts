@@ -29,7 +29,6 @@ export class File extends BaseItem {
   public content: File[]
   public p: string
   public cdTitle: string
-  public id: number
   // trck: number;
   public sort: number
   public imgUrl: string
@@ -42,7 +41,6 @@ export class File extends BaseItem {
     this.content = []
     this.p = ''
     this.cdTitle = ''
-    this.id = 0
     // this.trck=0
     this.sort = 0
     this.imgUrl = ''
@@ -103,7 +101,6 @@ const actions = {
         return 0
       })
       commit('setFiles', o)
-      console.log(i, delay)
       if (i < delay) {
         setTimeout(() => {
           commit('home/setData', { key: 'loaded', val: true}, {root: true})

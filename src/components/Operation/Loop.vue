@@ -21,14 +21,6 @@
   }
 </script>
 
-<style scoped lang="scss">
-  .Loop {
-    &.active{
-      background-color: rgba(0,0,0,.3);
-    }
-    img{
-      width: 100%;
-      height: 100%;
-    }
-  }
+<style lang="scss">
+
 </style>

@@ -12,6 +12,8 @@
     "@shopify/draggable": "^1.0.0-beta.7",
     "@types/lodash": "^4.14.115",
     "@types/qs": "^6.5.1",
+    "animejs": "^2.2.0",
+    "async-validator": "^1.10.1",
     "axios": "^0.18.0",
     "iview": "^3.0.0",
     "qs": "^6.5.2",

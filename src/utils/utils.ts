@@ -1,58 +1,59 @@
-import {File} from '@/store/modules/file';
-import Vue from 'vue';
+import {File} from '@/store/modules/file'
+import Vue from 'vue'
 // @ts-ignore
-import config from '@/utils/config';
+import config from '@/utils/config'
 // @ts-ignore
-import Confirm from '@/components/Common/Confirm.vue';
+import Confirm from '@/components/Common/Confirm.vue'
 // @ts-ignore
-import CreatePlayListModal from '@/components/CreatePlayListModal.vue';
+import CreatePlayListModal from '@/components/CreatePlayListModal.vue'
 
-import DropdownList from '@/components/Common/DropdownList.vue';
-import store from '@/store/index';
-import {Sortable, Plugins} from '@shopify/draggable';
-import SelectContainer from '@/mixins/selectContainer';
-import { PlayListContentDataItem} from '@/store/modules/playList';
+import DropdownList from '@/components/Common/DropdownList.vue'
+import store from '@/store/index'
+import {Sortable, Plugins} from '@shopify/draggable'
+import SelectContainer from '@/mixins/selectContainer'
+import {PlayListContentDataItem} from '@/store/modules/playList'
+import LoginModal from '@/components/LoginModal.vue'
 
-export function rendomNum(n:number): string {
-  let rnd = '';
+export function rendomNum(n: number): string {
+  let rnd = ''
   for (let i = 0; i < n; i++) {
-    rnd += Math.floor(Math.random() * 10);
+    rnd += Math.floor(Math.random() * 10)
   }
-  return rnd;
+  return rnd
 }
 
 function _initResourceUrl(arr: File[], path: string[]) {
   for (let i = 0; i < arr.length; i++) {
     if (arr[i].content) {
-      _initResourceUrl(arr[i].content || [], path.concat([arr[i].title]));
+      _initResourceUrl(arr[i].content || [], path.concat([arr[i].title]))
     } else {
-      const imgUrl = `${config.coverPath}/small/${path.join('/')}/${arr[i].title}.jpg`;
-      const musicUrl = `${config.musicPath}${path.join('/')}/${arr[i].title}.${config.musicExt}`;
+      const imgUrl = `${config.coverPath}/small/${path.join('/')}/${arr[i].title}.jpg`
+      const musicUrl = `${config.musicPath}${path.join('/')}/${arr[i].title}.${config.musicExt}`
 
-      arr[i].imgUrl = imgUrl;
-      arr[i].musicUrl = musicUrl;
+      arr[i].imgUrl = imgUrl
+      arr[i].musicUrl = musicUrl
     }
   }
 }
 
 export function initResourceUrl(arr: File[]) {
-  _initResourceUrl(arr, []);
+  _initResourceUrl(arr, [])
 }
 
 function _convertFilesToLinearArray(arr: File[], tmp: File[]) {
   for (let i = 0; i < arr.length; i++) {
     if (arr[i].content) {
-      _convertFilesToLinearArray(arr[i].content || [], tmp);
+      _convertFilesToLinearArray(arr[i].content || [], tmp)
     } else {
-      tmp.push(arr[i]);
+      tmp.push(arr[i])
     }
   }
 }
 
 export function convertFilesToLinearArray(arr: File[]) {
-  const tmp: File[] = [];
-  _convertFilesToLinearArray(arr, tmp);
-  return tmp;
+  const tmp: File[] = []
+  _convertFilesToLinearArray(arr, tmp)
+  return tmp
 }
 
 /*export function isInSelf(node: HTMLElement, target: HTMLElement): boolean {
@@ -68,39 +69,42 @@ export function convertFilesToLinearArray(arr: File[]) {
 
 
 export function isInSelf(node: HTMLElement, className: string): boolean {
-  if (node == document.body) { return false; }
+  if (node == document.body) {
+    return false
+  }
   if (node.className.indexOf(className) !== -1) {
-    return true;
+    return true
   }
   if (node.parentNode) {
-    return isInSelf(node.parentNode as HTMLElement, className);
+    return isInSelf(node.parentNode as HTMLElement, className)
   } else {
-    return false;
+    return false
   }
 }
 
 export function guid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c: string) => {
+    const r = Math.random() * 16 | 0
+    const v = c === 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
 }
 
-interface confirmConfig {
-  title: string;
-  info: string;
-  onCancel?: Function;
+interface IConfirmConfig {
+  title: string
+  info: string
+  onCancel?: () => {}
 }
 
-export function confirm(opt: confirmConfig) {
+export function confirm(opt: IConfirmConfig) {
   return new Promise(((resolve) => {
-    const confirm = Vue.extend(Confirm);
-    const contain = document.createElement('div');
-    document.body.appendChild(contain);
+    const confirm = Vue.extend(Confirm)
+    const contain = document.createElement('div')
+    document.body.appendChild(contain)
 
     function remove() {
-      vm.$destroy();
-      document.body.removeChild(vm.$el);
+      vm.$destroy()
+      document.body.removeChild(vm.$el)
     }
 
     const vm = new confirm({
@@ -108,101 +112,136 @@ export function confirm(opt: confirmConfig) {
       propsData: {
         cb: () => {
           // @ts-ignore
-          vm.show = false;
+          vm.show = false
           setTimeout(() => {
-            remove();
-          }, 3000);
-          resolve();
+            remove()
+          }, 3000)
+          resolve()
         },
         cancel: () => {
           // @ts-ignore
-          vm.show = false;
+          vm.show = false
           setTimeout(() => {
-            remove();
-          }, 3000);
+            remove()
+          }, 3000)
 
           if (opt.onCancel) {
-            opt.onCancel();
+            opt.onCancel()
           }
-          // reject()
         },
         ...opt,
       },
-    });
+    })
     // @ts-ignore
-    vm.show = true;
-  }));
+    vm.show = true
+  }))
 }
 
-interface editPlayListModalConfig {
-  isRename?: boolean;
-  oldName?: string;
-  onCancel?: Function;
+interface IEditPlayListModalConfig {
+  isRename?: boolean
+  oldName?: string
+  onCancel?: () => {}
 }
 
-export function editPlayListModal(opt?: editPlayListModalConfig) {
-  if (!opt) {
-    opt = {};
-  }
-  return new Promise(((resolve) => {
-    const contain = document.createElement('div');
-    document.body.appendChild(contain);
+export function showLoginModal() {
+  return createModel(LoginModal, 200)
+}
 
+function createModel(modal: any, animateTime: number = 200) {
+  return new Promise((resolve) => {
+    const contain = document.createElement('div')
+    document.body.appendChild(contain)
     function remove() {
-      vm.$destroy();
-      document.body.removeChild(vm.$el);
+      vm.$destroy()
+      document.body.removeChild(vm.$el)
     }
 
-    const vm = new CreatePlayListModal({
+    const vm = new modal({
       el: contain,
       store,
       propsData: {
-        cb: (name: string) => {
-          // @ts-ignore
-          vm.show = false;
+        show: false,
+        onOk: (...args) => {
+          vm.show = false
           setTimeout(() => {
-            remove();
-          }, 3000);
-          resolve(name);
+            remove()
+          }, animateTime)
+          resolve(...args)
         },
-        cancel: () => {
-          // @ts-ignore
-          vm.show = false;
+        onCancel: () => {
+          vm.show = false
           setTimeout(() => {
-            remove();
-          }, 3000);
-          if (opt!.onCancel) {
-
-            // @ts-ignore
-            opt!.onCancel();
-          }
+            remove()
+          }, animateTime)
         },
-        ...opt,
       },
-    });
-    // @ts-ignore
-    vm.show = true;
-  }));
+    })
+    vm.show = true
+  })
+}
+
+export function editPlayListModal(animateTime: number = 200) {
+  return createModel(CreatePlayListModal, animateTime)
+  /* if (!opt) {
+     opt = {}
+   }
+   return new Promise(((resolve) => {
+     const contain = document.createElement('div')
+     document.body.appendChild(contain)
+
+     function remove() {
+       vm.$destroy()
+       document.body.removeChild(vm.$el)
+     }
+
+     const vm: any = new CreatePlayListModal({
+       el: contain,
+       store,
+       propsData: {
+         onOk: (name: string) => {
+           vm.show = false
+           setTimeout(() => {
+             remove()
+           }, 3000)
+           resolve(name)
+         },
+         onCancel: () => {
+           vm.show = false
+           setTimeout(() => {
+             remove()
+           }, 3000)
+           if (opt!.onCancel) {
+             opt!.onCancel()
+           }
+         },
+         ...opt,
+       },
+     })
+     vm.show = true*/
+
+
 }
 
 
 export interface DropDownMenuItem {
-  label?: string;
-  callback?: Function;
-  split?: boolean;
-  isDisable?: boolean;
-  children?: DropDownMenuItem[];
-  el?: any;
+  label?: string
+  callback?: Function
+  split?: boolean
+  isDisable?: boolean
+  children?: DropDownMenuItem[]
+  el?: any
 }
 
-export function dropDownMenu(e: Event, opts: DropDownMenuItem[], onCancel?: Function) {   // 传递{split:true}为分割线
-  const contain = document.createElement('div');
-  document.body.appendChild(contain);
+export function dropDownMenu(e: Event, opts: DropDownMenuItem[], onCancel?: () => {}) {   // 传递{split:true}为分割线
+  const contain = document.createElement('div')
+  document.body.appendChild(contain)
 
   function remove() {
-    vm.$destroy();
-    document.body.removeChild(vm.$el);
-    onCancel && onCancel();
+    vm.$destroy()
+    document.body.removeChild(vm.$el)
+    if (onCancel) {
+      onCancel()
+    }
   }
 
   const vm = new DropdownList({
@@ -212,59 +251,59 @@ export function dropDownMenu(e: Event, opts: DropDownMenuItem[], onCancel?: Func
       items: opts,
       remove,
     },
-  });
+  })
   // @ts-ignore
-  vm.show = true;
+  vm.show = true
 }
 
 export function union(arr1: PlayListContentDataItem[], arr2: PlayListContentDataItem[]) {
-  const arr = [];
+  const arr = []
   for (let i = 0; i < arr1.length; i++) {
     // if (arr.indexOf(arr1[i]) === -1) {
-      if (arr.findIndex((o) => o.title === arr1[i].title && o.p === arr1[i].p) === -1) {
-      arr.push(arr1[i]);
+    if (arr.findIndex((o) => o.title === arr1[i].title && o.p === arr1[i].p) === -1) {
+      arr.push(arr1[i])
     }
   }
   for (let i = 0; i < arr2.length; i++) {
     if (arr.findIndex((o) => o.title === arr2[i].title && o.p === arr2[i].p) === -1) {
-      arr.push(arr2[i]);
+      arr.push(arr2[i])
     }
   }
-  return arr;
+  return arr
 }
 
 
 export function unionFiles(arr1: File[], arr2: File[]) {
-  const arr = [];
+  const arr = []
   for (let i = 0; i < arr1.length; i++) {
     if (arr.findIndex((o) => o.id === arr1[i].id) === -1) {
-      arr.push(arr1[i]);
+      arr.push(arr1[i])
     }
   }
   for (let i = 0; i < arr2.length; i++) {
     if (arr.findIndex((o) => o.id === arr2[i].id) === -1) {
-      arr.push(arr2[i]);
+      arr.push(arr2[i])
     }
   }
-  return arr;
+  return arr
 }
 
 
 export function toggleFullScreen() {
-  const document: any = window.document;
-  const el = document.body;
-  const isFullscreen = document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen;
+  const document: any = window.document
+  const el = document.body
+  const isFullscreen = document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen
   if (!isFullscreen) {// 进入全屏,多重短路表达式
     (el.requestFullscreen && el.requestFullscreen()) ||
     (el.mozRequestFullScreen && el.mozRequestFullScreen()) ||
-    (el.webkitRequestFullscreen && el.webkitRequestFullscreen()) || (el.msRequestFullscreen && el.msRequestFullscreen());
-    store.commit('home/setIsFullScreen', true);
+    (el.webkitRequestFullscreen && el.webkitRequestFullscreen()) || (el.msRequestFullscreen && el.msRequestFullscreen())
+    store.commit('home/setIsFullScreen', true)
 
   } else {	// 退出全屏,三目运算符
     document.exitFullscreen ? document.exitFullscreen() :
       document.mozCancelFullScreen ? document.mozCancelFullScreen() :
-        document.webkitExitFullscreen ? document.webkitExitFullscreen() : '';
-    store.commit('home/setIsFullScreen', false);
+        document.webkitExitFullscreen ? document.webkitExitFullscreen() : ''
+    store.commit('home/setIsFullScreen', false)
   }
 }
 
@@ -272,66 +311,66 @@ export function fullScreen() {
   const el: any = document.body;
   (el.requestFullscreen && el.requestFullscreen()) ||
   (el.mozRequestFullScreen && el.mozRequestFullScreen()) ||
-  (el.webkitRequestFullscreen && el.webkitRequestFullscreen()) || (el.msRequestFullscreen && el.msRequestFullscreen());
-  store.commit('home/setIsFullScreen', true);
+  (el.webkitRequestFullscreen && el.webkitRequestFullscreen()) || (el.msRequestFullscreen && el.msRequestFullscreen())
+  store.commit('home/setIsFullScreen', true)
 }
 
 export function exitFullScreen() {
-  const document: any = window.document;
+  const document: any = window.document
   document.exitFullscreen ? document.exitFullscreen() :
     document.mozCancelFullScreen ? document.mozCancelFullScreen() :
-      document.webkitExitFullscreen ? document.webkitExitFullscreen() : '';
+      document.webkitExitFullscreen ? document.webkitExitFullscreen() : ''
 }
 
 export function isFullScreen() {
-  const document: any = window.document;
-  return document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen;
+  const document: any = window.document
+  return document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen
 }
 
 export function fadeInFileContent() {
-  const content = document.querySelector('.Files>.content') as HTMLElement;
-  content.className = 'content';
+  const content = document.querySelector('.Files>.content') as HTMLElement
+  content.className = 'content'
   // content.style.opacity = '0'
-  content.style.visibility = 'hidden';
+  content.style.visibility = 'hidden'
   setTimeout(() => {
     // content.style.opacity = '1'
-    content.style.visibility = 'visible';
+    content.style.visibility = 'visible'
 
-    content.className = 'content fade-in';
-  });
+    content.className = 'content fade-in'
+  })
 }
 
 
 export function getAllFileByContent(content: File[]): File[] {
-  const tmp: File[] = [];
+  const tmp: File[] = []
 
   function pushItem(content: File[]) {
     for (let i = 0; i < content.length; i++) {
       if (content[i].content) {
-        pushItem(content[i].content);
+        pushItem(content[i].content)
       } else {
-        tmp.push(content[i]);
+        tmp.push(content[i])
       }
     }
   }
 
-  pushItem(content);
-  return tmp;
+  pushItem(content)
+  return tmp
 }
 
 export function getAddFileToContextMenuItems(files: File[], context?: SelectContainer) {
-  const contextMenu: any = [];
-  files = getAllFileByContent(files);
+  const contextMenu: any = []
+  files = getAllFileByContent(files)
   contextMenu.push({
     label: '正在播放',
     callback: () => {
-      store.dispatch('playList/addToPlayingList', files);
+      store.dispatch('playList/addToPlayingList', files)
       if (context) {
-        context.selectedItems = [];
+        context.selectedItems = []
       }
     },
-  });
-  contextMenu.push({split: true});
+  })
+  contextMenu.push({split: true})
 
   contextMenu.push({
     label: '新的播放列表', callback: () => {
@@ -340,15 +379,15 @@ export function getAddFileToContextMenuItems(files: File[], context?: SelectCont
         store.dispatch('playList/createPlayList', {
           name,
           content: files.map((o: File) => new PlayListContentDataItem(o.title, o.p)),
-        });
+        })
         if (context) {
-          context.selectedItems = [];
+          context.selectedItems = []
         }
-      });
+      })
     },
-  });
+  })
 
-  const playLists = store.state.playList.playLists;
+  const playLists = store.state.playList.playLists
 
   if (playLists.length > 0) {
     playLists.forEach((o) => {
@@ -359,38 +398,38 @@ export function getAddFileToContextMenuItems(files: File[], context?: SelectCont
             listId: o.id,
             // ids: files.map(o => o.id)
             content: files.map((o) => new PlayListContentDataItem(o.title, o.p)),
-          });
+          })
           if (context) {
-            context.selectedItems = [];
+            context.selectedItems = []
           }
         },
-      });
-    });
+      })
+    })
   }
 
-  return contextMenu;
+  return contextMenu
 }
 
 
 export function mapDataItemsToFiles(items: PlayListContentDataItem[]): File[] {
   // return store.state.file.allFile.filter(o => ids.indexOf(o.id) !== -1);
-  const res: File[] = [];
-  const allFile = store.state.file.allFile;
+  const res: File[] = []
+  const allFile = store.state.file.allFile
   items.forEach((item) => {
     // res.push(allFile.find(o => o.id === id) || new File());
-    res.push(allFile.find((o) => o.title === item.title && o.p === item.p) || new File());
-  });
-  return res;
+    res.push(allFile.find((o) => o.title === item.title && o.p === item.p) || new File())
+  })
+  return res
 }
 
 export interface SortListHack {
-  onStart?: Function;
-  onSort?: Function;
-  onEnd?: Function;
+  onStart?: Function
+  onSort?: Function
+  onEnd?: Function
 }
 
 export function SortList(container: HTMLElement, hacks: SortListHack, opt?: any) {
-  const {onStart, onSort, onEnd} = hacks;
+  const {onStart, onSort, onEnd} = hacks
   const mergeOpt = {
     draggable: 'li',
     // delay:300,
@@ -402,17 +441,23 @@ export function SortList(container: HTMLElement, hacks: SortListHack, opt?: any)
     plugins: [Plugins.SwapAnimation],
     ...opt,
 
-  };
-  const sortable = new Sortable(container, mergeOpt);
-  if (onStart) { sortable.on('sortable:start', onStart); }
-  if (onSort) { sortable.on('sortable:sort', onSort); }
-  if (onEnd) { sortable.on('sortable:stop', onEnd); }
+  }
+  const sortable = new Sortable(container, mergeOpt)
+  if (onStart) {
+    sortable.on('sortable:start', onStart)
+  }
+  if (onSort) {
+    sortable.on('sortable:sort', onSort)
+  }
+  if (onEnd) {
+    sortable.on('sortable:stop', onEnd)
+  }
 }
 
 export function playAllSelectFile(context: SelectContainer) {
 
-  context.$store.dispatch('file/playDirs', context.selectedItems);
-  context.selectedItems = [];
+  context.$store.dispatch('file/playDirs', context.selectedItems)
+  context.selectedItems = []
 }
 
 /*export function playAllFile(files: File[]) {
@@ -434,27 +479,27 @@ export function playAllSelectFile(context: SelectContainer) {
 }*/
 
 export function getLargeImg(url: string) {
-  return url.replace('/small/', '/large/');
+  return url.replace('/small/', '/large/')
 }
 
 export function beginAddTime() {
-  const state = store.state.audio;
-  clearInterval(state.timer);
+  const state = store.state.audio
+  clearInterval(state.timer)
   const timer = setInterval(() => {
-    store.commit('audio/addCurrentTime');
-  }, 1000 / state.fps);
-  store.commit('audio/setTimer', timer);
+    store.commit('audio/addCurrentTime')
+  }, 1000 / state.fps)
+  store.commit('audio/setTimer', timer)
 }
 
 export function convertTimeStrToSecond(timeStr: string): number {
-  const time = timeStr.split(':').map((o) => parseInt(o));
-  return time[0] * 60 + time[1];
+  const time = timeStr.split(':').map((o) => parseInt(o))
+  return time[0] * 60 + time[1]
 }
 
 export function getOffsetTop(obj: HTMLElement): number {
-  return obj.offsetTop + (obj.offsetParent ? getOffsetTop(obj.offsetParent as HTMLElement) : 0);
+  return obj.offsetTop + (obj.offsetParent ? getOffsetTop(obj.offsetParent as HTMLElement) : 0)
 }
 
 export function getOffsetLeft(obj: HTMLElement): number {
-  return obj.offsetLeft + (obj.offsetParent ? getOffsetLeft(obj.offsetParent as HTMLElement) : 0);
+  return obj.offsetLeft + (obj.offsetParent ? getOffsetLeft(obj.offsetParent as HTMLElement) : 0)
 }

@@ -272,7 +272,6 @@
       if (!Object.keys(this.distPlayList).length) {
         return 0
       }
-      console.log(JSON.parse(JSON.stringify(this.distPlayList)));
       const sec = this.distPlayList!.filesContent.reduce((total, timeStr) => {
         const timeArr = timeStr.time.split(":").map(o => parseInt(o));
         return total + timeArr[0] * 60 + timeArr[1];
