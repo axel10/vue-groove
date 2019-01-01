@@ -69,7 +69,11 @@ export function convertFilesToLinearArray(arr: File[]) {
 
 
 export function isInSelf(node: HTMLElement, className: string): boolean {
-  if (node == document.body) {
+  if (node === document.body) {
+    return false
+  }
+  console.log(node.className)
+  if (typeof node.className !== 'string') {
     return false
   }
   if (node.className.indexOf(className) !== -1) {
@@ -151,6 +155,7 @@ function createModel(modal: any, animateTime: number = 200) {
   return new Promise((resolve) => {
     const contain = document.createElement('div')
     document.body.appendChild(contain)
+
     function remove() {
       vm.$destroy()
       document.body.removeChild(vm.$el)
@@ -502,4 +507,8 @@ export function getOffsetTop(obj: HTMLElement): number {
 
 export function getOffsetLeft(obj: HTMLElement): number {
   return obj.offsetLeft + (obj.offsetParent ? getOffsetLeft(obj.offsetParent as HTMLElement) : 0)
+}
+
+export function getToken(artist: string, title: string) {
+  return `${artist}/${title}`
 }

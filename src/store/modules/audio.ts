@@ -6,6 +6,7 @@ import {LoopMode} from '@/utils/enum/LoopMode'
 import Vue from 'vue'
 import config from '@/utils/config'
 import {LocalStorageKeys} from '@/utils/enum/LocalStorageKeys'
+import mainApi from '@/api/mainApi'
 
 
 const initState: IState = {
@@ -23,7 +24,7 @@ const initState: IState = {
   isLoading: false,
 }
 
-const state: IState = _.cloneDeep(initState)
+const audioState: IState = _.cloneDeep(initState)
 
 export interface IState {
   serverPath: string,
@@ -64,12 +65,12 @@ const actions = {
   init({dispatch}: ActionContextBasic) {
     const player = document.getElementById('player') as HTMLAudioElement
     player.loop = false
-    player.addEventListener('ended', function() {
+    player.addEventListener('ended', function () {
       // commit('setPlaying', false);
       // clearInterval(state.timer);
       dispatch('handleEnd')
     })
-    player.volume = state.volume / 100
+    player.volume = audioState.volume / 100
   },
 
   handleEnd({commit, dispatch, rootState, state}: ActionContextBasic) {
@@ -100,9 +101,14 @@ const actions = {
   },
 
   play({state, commit, rootState, dispatch}: ActionContextBasic, file: File) {
-    if (state.isLoading) { return }
+    if (state.isLoading) {
+      return
+    }
     commit('setLoading', true)
-    const musicPath = file.musicUrl.endsWith(config.musicExt) ? file.musicUrl : file.musicUrl.split('.')[0] + `.${config.musicExt}`
+
+    dispatch('home/getLikeRecord', {file}, {root: true})
+    const musicPath = file.musicUrl.endsWith(config.musicExt)
+      ? file.musicUrl : file.musicUrl.split('.')[0] + `.${config.musicExt}`
     commit('initPlay', musicPath)
     setTimeout(() => {
       const player = document.getElementById('player') as HTMLAudioElement
@@ -112,7 +118,7 @@ const actions = {
         content: '正在加载...',
         duration: 0,
       })
-      player.onloadeddata = function() {
+      player.onloadeddata = () => {
         commit('setMusicInfo', file.time)
         const timer = setInterval(() => {
           commit('addCurrentTime')
@@ -138,7 +144,9 @@ const actions = {
   },
 
   togglePlay({commit, rootState, state, dispatch}: ActionContextBasic) {
-    if (state.isLoading) { return }
+    if (state.isLoading) {
+      return
+    }
     if (rootState.playList.playingList.length == 0 || rootState.home.playingFile.id == 0) {
       return
     }
@@ -167,14 +175,18 @@ const actions = {
     const playingFile = rootState.home.playingFile
     const playingList = rootState.playList.playingList
 
-    if (playingList.length === 0) { return }
+    if (playingList.length === 0) {
+      return
+    }
 
-    if (state.isRandom) {
+    if (audioState.isRandom) {
       dispatch('randomPlay')
       return
     }
     let index = playingList.findIndex((o) => o.id === playingFile.id) - 1
-    if (index < 0) { index = playingList.length - 1 }
+    if (index < 0) {
+      index = playingList.length - 1
+    }
     dispatch('play', playingList[index])
   },
   toNext({dispatch, rootState}: ActionContextBasic) {
@@ -183,15 +195,19 @@ const actions = {
     const playingFile = rootState.home.playingFile
     const playingList = rootState.playList.playingList
 
-    if (playingList.length === 0) { return }
+    if (playingList.length === 0) {
+      return
+    }
 
-    if (state.isRandom) {
+    if (audioState.isRandom) {
       dispatch('randomPlay')
       return
     }
 
     let index = playingList.findIndex((o) => o.id === playingFile.id) + 1
-    if (index >= playingList.length) { index = 0 }
+    if (index >= playingList.length) {
+      index = 0
+    }
     dispatch('play', playingList[index])
   },
   randomPlay({dispatch, rootState}: ActionContextBasic) {
@@ -203,7 +219,7 @@ const actions = {
     const player = document.getElementById('player') as HTMLAudioElement
     player.pause()
     commit('setPlaying', false)
-    clearInterval(state.timer)
+    clearInterval(audioState.timer)
   },
 }
 
@@ -304,7 +320,7 @@ const mutations = {
 
 export default {
   namespaced: true,
-  state,
+  state: audioState,
   getters,
   actions,
   mutations,

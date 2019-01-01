@@ -13,7 +13,7 @@ const duration = 1000;
 
 function createCircle(x, y, color = '#1d72ff') {
   const circle = document.createElement('span');
-  circle.style.position = 'absolute';
+  circle.style.position = 'fixed';
   circle.style.display = 'block';
   circle.style.borderRadius = `${circleSize}px`;
   circle.style.boxSizing = 'border-box';
@@ -35,7 +35,7 @@ function createParticle(x, y, index) {
   x = x - particleSize / 2;
   y = y - particleSize / 2;
   const particle = document.createElement('div');
-  particle.style.position = 'absolute';
+  particle.style.position = 'fixed';
   particle.classList.add('particle');
   particle.style.left = x + 'px';
   particle.style.top = y + 'px';

@@ -363,7 +363,10 @@
       height: 50px;
 
       .operate {
-
+        &>img{
+          width: 100%;
+          height: 100%;
+        }
         color: #fff;
         /*        width: 35px;
                 height:35px;*/
@@ -418,6 +421,7 @@
           position: relative;
           bottom: 3px;
         }
+
       }
     }
 

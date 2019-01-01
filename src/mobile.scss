@@ -63,6 +63,10 @@
     box-sizing: border-box;
   }
 
+  .like-group{
+    right: 1.5rem !important;
+  }
+
   .side {
     position: fixed;
     top: 0;
@@ -361,6 +365,12 @@
       .progress {
         padding: 0 !important;
       }
+    }
+  }
+
+  .g-modal{
+    &>.main{
+      width: 80% !important;
     }
   }
 

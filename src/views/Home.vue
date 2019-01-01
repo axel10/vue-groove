@@ -153,6 +153,7 @@
 
     hideMobileSide(e:MouseEvent){
       e.stopPropagation()
+      document.body.removeEventListener('click',this.hideMobileSide)
       if(!isInSelf(e.target as HTMLElement,'side')){
         this.isSideShow = false;
       }

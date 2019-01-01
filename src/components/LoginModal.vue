@@ -11,12 +11,14 @@
         </div>
 
         <div class="field">
-          <input type="text" v-model="loginForm.password" placeholder="密码" name="password">
+          <input type="password" v-model="loginForm.password" placeholder="密码" name="password">
         </div>
 
         <p>没有帐户 ？<span class="toRegister" @click="toRegister">创建一个！</span></p>
 
         <div class="footer">
+          <span @click="onCancel">取消</span>
+
           <VPButton type="small" @click="login">
             登录
           </VPButton>
@@ -36,14 +38,16 @@
                  @change="checkRegisterForm">
         </div>
         <div class="field">
-          <input type="password" v-model="registerForm.confirmPassword" placeholder="确认密码" name="password"
+          <input type="password" v-model="registerForm.confirmPassword" placeholder="确认密码" name="confirmPassword"
                  @change="checkRegisterForm">
         </div>
 
         <p>已有帐户 ？<span class="toRegister" @click="toLogin">登录</span></p>
 
         <div class="footer">
-          <VPButton @click="register">
+          <span @click="onCancel">取消</span>
+
+          <VPButton type="small" @click="register">
             注册
           </VPButton>
         </div>
@@ -54,13 +58,14 @@
 </template>
 
 <script lang="ts">
-  import {Component, Vue} from "vue-property-decorator"
+  import {Component, Prop, Vue} from "vue-property-decorator"
   import Modal from "@/components/Modal.vue"
   import schema from "async-validator"
+  import mainApi from "@/api/mainApi"
 
   const loginDescriptor = {
-    username: {type: "string", require: true},
-    password: {type: "string", require: true}
+    username: {type: "string", required: true, trigger: "blur", message: "请输入用户名"},
+    password: {type: "string", required: true, trigger: "blur", message: "请输入密码"}
   }
 
 
@@ -68,10 +73,11 @@
     username: {type: "string", require: true},
     password: {type: "string", require: true},
     confirmPassword: {
-      validator(rule, value, cb) {
+      validator(rule, value, cb, s) {
+        console.log(rule, value, s, this)
         if (value === "") {
           cb(new Error("请再次输入密码"))
-        } else if (value !== this.registerForm.password) {
+        } else if (value !== s.password) {
           cb(new Error("两次输入的密码不一致"))
         } else {
           cb()
@@ -89,6 +95,7 @@
         require: true
       },
       onOk: {
+        type: Function,
         require: true
       },
       onCancel: {
@@ -100,17 +107,47 @@
     }
   })
   export default class LoginModal extends Vue {
+    @Prop() onOk: () => void
 
     checkRegisterForm() {
-      const validator = new schema(registerDescriptor)
-      validator.validate(this.registerForm, (errs) => {
-        if (errs) {
-          console.log(errs)
-          return
-        }
-      })
+      this.regValidator.validate(this.registerForm, this.checkError())
     }
 
+    checkLoginForm() {
+      this.loginValidator.validate(this.loginForm, this.checkError())
+    }
+
+    regValidator = new schema(registerDescriptor)
+    loginValidator = new schema(loginDescriptor)
+
+    checkError = (cb?: () => void) => {
+      return errs => {
+        console.log(errs)
+        if (errs) {
+          for (let i = 0; i < errs.length; i++) {
+            const field = document.getElementsByName(errs[i].field)[0].parentElement as HTMLElement
+            if (field.querySelector("p")) {
+              field.removeChild(field.querySelector("p"))
+            }
+            const errMsg = document.createElement("p")
+            errMsg.style.color = "red"
+            errMsg.classList.add("form-error-msg")
+            errMsg.innerText = errs[i].message
+            field.appendChild(errMsg)
+          }
+          console.log(errs)
+          return false
+        } else {
+          document.querySelectorAll(".form-error-msg").forEach((o: HTMLElement) => {
+            o.style.display = "none"
+          })
+          if (cb) {
+            cb()
+          }
+          return true
+        }
+      }
+    }
     registerForm = {
       username: "",
       password: "",
@@ -123,9 +160,24 @@
     current = "login"
 
     login() {
+      const that = this
+      this.loginValidator.validate(this.loginForm, this.checkError(() => {
+        mainApi.login(this.loginForm).then(o => {
+          that.onOk()
+          that.$store.commit('home/setData',{key:'isLogin',val:true})
+        })
+      }))
     }
 
     register() {
+      const that = this
+      this.regValidator.validate(this.registerForm, this.checkError(() => {
+
+        mainApi.register(this.registerForm).then(o => {
+          that.onOk()
+          that.$store.commit('home/setData',{key:'isLogin',val:true})
+        })
+      }))
     }
 
     toRegister() {
@@ -155,7 +207,7 @@
     & > form {
       width: 100%;
 
-      &>h3{
+      & > h3 {
         font-size: 1.8rem;
         margin-bottom: 1rem;
       }
@@ -182,6 +234,12 @@
         display: flex;
         justify-content: flex-end;
         margin-top: 2rem;
+        align-items: center;
+        &>span{
+          color: rgb(0, 90, 158);
+          margin: 0 1rem;
+
+        }
       }
 
       & > p {

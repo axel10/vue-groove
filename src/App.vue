@@ -238,7 +238,10 @@
 <style lang="scss">
   @import './mobile.scss';
 
-
+  body,html,#app{
+    overflow-x: hidden;
+    width: 100%;
+  }
   input{
     outline: none;
   }

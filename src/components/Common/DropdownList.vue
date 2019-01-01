@@ -13,161 +13,164 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop, Vue, Watch} from "vue-property-decorator";
-  import {DropDownMenuItem, getOffsetLeft, getOffsetTop} from "../../utils/utils";
+  import {Component, Prop, Vue, Watch} from "vue-property-decorator"
+  import {DropDownMenuItem, getOffsetLeft, getOffsetTop} from "../../utils/utils"
 
   @Component({})
   export default class DropdownList extends Vue {
 
-    @Prop(Array) items !: Array<DropDownMenuItem>;
-    @Prop(MouseEvent) e !: MouseEvent;
-    @Prop(Function) remove !: any;
+    @Prop(Array) items !: Array<DropDownMenuItem>
+    @Prop(MouseEvent) e !: MouseEvent
+    @Prop(Function) remove !: any
 
     @Watch("show")
     onShowChange(val: boolean) {
       if (val) {
         this.items.forEach((o, i) => {
           if (o.el) {
-            const div: HTMLElement = document.createElement("div");
-            const items:any = this.$refs.item
-            const li = <HTMLElement>items[i];
+            const div: HTMLElement = document.createElement("div")
+            const items: any = this.$refs.item
+            const li = <HTMLElement> items[i]
             li.appendChild(div)
             // o.el.$mount(this.$refs.item[i]);
-            o.el.$mount(div);
+            o.el.$mount(div)
           }
-        });
+        })
 
         setTimeout(() => {
-          const screenW = document.body.clientWidth;
-          const screenH = document.body.clientHeight;
-          const selfWidth: number = this.$el.offsetWidth + 10;
+          const screenW = document.body.clientWidth
+          const screenH = document.body.clientHeight
+          const selfWidth: number = this.$el.offsetWidth + 10
 
-          const selfHeight = this.$el.offsetHeight;
+          const selfHeight = this.$el.offsetHeight
 
-          const evtX = this.e.pageX;
-          const evtY = this.e.pageY;
+          const evtX = this.e.pageX
+          const evtY = this.e.pageY
 
-          let distX = 0;
-          let distY = 0;
+          let distX = 0
+          let distY = 0
 
           if (screenW - evtX < selfWidth) {
-            distX = screenW - selfWidth;
+            distX = screenW - selfWidth
           } else {
-            distX = evtX;
+            distX = evtX
           }
 
           if (screenH - evtY < selfHeight) {
-            distY = screenH - selfHeight - 20;
+            distY = screenH - selfHeight - 20
           } else {
-            distY = evtY;
+            distY = evtY
           }
-          this.x = distX;
-          this.y = distY;
+          this.x = distX
+          this.y = distY
 
-        });
+        })
 
       }
     }
 
     dealMouseEnter(e: MouseEvent, item: DropDownMenuItem) {
-      const that = this;
-      var selfDom = <HTMLElement>e.target;
+      const that = this
+      var selfDom = <HTMLElement> e.target
 
 
-
-
-      if (item.children && item.children.length > 0 && (<HTMLElement>e.target).getElementsByTagName("ul").length === 0) {
+      if (item.children && item.children.length > 0 && (<HTMLElement> e.target).getElementsByTagName("ul").length === 0) {
 
         selfDom.onmouseout = function (e: MouseEvent) {
-          var ul = <HTMLElement>selfDom.getElementsByTagName("ul")[0];
-          const targetEle = (<HTMLElement>e.relatedTarget).parentElement;
+          var ul = <HTMLElement> selfDom.getElementsByTagName("ul")[0]
+          const targetEle = (<HTMLElement> e.relatedTarget).parentElement
           if (targetEle === selfDom || targetEle === ul) {
-            return;
+            return
           }
-          selfDom.removeChild(ul);
-        };
+          selfDom.removeChild(ul)
+        }
 
-        const ul: HTMLElement = document.createElement("ul");
-        ul.className = "DropdownList";
+        const ul: HTMLElement = document.createElement("ul")
+        ul.className = "DropdownList"
         item.children.forEach(o => {
-          const li: HTMLElement = document.createElement("li");
-          li.className = "DropdownListItem";
-          li.innerHTML = o.label||'';
+          const li: HTMLElement = document.createElement("li")
+          li.className = "DropdownListItem"
+          li.innerHTML = o.label || ""
           li.onmouseenter = function (e) {
-            that.dealMouseEnter(e, o);
-          };
+            that.dealMouseEnter(e, o)
+          }
           li.onclick = function () {
-            that.execCallback(o);
-          };
+            that.execCallback(o)
+          }
           /*          li.onmouseout = function () {
                       var ul = <HTMLElement>li.getElementsByTagName("ul")[0];
                       console.log(li);
                       if (ul) ul.style.display = "none";
                     };*/
 
-          ul.appendChild(li);
-        });
-        let x = (<HTMLElement>e.target).offsetWidth;
-        let y = (<HTMLElement>e.target).offsetTop;
+          ul.appendChild(li)
+        })
+        let x = (<HTMLElement> e.target).offsetWidth
+        let y = (<HTMLElement> e.target).offsetTop
         // ul.style.left = x + "px";
-        ul.style.top = 0 + "px";
+        ul.style.top = 0 + "px"
 
-        selfDom.appendChild(ul);
+        selfDom.appendChild(ul)
 
         if (getOffsetLeft(selfDom) + selfDom.offsetWidth + ul.offsetWidth > document.body.clientWidth) {
-          x = -ul.offsetWidth;
+          x = -ul.offsetWidth
         }
         if (getOffsetTop(ul) + ul.offsetHeight > document.body.clientHeight) {
-          y = -(ul.offsetHeight - (document.body.clientHeight - getOffsetTop(ul)));
+          y = -(ul.offsetHeight - (document.body.clientHeight - getOffsetTop(ul)))
         }
 
-        ul.style.left = x + "px";
-        ul.style.top = y + "px";
+        ul.style.left = x + "px"
+        ul.style.top = y + "px"
       }
     }
 
-    x: number = 0;
-    y: number = 0;
-    show: boolean = false;
+    x: number = 0
+    y: number = 0
+    show: boolean = false
 
 
-     execCallback(item: DropDownMenuItem) {
+    execCallback(item: DropDownMenuItem) {
       if (typeof item.callback === "function" && !item.isDisable) {
-        item.callback();
+        item.callback()
       }
     }
 
     public created() {
-      document.addEventListener("click", hideList, true);
-      document.addEventListener("contextmenu", hideList, true);
+      document.addEventListener("click", hideList, true)
+      document.addEventListener("contextmenu", hideList, true)
 
       const isInSelf = function (node: HTMLElement, className: string): boolean {
-        if (node == document.body) return false;
+        if (node == document.body) {
+          return false
+        }
         if (node.className.indexOf(className) !== -1) {
-          return true;
+          return true
         }
         if (node.parentNode) {
-          return isInSelf(<HTMLElement>node.parentNode, className);
-        } else {
-          return false;
-        }
-      };
 
-      const that: any = this;
+          return isInSelf(<HTMLElement> node.parentNode, className)
+        } else {
+          return false
+        }
+      }
+
+      const that: any = this
 
       function hideList(e: MouseEvent) {
-        const className = that.$refs.dropDown.className;
-        if (!isInSelf(<HTMLElement>e.target, className)) {
-          e.stopPropagation();
+        const className = that.$refs.dropDown.className
+        if (!isInSelf(<HTMLElement> e.target, className)) {
+          e.stopPropagation()
         }
-        document.removeEventListener("click", hideList, true);
-        document.removeEventListener("contextmenu", hideList, true);
+        document.removeEventListener("click", hideList, true)
+        document.removeEventListener("contextmenu", hideList, true)
         // that.show = false;
         // setTimeout(() => {
         //   if (that.remove) that.remove();
         // }, 3000);
-        if (that.remove) that.remove();
-        e.preventDefault();
+        if (that.remove) {
+          that.remove()
+        }
+        e.preventDefault()
       }
     }
 
@@ -187,10 +190,12 @@
     z-index: 10000000000 !important;
     transition: opacity .3s;
     padding: 10px 0;
+
     li {
       &.disabled {
         color: #ccc;
       }
+
       z-index: 10000000000;
 
       &:hover {
