@@ -14,6 +14,7 @@
           <input type="password" v-model="loginForm.password" placeholder="密码" name="password">
         </div>
 
+        <p  class="errorMsg" ref="loginErrorMsg"></p>
         <p>没有帐户 ？<span class="toRegister" @click="toRegister">创建一个！</span></p>
 
         <div class="footer">
@@ -41,7 +42,7 @@
           <input type="password" v-model="registerForm.confirmPassword" placeholder="确认密码" name="confirmPassword"
                  @change="checkRegisterForm">
         </div>
-
+        <p class="errorMsg" ref="regErrorMsg"></p>
         <p>已有帐户 ？<span class="toRegister" @click="toLogin">登录</span></p>
 
         <div class="footer">
@@ -62,6 +63,7 @@
   import Modal from "@/components/Modal.vue"
   import schema from "async-validator"
   import mainApi from "@/api/mainApi"
+  import {AxiosError} from "axios"
 
   const loginDescriptor = {
     username: {type: "string", required: true, trigger: "blur", message: "请输入用户名"},
@@ -164,7 +166,11 @@
       this.loginValidator.validate(this.loginForm, this.checkError(() => {
         mainApi.login(this.loginForm).then(o => {
           that.onOk()
-          that.$store.commit('home/setData',{key:'isLogin',val:true})
+          that.$store.commit("home/setData", {key: "isLogin", val: true})
+        }).catch((e: AxiosError) => {
+          console.log(e.response.data["ErrorMsg"])
+          const errorMsg = (this.$refs.loginErrorMsg as HTMLElement)
+          errorMsg.innerText = e.response.data["ErrorMsg"]
         })
       }))
     }
@@ -175,7 +181,11 @@
 
         mainApi.register(this.registerForm).then(o => {
           that.onOk()
-          that.$store.commit('home/setData',{key:'isLogin',val:true})
+          that.$store.commit("home/setData", {key: "isLogin", val: true})
+        }).catch((e: AxiosError) => {
+          console.log(e.response.data["ErrorMsg"])
+          const errorMsg = (this.$refs.regErrorMsg as HTMLElement)
+          errorMsg.innerText = e.response.data["ErrorMsg"]
         })
       }))
     }
@@ -235,7 +245,8 @@
         justify-content: flex-end;
         margin-top: 2rem;
         align-items: center;
-        &>span{
+
+        & > span {
           color: rgb(0, 90, 158);
           margin: 0 1rem;
 
@@ -250,6 +261,10 @@
           cursor: pointer;
         }
       }
+    }
+
+    .errorMsg {
+      color: red;
     }
 
   }

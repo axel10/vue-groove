@@ -1,0 +1,67 @@
+.like-group{
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  &>div{
+    margin: 0 .2rem;
+  }
+}
+
+.round-btn {
+  box-sizing: border-box;
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 41px;
+  height: 41px;
+  font-size: 26px;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0);
+  transition:border .3s;
+  position: relative;
+  &.no-border{
+    border: none!important;
+    &:hover{
+      transform: scale(1.2);
+    }
+  }
+  &>.bridge{
+    height: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #666;
+    background-color: #ffffff;
+    border-radius: 2rem;
+    font-size: .8rem;
+    position: absolute;
+    left: 1.2rem;
+    top: -.5rem;
+    /*box-sizing: border-box;*/
+    padding: .3rem .4rem;
+  }
+
+  &:hover {
+    border: 2px solid rgba(255, 255, 255, .5);
+  }
+
+  &.loop, &.svg {
+    padding: 6px 7px 8px;
+    /*padding: 7px;*/
+  }
+
+  &.mobile-more {
+    display: none;
+  }
+
+
+  &.active{
+    background-color: rgba(0,0,0,.3);
+  }
+  img,svg{
+    width: 100%;
+    height: 100%;
+  }
+}
