@@ -31,4 +31,7 @@ export default {
   getLikeRecord(artist, title) {
     return request.get(apiUrl + '/like/get', {token: `${artist}/${title}`})
   },
+  addPlayCount(data: { artist: string, title: string }) {
+    return request.post(apiUrl + '/count/AddPlayCount', data)
+  }
 }

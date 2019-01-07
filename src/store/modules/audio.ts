@@ -1,7 +1,7 @@
 import * as  _ from 'lodash'
 import {ActionContextBasic} from '@/store'
 import {File} from './file'
-import {beginAddTime, convertTimeStrToSecond} from '@/utils/utils'
+import {beginAddTime, beginPlay, convertTimeStrToSecond, pausePlay, setPlayTimer} from '@/utils/utils'
 import {LoopMode} from '@/utils/enum/LoopMode'
 import Vue from 'vue'
 import config from '@/utils/config'
@@ -65,12 +65,18 @@ const actions = {
   init({dispatch}: ActionContextBasic) {
     const player = document.getElementById('player') as HTMLAudioElement
     player.loop = false
-    player.addEventListener('ended', function () {
-      // commit('setPlaying', false);
-      // clearInterval(state.timer);
+    player.addEventListener('ended', () => {
       dispatch('handleEnd')
     })
     player.volume = audioState.volume / 100
+    if (navigator.mediaSession) {
+      navigator.mediaSession.setActionHandler('play', () => {
+        beginPlay()
+      })
+      navigator.mediaSession.setActionHandler('pause', () => {
+        pausePlay()
+      })
+    }
   },
 
   handleEnd({commit, dispatch, rootState, state}: ActionContextBasic) {
@@ -104,8 +110,10 @@ const actions = {
     if (state.isLoading) {
       return
     }
+    if (!file.p || !file.title) {
+      return
+    }
     commit('setLoading', true)
-
     dispatch('home/getLikeRecord', {file}, {root: true})
     const musicPath = file.musicUrl.endsWith(config.musicExt)
       ? file.musicUrl : file.musicUrl.split('.')[0] + `.${config.musicExt}`
@@ -120,10 +128,7 @@ const actions = {
       })
       player.onloadeddata = () => {
         commit('setMusicInfo', file.time)
-        const timer = setInterval(() => {
-          commit('addCurrentTime')
-        }, 1000 / state.fps)
-        commit('setTimer', timer)
+        setPlayTimer()
         player.play()
         msg()
         commit('setLoading', false)
@@ -133,6 +138,7 @@ const actions = {
       if (!rootState.home.isInRecentPlay) {
         dispatch('playList/addRecentPlay', file, {root: true})
       }
+      mainApi.addPlayCount({artist: file.p, title: file.title})
     })
   },
 
@@ -147,7 +153,7 @@ const actions = {
     if (state.isLoading) {
       return
     }
-    if (rootState.playList.playingList.length == 0 || rootState.home.playingFile.id == 0) {
+    if (rootState.playList.playingList.length === 0 || rootState.home.playingFile.id === 0) {
       return
     }
     const player = document.getElementById('player') as HTMLAudioElement
@@ -156,18 +162,10 @@ const actions = {
       dispatch('play', rootState.home.playingFile)
       return
     }
-
     if (player.paused) {
-      player.play()
-      const timer = setInterval(() => {
-        commit('addCurrentTime')
-      }, 1000 / state.fps)
-      commit('setTimer', timer)
-      commit('setPlaying', true)
+      beginPlay()
     } else {
-      player.pause()
-      commit('setPlaying', false)
-      clearInterval(state.timer)
+      pausePlay()
     }
   },
 
@@ -248,10 +246,13 @@ const mutations = {
   },
   /**
    * 当前时间自增
-   * @param state
    */
-  addCurrentTime(state: IState) {
-    state.currentTime += 1 / state.fps
+  syncCurrentTime(state: IState, time: number) {
+    // state.currentTime += 1 / state.fps
+    // state.currentTime += time
+    const player = document.getElementById('player') as HTMLAudioElement
+    // console.log(player.currentTime)
+    state.currentTime = Math.floor(player.currentTime)
   },
 
   setPlaying(state: IState, b: boolean) {

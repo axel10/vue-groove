@@ -14,7 +14,7 @@
           <input type="password" v-model="loginForm.password" placeholder="密码" name="password">
         </div>
 
-        <p  class="errorMsg" ref="loginErrorMsg"></p>
+        <p  class="errorMsg" >{{loginErrorMsg}}</p>
         <p>没有帐户 ？<span class="toRegister" @click="toRegister">创建一个！</span></p>
 
         <div class="footer">
@@ -42,7 +42,7 @@
           <input type="password" v-model="registerForm.confirmPassword" placeholder="确认密码" name="confirmPassword"
                  @change="checkRegisterForm">
         </div>
-        <p class="errorMsg" ref="regErrorMsg"></p>
+        <p class="errorMsg">{{regErrorMsg}}</p>
         <p>已有帐户 ？<span class="toRegister" @click="toLogin">登录</span></p>
 
         <div class="footer">
@@ -76,7 +76,6 @@
     password: {type: "string", require: true},
     confirmPassword: {
       validator(rule, value, cb, s) {
-        console.log(rule, value, s, this)
         if (value === "") {
           cb(new Error("请再次输入密码"))
         } else if (value !== s.password) {
@@ -105,13 +104,18 @@
       },
       animateTime: {
         default: 200,
-      }
+      },
     }
   })
   export default class LoginModal extends Vue {
     @Prop() onOk: () => void
 
-    checkRegisterForm() {
+
+    regErrorMsg=''
+    loginErrorMsg=''
+
+
+      checkRegisterForm() {
       this.regValidator.validate(this.registerForm, this.checkError())
     }
 
@@ -124,7 +128,6 @@
 
     checkError = (cb?: () => void) => {
       return errs => {
-        console.log(errs)
         if (errs) {
           for (let i = 0; i < errs.length; i++) {
             const field = document.getElementsByName(errs[i].field)[0].parentElement as HTMLElement
@@ -137,7 +140,6 @@
             errMsg.innerText = errs[i].message
             field.appendChild(errMsg)
           }
-          console.log(errs)
           return false
         } else {
           document.querySelectorAll(".form-error-msg").forEach((o: HTMLElement) => {
@@ -168,9 +170,7 @@
           that.onOk()
           that.$store.commit("home/setData", {key: "isLogin", val: true})
         }).catch((e: AxiosError) => {
-          console.log(e.response.data["ErrorMsg"])
-          const errorMsg = (this.$refs.loginErrorMsg as HTMLElement)
-          errorMsg.innerText = e.response.data["ErrorMsg"]
+          that.loginErrorMsg = e.response.data["ErrorMsg"]
         })
       }))
     }
@@ -183,9 +183,7 @@
           that.onOk()
           that.$store.commit("home/setData", {key: "isLogin", val: true})
         }).catch((e: AxiosError) => {
-          console.log(e.response.data["ErrorMsg"])
-          const errorMsg = (this.$refs.regErrorMsg as HTMLElement)
-          errorMsg.innerText = e.response.data["ErrorMsg"]
+          that.regErrorMsg = e.response.data["ErrorMsg"]
         })
       }))
     }

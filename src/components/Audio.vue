@@ -1,6 +1,6 @@
 <template>
   <div class="Audio">
-    <audio id="player" loop="loop" >
+    <audio id="player" loop="loop">
       <source :src="serverPath" type="audio/mpeg"/>
     </audio>
   </div>
@@ -9,6 +9,7 @@
 <script lang="ts">
   import {Component, Vue} from 'vue-property-decorator';
   import {namespace} from 'vuex-class'
+  import {beginPlay, pausePlay} from "@/utils/utils"
 
   const audioModule = namespace('audio')
 
@@ -16,7 +17,6 @@
   export default class Audio extends Vue {
     @audioModule.State serverPath!:string
     @audioModule.Action init!:any
-    @audioModule.Action play!:any
 
     public mounted(){
       this.init()

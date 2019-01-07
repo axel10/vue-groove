@@ -75,7 +75,6 @@ const actions = {
     // 验证是否登录
     mainApi.isLogin().then((o) => {
       commit('setData', {key: 'isLogin', val: o.data})
-      console.log(o)
     })
   },
 

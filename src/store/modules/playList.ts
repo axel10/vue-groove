@@ -105,9 +105,7 @@ const actions = {
    * @param files
    */
   addToPlayingList({commit, dispatch, rootState, state}: ActionContextBasic, files: File[]) {
-    if (rootState.playList.playingList.length == 0) {
-      /*      dispatch('audio/play',files[0],{root:true})
-            dispatch('audio/togglePlay',{},{root:true})*/
+    if (rootState.playList.playingList.length === 0) {
       commit('home/setPlayingFile', files[0], {root: true})
     }
     commit('setPlayingList', unionFiles(state.playingList, files))

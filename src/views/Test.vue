@@ -36,19 +36,6 @@
     guid = guid;
 
 
-/*    public mounted() {
-      const sortable = new Sortable(<HTMLElement>this.$refs.ul, {
-        draggable: "li",
-        swapAnimation:{
-          duration:200,
-          easingFunction: 'ease-in-out',
-          horizontal: true
-        },
-        plugins:[Plugins.SwapAnimation]
-      });
-
-      sortable.on('sortable:stop', (e:any) => console.log(e));
-    }*/
 
   }
 </script>

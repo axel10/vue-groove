@@ -1,19 +1,18 @@
 import anime from 'animejs'
 
-const scale = 1;
-const numberOfParticle = 6;
-// const particleColor = '#1d72ff';
-const particleColor = ['#4fc3f7','#00b454','#d8f800','#0b61a4','#4db6ac','#f06292'];
-const particleDistance = 100 * scale;
-const circleSize = 90 * scale;
-const circleBorderWidth = 10 * scale;
-const particleSize = 10 * scale;
-const circleOpacity = .5
-const duration = 1000;
+const scale = 1; // 动画的整体缩放
+const numberOfParticle = 6; // 粒子数量
+const particleColor = ['#4fc3f7','#00b454','#d8f800','#0b61a4','#4db6ac','#f06292']; // 粒子颜色
+const particleDistance = 100 * scale; // 粒子飞行距离
+const circleSize = 90 * scale;  // 圆环大小
+const circleBorderWidth = 10 * scale; // 圆环宽度
+const particleSize = 10 * scale; // 粒子大小
+const circleOpacity = .5 // 圆环透明度
+const duration = 1000; // 动画持续时间
 
 function createCircle(x, y, color = '#1d72ff') {
   const circle = document.createElement('span');
-  circle.style.position = 'fixed';
+  circle.style.position = 'fixed';  // 使用fixed以防撑开页面
   circle.style.display = 'block';
   circle.style.borderRadius = `${circleSize}px`;
   circle.style.boxSizing = 'border-box';
@@ -24,8 +23,6 @@ function createCircle(x, y, color = '#1d72ff') {
   circle.style.top = y - circleSize / 2 + 'px';
   circle.style.border = `${circleBorderWidth}px solid ${color}`;
   circle.style.transform = 'scale(.01)';
-  circle.classList.add('circle');
-
   circle.style.borderWidth = '10px';
   document.body.appendChild(circle);
   return circle;
@@ -36,7 +33,6 @@ function createParticle(x, y, index) {
   y = y - particleSize / 2;
   const particle = document.createElement('div');
   particle.style.position = 'fixed';
-  particle.classList.add('particle');
   particle.style.left = x + 'px';
   particle.style.top = y + 'px';
   particle.style.width = particleSize + 'px';
@@ -47,12 +43,11 @@ function createParticle(x, y, index) {
   } else {
     particle.style.backgroundColor = particleColor;
   }
-  particle.radius = particleDistance;
 
   const angle = (index * (360 / numberOfParticle) - 90) * Math.PI / 180;
-  particle.endPos = {
-    x: Math.cos(angle) * particle.radius,
-    y: Math.sin(angle) * particle.radius
+  particle.endPos = {  // 计算出每个粒子消失点的位置
+    x: Math.cos(angle) * particleDistance,
+    y: Math.sin(angle) * particleDistance
   };
 
   document.body.appendChild(particle);
@@ -66,22 +61,21 @@ export function fire(x, y) {
   }
   const circle = createCircle(x, y);
 
-  anime.timeline()
-    .add({
+  anime.timeline() // anime时间线动画。文档：https://github.com/juliangarnier/anime#timeline
+    .add({ // 粒子飞向各自的结束点
       targets: particles,
-      translateX: function (p) {
+      translateX: function (p) { // transform动画
         return parseFloat(p.endPos.x.toFixed(10));
       },
       translateY: function (p) {
         return parseFloat(p.endPos.y.toFixed(10));
       },
-      // scale: 0.01,
       easing: 'easeOutExpo',
       duration: duration
     })
-    .add({
+    .add({ // 粒子缩小
       translateX: function (p) {
-        return parseFloat(p.endPos.x.toFixed(10));
+        return parseFloat(p.endPos.x.toFixed(10)); // 由于transform已经被之前translate的动画占用，如果还要加scale动画的话就要确保translate不被覆盖。
       },
       translateY: function (p) {
         return parseFloat(p.endPos.y.toFixed(10));
@@ -90,7 +84,7 @@ export function fire(x, y) {
       scale: 0.01,
       easing: 'easeOutQuad',
       duration: 900,
-      offset: duration - 900
+      offset: duration - 900 // 此动画距离动画开始时间的偏移
     })
     .add({
       targets: circle,
@@ -107,7 +101,7 @@ export function fire(x, y) {
       duration: duration / 3.5,
       offset: duration / 3.5
     });
-  setTimeout(function () {
+  setTimeout(function () { // 移除动画dom
     particles.forEach(o => {
       document.body.removeChild(o);
     });
@@ -131,9 +125,3 @@ export function shake(e) {
   })
 }
 
-/*
-document.addEventListener(tap, function (e) {
-  updateCoords(e);
-  fire();
-});
-*/

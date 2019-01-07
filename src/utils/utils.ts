@@ -14,6 +14,8 @@ import SelectContainer from '@/mixins/selectContainer'
 import {PlayListContentDataItem} from '@/store/modules/playList'
 import LoginModal from '@/components/LoginModal.vue'
 
+const {commit, dispatch} = store
+
 export function rendomNum(n: number): string {
   let rnd = ''
   for (let i = 0; i < n; i++) {
@@ -72,7 +74,6 @@ export function isInSelf(node: HTMLElement, className: string): boolean {
   if (node === document.body) {
     return false
   }
-  console.log(node.className)
   if (typeof node.className !== 'string') {
     return false
   }
@@ -187,44 +188,6 @@ function createModel(modal: any, animateTime: number = 200) {
 
 export function editPlayListModal(animateTime: number = 200) {
   return createModel(CreatePlayListModal, animateTime)
-  /* if (!opt) {
-     opt = {}
-   }
-   return new Promise(((resolve) => {
-     const contain = document.createElement('div')
-     document.body.appendChild(contain)
-
-     function remove() {
-       vm.$destroy()
-       document.body.removeChild(vm.$el)
-     }
-
-     const vm: any = new CreatePlayListModal({
-       el: contain,
-       store,
-       propsData: {
-         onOk: (name: string) => {
-           vm.show = false
-           setTimeout(() => {
-             remove()
-           }, 3000)
-           resolve(name)
-         },
-         onCancel: () => {
-           vm.show = false
-           setTimeout(() => {
-             remove()
-           }, 3000)
-           if (opt!.onCancel) {
-             opt!.onCancel()
-           }
-         },
-         ...opt,
-       },
-     })
-     vm.show = true*/
-
-
 }
 
 
@@ -491,7 +454,7 @@ export function beginAddTime() {
   const state = store.state.audio
   clearInterval(state.timer)
   const timer = setInterval(() => {
-    store.commit('audio/addCurrentTime')
+    store.commit('audio/syncCurrentTime')
   }, 1000 / state.fps)
   store.commit('audio/setTimer', timer)
 }
@@ -511,4 +474,33 @@ export function getOffsetLeft(obj: HTMLElement): number {
 
 export function getToken(artist: string, title: string) {
   return `${artist}/${title}`
+}
+
+
+export function beginPlay() {
+  const player = document.getElementById('player') as HTMLAudioElement
+  if (!player.paused || store.state.audio.isLoading) {
+    return
+  }
+  player.play()
+  setPlayTimer()
+  commit('audio/setPlaying', true)
+}
+
+export function pausePlay() {
+  const player = document.getElementById('player') as HTMLAudioElement
+  if (player.paused) {
+    return
+  }
+  player.pause()
+  commit('audio/setPlaying', false)
+  clearInterval(store.state.audio.timer)
+}
+
+export function setPlayTimer() {
+  const {fps} = store.state.audio
+  const timer = setInterval(() => {
+    commit('audio/syncCurrentTime', 1 / fps)
+  }, 1000 / fps)
+  commit('audio/setTimer', timer)
 }
