@@ -89,7 +89,7 @@ const actions = {
       case LoopMode.close:
         const playingFile = rootState.home.playingFile
         const playingList = rootState.playList.playingList
-        const index = playingList.findIndex((o) => o.id == playingFile.id)
+        const index = playingList.findIndex((o) => o.token === playingFile.token)
         if (index === playingList.length - 1) {
           commit('setPlaying', false)
           clearInterval(state.timer)
@@ -153,7 +153,7 @@ const actions = {
     if (state.isLoading) {
       return
     }
-    if (rootState.playList.playingList.length === 0 || rootState.home.playingFile.id === 0) {
+    if (rootState.playList.playingList.length === 0 /*|| rootState.home.playingFile.id === 0*/) {
       return
     }
     const player = document.getElementById('player') as HTMLAudioElement
@@ -181,7 +181,7 @@ const actions = {
       dispatch('randomPlay')
       return
     }
-    let index = playingList.findIndex((o) => o.id === playingFile.id) - 1
+    let index = playingList.findIndex((o) => o.token === playingFile.token) - 1
     if (index < 0) {
       index = playingList.length - 1
     }
@@ -202,7 +202,7 @@ const actions = {
       return
     }
 
-    let index = playingList.findIndex((o) => o.id === playingFile.id) + 1
+    let index = playingList.findIndex((o) => o.token === playingFile.token) + 1
     if (index >= playingList.length) {
       index = 0
     }

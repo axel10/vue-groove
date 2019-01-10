@@ -128,7 +128,6 @@
             })
           });
         } else {
-          // this.$store.dispatch("playList/createPlayList", {name, fileIds: [this.item.id]});
           this.$store.dispatch("playList/createPlayList", {
             name,
             content: [new PlayListContentDataItem(this.item.title, this.item.p)]

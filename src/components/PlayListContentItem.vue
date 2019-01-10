@@ -115,7 +115,6 @@
             label: o.title,
             callback: () => this.$store.dispatch("playList/addToPlayList", {
               listId: o.id,
-              // ids: [this.item.id]
               content:[new PlayListContentDataItem(this.item.title,this.item.p)]
             })
           });
@@ -130,7 +129,6 @@
 
     showCreatePlayListModal() {
       editPlayListModal({isRename: false}).then(name => {
-        // this.$store.dispatch("playList/createPlayList", {name, fileIds: [this.item.id]});
         this.$store.dispatch("playList/createPlayList", {name, content:new PlayListContentDataItem(this.item.title,this.item.p)});
       });
     }

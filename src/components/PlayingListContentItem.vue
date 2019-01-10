@@ -64,15 +64,6 @@
       return this.selectedItems.length > 0;
     }
 
-/*    toggleSelect(e: MouseEvent) {
-      e.stopPropagation();
-      if (this.selected) {
-        this.$emit("select", this.selectedItems.filter(o => o.id !== this.item.id));
-      } else {
-        this.$emit("select", this.selectedItems.concat([this.item]));
-      }
-    }*/
-
     showDropDown(e: MouseEvent) {
       e.preventDefault();
       const contextMenu: any = [{
@@ -84,7 +75,6 @@
         label: "移除",
         callback: () => {
           this.$store.dispatch('playList/removePlayingList',[this.item.id])
-
         }
       }];
       dropDownMenu(e, contextMenu);
@@ -92,16 +82,6 @@
 
     showAddListMenu(e: MouseEvent) {
       e.stopPropagation();
-/*      const contextMenu: any = [{label: "新的播放列表", callback: this.showCreatePlayListModal}];
-      if (this.playLists.length > 0) {
-        contextMenu.push({split: true});
-        this.playLists.forEach(o => {
-          contextMenu.push({
-            label: o.title,
-            callback: () => this.$store.dispatch("playList/addToPlayList", {listId: o.id, ids: [this.item.id]})
-          });
-        });
-      }*/
       let contextMenu:any = getAddFileToContextMenuItems(this.selectedItems)
       dropDownMenu(e, contextMenu);
     }
@@ -116,7 +96,6 @@
 
     showCreatePlayListModal() {
       editPlayListModal({isRename: false}).then(name => {
-        // this.$store.dispatch("playList/createPlayList", {name, fileIds: [this.item.id]});
         this.$store.dispatch("playList/createPlayList", {name, content:new PlayListContentDataItem(this.item.title,this.item.p)});
       });
     }

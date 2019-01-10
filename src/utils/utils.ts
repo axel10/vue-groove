@@ -34,6 +34,7 @@ function _initResourceUrl(arr: File[], path: string[]) {
 
       arr[i].imgUrl = imgUrl
       arr[i].musicUrl = musicUrl
+      arr[i].token = arr[i].p + '/' + arr[i].title
     }
   }
 }
@@ -343,7 +344,6 @@ export function getAddFileToContextMenuItems(files: File[], context?: SelectCont
   contextMenu.push({
     label: '新的播放列表', callback: () => {
       editPlayListModal().then((name) => {
-        // store.dispatch('playList/createPlayList', {name, fileIds: files.map(o => o.id)});
         store.dispatch('playList/createPlayList', {
           name,
           content: files.map((o: File) => new PlayListContentDataItem(o.title, o.p)),
@@ -364,7 +364,6 @@ export function getAddFileToContextMenuItems(files: File[], context?: SelectCont
         callback: () => {
           store.dispatch('playList/addToPlayList', {
             listId: o.id,
-            // ids: files.map(o => o.id)
             content: files.map((o) => new PlayListContentDataItem(o.title, o.p)),
           })
           if (context) {
@@ -380,11 +379,9 @@ export function getAddFileToContextMenuItems(files: File[], context?: SelectCont
 
 
 export function mapDataItemsToFiles(items: PlayListContentDataItem[]): File[] {
-  // return store.state.file.allFile.filter(o => ids.indexOf(o.id) !== -1);
   const res: File[] = []
   const allFile = store.state.file.allFile
   items.forEach((item) => {
-    // res.push(allFile.find(o => o.id === id) || new File());
     res.push(allFile.find((o) => o.title === item.title && o.p === item.p) || new File())
   })
   return res

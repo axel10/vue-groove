@@ -132,10 +132,8 @@
         }
         let firstFile!: File;
         if (firstDataItem) {
-          // firstFile = this.allFile.find(file => file.id === firstFileId) || new File();
           firstFile = this.allFile.find(file => file.title === firstDataItem.title && file.p === firstDataItem.p) || new File();
         }
-        // const firstFile!:File = firstFileId === undefined ? new File() : this.allFile.find(file => file.id === firstFileId);
         const imgUrl = firstFile.imgUrl ? firstFile.imgUrl : "";
         return {...o, imgUrl, total: o.content.length};
       });

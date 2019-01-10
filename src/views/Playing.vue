@@ -166,7 +166,6 @@
 
     showCreatePlayListModal() {
       editPlayListModal().then((name: any) => {
-        // this.$store.dispatch("playList/createPlayList", {name, fileIds: this.selectedItems.map(o => o.id)});
         this.$store.dispatch("playList/createPlayList", {name, content:this.selectedItems.map(o => {return new PlayListContentDataItem(o.title,o.p)})});
       });
     }

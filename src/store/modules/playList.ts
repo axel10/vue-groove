@@ -117,7 +117,7 @@ const actions = {
   removePlayList({commit, state}: ActionContextBasic, {context, id}: any) {
 
     const currentId = context.$route.params.id
-    if (currentId == id) {
+    if (currentId === id) {
       const playLists: PlayList[] = state.playLists
       let prePlayListIndex = playLists.findIndex((o) => o.id === id) - 1
       if (playLists.length < 0) { prePlayListIndex = 0 }

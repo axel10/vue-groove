@@ -34,6 +34,7 @@ export class File extends BaseItem {
   public imgUrl: string
   public musicUrl: string
   public time!: string
+  public token?: string
 
   constructor() {
     super()
@@ -85,7 +86,7 @@ const actions = {
   getFiles({commit, dispatch}: ActionContextBasic) {
     let i = 0
     const delay = 800
-    for (let j = 0; j < delay/100; j++) {
+    for (let j = 0; j < delay / 100; j++) {
       setTimeout(() => {
         i++
       }, 100)
@@ -101,12 +102,13 @@ const actions = {
         return 0
       })
       commit('setFiles', o)
+
       if (i < delay) {
         setTimeout(() => {
-          commit('home/setData', { key: 'loaded', val: true}, {root: true})
+          commit('home/setData', {key: 'loaded', val: true}, {root: true})
         }, delay - i)
       } else {
-        commit('home/setData', { key: 'loaded', val: true}, {root: true})
+        commit('home/setData', {key: 'loaded', val: true}, {root: true})
       }
     })
   },
@@ -137,13 +139,13 @@ function getAllFileByContent(content: File[]) {
   const tmp: File[] = []
 
   function pushItem(con: File[]) {
-/*    for (let i = 0; i < content.length; i++) {
-      if (content[i].content) {
-        pushItem(content[i].content)
-      } else {
-        tmp.push(content[i])
-      }
-    }*/
+    /*    for (let i = 0; i < content.length; i++) {
+          if (content[i].content) {
+            pushItem(content[i].content)
+          } else {
+            tmp.push(content[i])
+          }
+        }*/
     for (const item of con) {
       if (item.content) {
         pushItem(item.content)

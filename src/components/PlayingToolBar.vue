@@ -224,7 +224,6 @@
 
     saveToPlayList() {
       editPlayListModal({isRename: false}).then(name => {
-        // this.$store.dispatch("playList/createPlayList", {name, fileIds: this.playingList.map((o: File) => o.id)});
         this.$store.dispatch("playList/createPlayList", {name, content:this.playingList.map((o:File)=>{return new PlayListContentDataItem(o.title,o.p)})});
       });
     }

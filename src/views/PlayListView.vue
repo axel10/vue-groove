@@ -162,13 +162,11 @@
     onDistPlayListContentChanged(val: Array<File>) {
       this.$store.commit("playList/setPlayListContent", {
         listId: this.distPlayList!.id,
-        // content: val.map((o: File) => o.id)
         content: val.map((o: File) => new PlayListContentDataItem(o.title,o.p))
       });
     }
 
     // 字段同playList,Content中为具体的文件
-    // distPlayList: distPlayList | null = null;
     distPlayList!: distPlayList;
     distPlayListContent: Array<File> = [];
     selectedItems: Array<File> = [];
@@ -286,9 +284,7 @@
         return;
       }
       const playListContentData: Array<PlayListContentDataItem> = currentPlayList.content;
-      /*      const content: Array<File> = currentPlayListContent.map(o => {
-              return this.allFile.find((file: File) => file.id === o) || new File();
-            }).filter(o => o) || [];*/
+
       const content: any = playListContentData.map(o => {
         return this.allFile.find((file: File) => file.title === o.title && file.p === o.p);
       }).filter(o => o) || [];
@@ -341,18 +337,7 @@
 
     remove() {
       confirm({title: "确定要删除吗?", info: "该播放列表下的所有条目都将被删除"}).then(() => {
-
-        /*        const playLists = this.playLists
-                let prePlayListIndex = this.playLists.findIndex(o=>o.id===this.distPlayList.id)-1
-                if (this.playLists.length > 1) prePlayListIndex = 0;
-                if (prePlayListIndex>=0) {
-                  this.$router.replace('/playList/'+playLists[prePlayListIndex].id)
-                }else{
-                  this.$router.replace('/allPlayList')
-                }*/
-
         this.$store.dispatch("playList/removePlayList", {id: this.distPlayList!.id, context: this});
-
       });
     }
   }

@@ -69,7 +69,6 @@
       }
       const ids = this.item.content;
       const files = ids.map(o => {
-        // return this.allFile.find((file: File) => file.id === o);
         return this.allFile.find((file: File) => file.title === o.title && file.p === o.p );
       });
 
@@ -104,20 +103,6 @@
       }
       this.$router.push('/playList/'+this.item.id)
     }
-
-/*    toggleSelect(e: MouseEvent) {
-      e.stopPropagation();
-      if (this.selected) {
-        this.$emit("select", this.selectedItems.filter(o => o.id !== this.item.id));
-      } else {
-        this.$emit("select", this.selectedItems.concat([this.item]));
-      }
-    }*/
-
-/*    get selected() {
-      return this.selectedItems.findIndex(o => o.id === this.item.id) !== -1;
-    }*/
-
   }
 </script>
 
