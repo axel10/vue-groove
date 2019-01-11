@@ -19,10 +19,7 @@
         <div class="small-block"></div>
         <div class="block"></div>
         <div class="cd">
-          <!--<img :src="item.imgUrl" alt="" v-if="item.imgUrl" ref="cover">-->
-          <!--<Icon type="ios-list" v-if="!item.imgUrl"/>-->
           <Icon type="ios-list" />
-
         </div>
       </div>
     </div>

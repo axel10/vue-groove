@@ -10,7 +10,6 @@
         <div class="main">
           <PlayingToolBar :moveShowList="moveShowList"
                           @toggleList="toggleList" ref="playingToolBar"></PlayingToolBar>
-
           <div class="music-list" :class="{'hide':!isShowList,'show':isShowList,
             'moveShow':moveShowList===true,'moveHide':moveShowList===false
           }">
@@ -19,7 +18,7 @@
                                       :isShowAdd='true'
                                       :selectedItems="selectedItems"
                                       :key="guid()"
-                                      @select="(val)=>{selectedItems=val}"
+                                      @select="handlePlayingItemSelect"
               ></PlayingListContentItem>
             </ul>
           </div>
@@ -147,6 +146,11 @@
         });
       };
       SortList(list, {onEnd}, {delay: 400});
+    }
+
+    handlePlayingItemSelect(items){
+      console.log(items)
+      this.selectedItems = items
     }
 
     goBack() {

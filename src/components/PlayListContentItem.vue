@@ -147,6 +147,10 @@
           border: 1px solid #fff;
         }
       }
+      &:hover{
+        background-color: rgb(0, 75, 133);
+          color: #fff;
+      }
     }
     .checkbox-area {
       .checkbox{
@@ -154,10 +158,10 @@
       }
     }
 
-    &:hover{
+/*    &:hover{
       color: #000;
       background-color: #ddd!important;
-    }
+    }*/
 
 
   }

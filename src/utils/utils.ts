@@ -31,10 +31,12 @@ function _initResourceUrl(arr: File[], path: string[]) {
     } else {
       const imgUrl = `${config.coverPath}/small/${path.join('/')}/${arr[i].title}.jpg`
       const musicUrl = `${config.musicPath}${path.join('/')}/${arr[i].title}.${config.musicExt}`
-
       arr[i].imgUrl = imgUrl
       arr[i].musicUrl = musicUrl
-      arr[i].token = arr[i].p + '/' + arr[i].title
+      const token = arr[i].p + '/' + arr[i].title
+      arr[i].token = token
+      arr[i].id = token
+      debugger
     }
   }
 }

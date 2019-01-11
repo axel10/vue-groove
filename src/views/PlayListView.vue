@@ -459,6 +459,7 @@
         width: 100%;
         position: relative;
         top: 255px;
+        outline: none;
 
         > .deep {
           background-color: #eee;

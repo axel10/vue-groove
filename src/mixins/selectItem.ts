@@ -1,33 +1,30 @@
-import Vue from 'vue';
-import {Prop} from 'vue-property-decorator';
-import {File} from '@/store/modules/file';
+import Vue from 'vue'
+import {Prop} from 'vue-property-decorator'
+import {BaseItem} from '@/types/BaseItem'
 
 
-export class BaseItem {
-  id: any;
-  title!: string;
-  content!: Array<any>;
-}
+
 
 export default class SelectItem extends Vue {
-  @Prop(Array) selectedItems!: Array<BaseItem>;
-  @Prop(Object) item!: BaseItem;
+  @Prop(Array) public selectedItems!: BaseItem[]
+  @Prop(Object) public item!: BaseItem
 
 
   get selected() {
-    return this.selectedItems.findIndex((o: any) => o.id === this.item.id) !== -1;
+    console.log(this.selectedItems, this.item)
+    return this.selectedItems.findIndex((o: any) => o.id === this.item.id) !== -1
   }
 
-  toggleSelect(e: MouseEvent) {
-    e.stopPropagation();
+  public toggleSelect(e: MouseEvent) {
+    e.stopPropagation()
     if (this.selected) {
-      this.$emit('select', this.selectedItems.filter((o: any) => o.id !== this.item.id));
+      this.$emit('select', this.selectedItems.filter((o: any) => o.id !== this.item.id))
     } else {
-      this.$emit('select', this.selectedItems.concat([this.item]));
+      this.$emit('select', this.selectedItems.concat([this.item]))
     }
   }
 
   get isSelectMode() {
-    return this.selectedItems.length > 0;
+    return this.selectedItems.length > 0
   }
 }

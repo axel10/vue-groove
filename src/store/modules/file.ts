@@ -2,7 +2,7 @@ import * as  _ from 'lodash'
 import {ActionContextBasic} from '@/store'
 import mainApi from '../../api/mainApi'
 import {convertFilesToLinearArray, initResourceUrl} from '@/utils/utils'
-import {BaseItem} from '@/mixins/selectItem'
+import {BaseItem} from '@/types/BaseItem'
 
 
 const initState = {
@@ -25,6 +25,7 @@ export interface IState {
 }
 
 export class File extends BaseItem {
+  public id:string
   public title: string
   public content: File[]
   public p: string
@@ -38,6 +39,7 @@ export class File extends BaseItem {
 
   constructor() {
     super()
+    this.id = ''
     this.title = ''
     this.content = []
     this.p = ''

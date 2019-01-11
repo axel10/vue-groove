@@ -1,6 +1,6 @@
 <template>
   <PlayListItemBase>
-    <div class="PlayListContentItem" @contextmenu="showDropDown" :class="{'playing':isPlaying,'select':selected}" @click="handleClick">
+    <div class="PlayingListContentItem" @contextmenu="showDropDown" :class="{'playing':isPlaying,'select':selected}" @click="handleClick">
       <div class="checkbox-area" v-if="isSelectMode">
         <div class="checkbox" :class="{'no-select':!selected}" @click="()=>{this.toggleSelect()}">
           <Icon type="ios-checkmark" v-if="selected"/>
@@ -17,9 +17,6 @@
         <div class="add" @click="showAddListMenu">
           <Icon type="ios-add"/>
         </div>
-        <!--      <div class="remove" @click="$emit('remove',item)" v-if="!isShowAdd">
-                <Icon type="ios-remove"/>
-              </div>-->
       </div>
       <div class="artist">{{item.p}}</div>
       <div class="album">{{item.cdTitle}}</div>
@@ -104,95 +101,14 @@
 </script>
 
 <style scoped lang="scss">
-  .PlayListContentItem {
-/*    outline: none;
-    display: flex;
-    align-items: center;
-    height: 50px;
-    font-size: 14px;
-    text-align: left;
-    color: #ccc;
-    box-sizing: border-box;
-    padding-left: 20px;
-
-    &:hover {
-      color: #fff;
-      background-color: rgba(255,255,255,.1);
-      & > .operation {
-        opacity: 1;
-      }
-    }
-
-    &.playing {
-      color: #4cbafa;
-      &:hover {
-        color: #3591e2;
-      }
-    }
-
-    &.select{
-      background-color: rgb(0,90,158);
-    }
-
-    .operation {
-      width: 100px;
-      height: 100%;
-      display: flex;
-      opacity: 0;
-      transition: opacity .3s;
-      margin-right: 20px;
-
-      .play, .add, .remove {
-        width: 50px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 32px;
-        &:hover {
-          background-color: rgba(255, 255, 255, .2);
-        }
-      }
-    }
-
-    .checkboxArea {
-      width: 50px;
-      .checkbox {
-        width: 20px;
-        height: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 32px;
-        &.no-select {
-          border: 1px solid #fff;
-        }
-        &:hover {
-          &.no-select {
-            border: 1px solid #999;
-          }
-        }
-      }
-    }
-
-    .title {
-      font-weight: normal;
-      flex: 4;
-      box-sizing: border-box;
-      padding-left: 10px;
-    }
-    .artist {
-      flex: 3;
-    }
-    .album {
-      flex: 3;
-    }
-    .year {
-      flex: 1;
-    }
-    .time {
-      width: 60px;
-    }*/
+  .PlayingListContentItem {
     border-bottom: 1px solid rgba(255, 255, 255, .2);
 
+    &.select{
+      &:hover{
+        background-color: rgb(0, 75, 133);
+        color: #fff;
+      }
+    }
   }
 </style>

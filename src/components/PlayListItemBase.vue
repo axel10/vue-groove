@@ -49,6 +49,7 @@
 
       &.select{
         background-color: rgb(0,90,158);
+
       }
 
       .operation {
