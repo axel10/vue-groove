@@ -1,7 +1,7 @@
 import * as  _ from 'lodash'
 import {ActionContextBasic} from '@/store'
 import mainApi from '../../api/mainApi'
-import {convertFilesToLinearArray, initResourceUrl} from '@/utils/utils'
+import {convertFilesToLinearArray, initResourceInfo} from '@/utils/utils'
 import {BaseItem} from '@/types/BaseItem'
 
 
@@ -25,7 +25,7 @@ export interface IState {
 }
 
 export class File extends BaseItem {
-  public id:string
+  public id!: string
   public title: string
   public content: File[]
   public p: string
@@ -36,10 +36,10 @@ export class File extends BaseItem {
   public musicUrl: string
   public time!: string
   public token?: string
+  public album!: string
 
   constructor() {
     super()
-    this.id = ''
     this.title = ''
     this.content = []
     this.p = ''
@@ -164,7 +164,7 @@ function getAllFileByContent(content: File[]) {
 
 const mutations = {
   setFiles(state: IState, files: File[]) {
-    initResourceUrl(files)
+    initResourceInfo(files)
     state.allFile = convertFilesToLinearArray(files)
     state.files = files
   },

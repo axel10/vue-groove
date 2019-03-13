@@ -30,84 +30,85 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop, Vue} from "vue-property-decorator";
-  import {State, Mutation, Action, namespace} from "vuex-class";
-  import {dropDownMenu, editPlayListModal} from "../utils/utils";
+  import {Component, Prop, Vue} from "vue-property-decorator"
+  import {State, Mutation, Action, namespace} from "vuex-class"
+  import {dropDownMenu, showEditPlayListModal} from '@/utils/utils'
 
-  import {File} from "../store/modules/file";
-  import {PlayList, PlayListContentDataItem} from "../store/modules/playList";
-  import PlayListItemBase from "./PlayListItemBase.vue";
+  import {File} from '@/store/modules/file'
+  import { PlayListContentDataItem} from '@/store/modules/playList'
+  import PlayListItemBase from "./PlayListItemBase.vue"
+  import {PlayList} from '@/store/types/PlayList';
 
-  const homeModule = namespace("home");
-  const playingModule = namespace("playing");
-  const playListModule = namespace("playList");
+  const homeModule = namespace("home")
+  const playingModule = namespace("playing")
+  const playListModule = namespace("playList")
 
   @Component({
     components: {PlayListItemBase}
   })
   export default class PlayListContentItem extends Vue {
 
-    @Prop(Object) item !: File;
-    @Prop(Number) index !: number;
-    @Prop(Array) selectedItems !: Array<File>;
-    @homeModule.State playingFile !: File;
-    @playingModule.Mutation toSelectMode !: any;
-    @playListModule.State playLists !: Array<PlayList>;
+    @Prop(Object) item !: File
+    @Prop(Number) index !: number
+    @Prop(Array) selectedItems !: Array<File>
+    @homeModule.State playingFile !: File
+    @playingModule.Mutation toSelectMode !: any
+    @playListModule.State playLists !: Array<PlayList>
 
 
     get isSelectMode() {
-      return this.selectedItems.length > 0;
+      return this.selectedItems.length > 0
     }
 
     get isPlaying() {
-      return this.playingFile.title === this.item.title;
+      return this.playingFile.title === this.item.title
     }
 
     get selected() {
-      return this.selectedItems.findIndex(o => o.id === this.item.id) !== -1;
+      return this.selectedItems.findIndex(o => o.id === this.item.id) !== -1
     }
 
     handleClick(e: MouseEvent) {
       if (this.isSelectMode) {
-        this.toggleSelect(e);
+        this.toggleSelect(e)
       } else {
-        this.play();
+        this.play()
       }
     }
 
     toggleSelect(e: MouseEvent) {
-      e.stopPropagation();
+      e.stopPropagation()
       if (this.selected) {
-        this.$emit("select", this.selectedItems.filter(o => o.id !== this.item.id));
+        this.$emit("select", this.selectedItems.filter(o => o.id !== this.item.id))
       } else {
-        this.$emit("select", this.selectedItems.concat([this.item]));
+        this.$emit("select", this.selectedItems.concat([this.item]))
       }
     }
 
     showDropDown(e: MouseEvent) {
-      e.preventDefault();
+      e.preventDefault()
 
       const contextMenu: any = [{
         label: "选择", callback: () => {
-          this.$emit("select", this.selectedItems.concat([this.item]));
+          this.$emit("select", this.selectedItems.concat([this.item]))
         }
-      }];
+      }]
 
 
-      dropDownMenu(e, contextMenu);
+      dropDownMenu(e, contextMenu)
     }
 
     showAddListMenu(e: MouseEvent) {
-      e.stopPropagation();
-      const contextMenu: any = [];
+      e.stopPropagation()
+      const contextMenu: any = []
 
       contextMenu.push({
         label: "正在播放",
         callback: this.$store.dispatch("playList/addToPlayingList", this.item)
-      });
-      contextMenu.push({split: true});
+      })
+      contextMenu.push({split: true})
 
-      contextMenu.push({label: "新的播放列表", callback: this.showCreatePlayListModal});
+      contextMenu.push({label: "新的播放列表", callback: this.showCreatePlayListModal})
 
       if (this.playLists.length > 0) {
         this.playLists.forEach(o => {
@@ -115,22 +116,25 @@
             label: o.title,
             callback: () => this.$store.dispatch("playList/addToPlayList", {
               listId: o.id,
-              content:[new PlayListContentDataItem(this.item.title,this.item.p)]
+              content: [new PlayListContentDataItem(this.item.title, this.item.p, this.item.album)]
             })
-          });
-        });
+          })
+        })
       }
-      dropDownMenu(e, contextMenu);
+      dropDownMenu(e, contextMenu)
     }
 
     play() {
-      this.$store.dispatch("audio/play", this.item);
+      this.$store.dispatch("audio/play", this.item)
     }
 
     showCreatePlayListModal() {
-      editPlayListModal({isRename: false}).then(name => {
-        this.$store.dispatch("playList/createPlayList", {name, content:new PlayListContentDataItem(this.item.title,this.item.p)});
-      });
+      showEditPlayListModal().then(name => {
+        this.$store.dispatch("playList/createPlayList", {
+          name,
+          content: new PlayListContentDataItem(this.item.title, this.item.p, this.item.album)
+        })
+      })
     }
   }
 </script>
@@ -142,26 +146,29 @@
 
     &.select {
       color: #fff;
-      .checkbox-area{
-        .checkbox{
+
+      .checkbox-area {
+        .checkbox {
           border: 1px solid #fff;
         }
       }
-      &:hover{
+
+      &:hover {
         background-color: rgb(0, 75, 133);
-          color: #fff;
+        color: #fff;
       }
     }
+
     .checkbox-area {
-      .checkbox{
+      .checkbox {
         border: 1px solid #000;
       }
     }
 
-/*    &:hover{
-      color: #000;
-      background-color: #ddd!important;
-    }*/
+    /*    &:hover{
+          color: #000;
+          background-color: #ddd!important;
+        }*/
 
 
   }

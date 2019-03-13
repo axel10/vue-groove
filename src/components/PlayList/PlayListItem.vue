@@ -31,7 +31,7 @@
 <script lang="ts">
   import {Component, Prop, Vue} from "vue-property-decorator";
   import {namespace} from "vuex-class";
-  import {confirm, dropDownMenu, editPlayListModal} from "../../utils/utils";
+  import {confirm, dropDownMenu, showEditPlayListModal} from "../../utils/utils";
   import {PlayList} from "../../store/modules/playList";
   import {File} from "../../store/modules/file";
   import SelectItem from '../../mixins/selectItem';
@@ -53,7 +53,7 @@
 
     showRenameModal() {
       // this.renamePlayListModalShow = true
-      editPlayListModal({isRename: true, oldName: this.item.title}).then(name => {
+      showEditPlayListModal({isRename: true, oldName: this.item.title}).then(name => {
         this.$store.commit("playList/renamePlayList", {id: this.item.id, name});
       });
     }

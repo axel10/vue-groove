@@ -83,15 +83,15 @@
 <script lang="ts">
   import {Component, Prop, Vue} from "vue-property-decorator";
   import {namespace} from "vuex-class";
-  import {getTimeStr} from "../store/modules/audio";
-  import {dropDownMenu, editPlayListModal, isFullScreen, isInSelf, toggleFullScreen,exitFullScreen,fullScreen} from "../utils/utils";
+  import {getTimeStr} from '@/store/modules/audio';
+  import {dropDownMenu, showEditPlayListModal, isFullScreen, isInSelf, toggleFullScreen,exitFullScreen,fullScreen} from "../utils/utils";
   import VolumeIcon from "./Operation/VolumeIcon.vue";
   import Loop from "./Operation/Loop.vue";
   import Random from "./Operation/Random.vue";
-  import {File} from "../store/modules/file";
+  import {File} from '@/store/modules/file';
   import VolumeSlider from "./Operation/VolumeSlider.vue";
   import TimeSlider from "./Operation/TimeSlider.vue";
-  import {PlayListContentDataItem} from '../store/modules/playList';
+  import {PlayListContentDataItem} from '@/store/modules/playList';
 
   const audioModule = namespace("audio");
   const homeModule = namespace("home");
@@ -223,7 +223,7 @@
     }
 
     saveToPlayList() {
-      editPlayListModal({isRename: false}).then(name => {
+      showEditPlayListModal({isRename: false}).then(name => {
         this.$store.dispatch("playList/createPlayList", {name, content:this.playingList.map((o:File)=>{return new PlayListContentDataItem(o.title,o.p)})});
       });
     }

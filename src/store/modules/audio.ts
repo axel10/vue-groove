@@ -106,6 +106,7 @@ const actions = {
     }
   },
 
+
   play({state, commit, rootState, dispatch}: ActionContextBasic, file: File) {
     if (state.isLoading) {
       return
@@ -114,12 +115,17 @@ const actions = {
       return
     }
     commit('setLoading', true)
-    dispatch('home/getLikeRecord', {file}, {root: true})
+    dispatch('home/getLikeRecord', {file}, {root: true}).catch((e) => {
+    })
     const musicPath = file.musicUrl.endsWith(config.musicExt)
       ? file.musicUrl : file.musicUrl.split('.')[0] + `.${config.musicExt}`
     commit('initPlay', musicPath)
     setTimeout(() => {
       const player = document.getElementById('player') as HTMLAudioElement
+      /*      player.onerror=()=>{
+              console.log('error')
+              debugger
+            }*/
       player.load()
       clearInterval(state.timer)
       const msg = (new Vue()).$Message.loading({
@@ -132,13 +138,17 @@ const actions = {
         player.play()
         msg()
         commit('setLoading', false)
+
+
+        // 设置当前播放文件
+        dispatch('home/setPlayingFile', file, {root: true})
+        if (!rootState.home.isInRecentPlay) {
+          dispatch('playList/addRecentPlay', file, {root: true})
+        }
+        mainApi.addPlayCount({artist: file.p, title: file.title, album: file.album})
       }
-      // 设置当前播放文件
-      dispatch('home/setPlayingFile', file, {root: true})
-      if (!rootState.home.isInRecentPlay) {
-        dispatch('playList/addRecentPlay', file, {root: true})
-      }
-      mainApi.addPlayCount({artist: file.p, title: file.title})
+
+
     })
   },
 
@@ -251,7 +261,6 @@ const mutations = {
     // state.currentTime += 1 / state.fps
     // state.currentTime += time
     const player = document.getElementById('player') as HTMLAudioElement
-    // console.log(player.currentTime)
     state.currentTime = Math.floor(player.currentTime)
   },
 
@@ -316,6 +325,15 @@ const mutations = {
   },
   setLoading(state: IState, isLoading: boolean) {
     state.isLoading = isLoading
+  },
+
+  onPlayerError(state: IState, {context}:{context:Vue}) {
+    context.$Message.destroy()
+    context.$Message.error({
+      content: '出错了😭请前往<a href="https://blog.vcollection.org/index.php/2017/08/18/hello-world-2/">留言板</a>汇报bug',
+      duration: 3,
+    })
+    state.isLoading = false
   },
 }
 

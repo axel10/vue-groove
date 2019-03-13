@@ -11,7 +11,6 @@ export default class SelectItem extends Vue {
 
 
   get selected() {
-    console.log(this.selectedItems, this.item)
     return this.selectedItems.findIndex((o: any) => o.id === this.item.id) !== -1
   }
 

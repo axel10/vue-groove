@@ -87,7 +87,7 @@
   import CreatePlayListModal from "../components/CreatePlayListModal.vue";
   import {
     dropDownMenu,
-    editPlayListModal,
+    showEditPlayListModal,
     getAddFileToContextMenuItems,
     guid,
     SortList,
@@ -149,7 +149,6 @@
     }
 
     handlePlayingItemSelect(items){
-      console.log(items)
       this.selectedItems = items
     }
 
@@ -169,7 +168,7 @@
     }
 
     showCreatePlayListModal() {
-      editPlayListModal().then((name: any) => {
+      showEditPlayListModal().then((name: any) => {
         this.$store.dispatch("playList/createPlayList", {name, content:this.selectedItems.map(o => {return new PlayListContentDataItem(o.title,o.p)})});
       });
     }

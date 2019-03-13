@@ -93,7 +93,7 @@
   import {Component, Vue, Watch} from "vue-property-decorator";
   import {namespace} from "vuex-class";
   import PlayListItem from "../components/PlayList/PlayListItem.vue";
-  import {editPlayListModal, confirm, mapDataItemsToFiles} from "../utils/utils";
+  import {showEditPlayListModal, confirm, mapDataItemsToFiles} from "../utils/utils";
   import SelectBottomTools from "../components/Operation/SelectBottomTools.vue";
   import {PlayList, PlayListContentDataItem} from "../store/modules/playList";
   import {File} from "../store/modules/file";
@@ -146,7 +146,7 @@
     selectedItems: Array<PlayList> = [];
 
     showCreatePlayListModal() {
-      editPlayListModal().then(name => {
+      showEditPlayListModal().then(name => {
         this.$store.dispatch("playList/createPlayList", {name, content: []});
       });
     }

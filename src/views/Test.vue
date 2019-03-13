@@ -11,13 +11,8 @@
 
 <script lang="ts">
   import {Component, Mixins, Vue} from "vue-property-decorator";
-  import {confirm, guid} from "../utils/utils";
-  import {Sortable,Plugins} from "@shopify/draggable";
+  import {guid} from '@/utils/utils';
   import {
-    State,
-    Getter,
-    Action,
-    Mutation,
     namespace
   } from "vuex-class";
   import TestMixins from '@/mixins/test'

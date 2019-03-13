@@ -47,7 +47,7 @@
     @homeModule.State playingFile!: number
 
     async like(action: string) {
-      if ((this.disliked&&action==='like')||(this.liked&&action==='dislike')) {
+      if ((this.disliked && action === "like") || (this.liked && action === "dislike")) {
         return
       }
       let target
@@ -65,22 +65,27 @@
             fire(left, top)
             shake(target)
           }
-          this.$store.dispatch("home/like", {action: "like"}).finally(()=>{
-            this.$store.dispatch('home/getLikeRecord',{file:this.playingFile})
+          this.$store.dispatch("home/like", {action: "like"}).finally(() => {
+            this.$store.dispatch("home/getLikeRecord", {file: this.playingFile})
           })
         } :
         () => {
-          this.$store.dispatch("home/like", {action: "dislike"}).finally(()=>{
-            this.$store.dispatch('home/getLikeRecord',{file:this.playingFile})
+          this.$store.dispatch("home/like", {action: "dislike"}).finally(() => {
+            this.$store.dispatch("home/getLikeRecord", {file: this.playingFile})
           })
         }
 
-      if (!this.isLogin) {
-        await showLoginModal()
-        callLike()
-      } else {
-        callLike()
-      }
+      callLike()
+      /*      if (!this.isLogin) {
+               showLoginModal().then(()=>{
+                 callLike()
+               })
+
+              // await showLoginModal()
+              // callLike()
+            } else {
+              callLike()
+            }*/
     }
   }
 </script>
@@ -88,7 +93,7 @@
 <style scoped lang="scss">
   @import "../var";
 
-  .like-group-enter,.like-group-leave-to{
+  .like-group-enter, .like-group-leave-to {
     transform: translateX(10rem);
   }
 

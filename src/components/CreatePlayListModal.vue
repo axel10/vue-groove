@@ -15,9 +15,9 @@
 
     </div>
     <div class="footer">
-<!--      <div class="create-btn vp-btn" @click="ok">
-        {{isRename?'重命名':'创建播放列表'}}
-      </div>-->
+      <!--      <div class="create-btn vp-btn" @click="ok">
+              {{isRename?'重命名':'创建播放列表'}}
+            </div>-->
       <VPButton @click="ok" class="create-btn">
         {{isRename?'重命名':'创建播放列表'}}
       </VPButton>
@@ -31,7 +31,7 @@
 <script lang="ts">
   import {Component, Prop, Vue, Watch} from "vue-property-decorator"
   import {namespace} from "vuex-class"
-  import {PlayList} from '@/store/modules/playList'
+  import {PlayList} from "@/store/types/PlayList"
   import Modal from "@/components/Modal.vue"
 
   const playListModule = namespace("playList")
@@ -39,10 +39,10 @@
     components: {
       Modal
     },
-    props:{
-      animateTime:{
-        type:Number,
-        default:200
+    props: {
+      animateTime: {
+        type: Number,
+        default: 200
       }
     }
   })
@@ -76,8 +76,6 @@
 </script>
 
 <style scoped lang="scss">
-
-
 
 
   .CreatePlayListModal {
@@ -156,7 +154,6 @@
       .create-btn {
         padding: .3rem 4rem;
       }
-
 
 
       .cancel {

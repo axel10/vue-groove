@@ -16,6 +16,7 @@
     "object-literal-sort-keys": false,
     "no-consecutive-blank-lines": false,
     "semicolon": [true,"never"],
-    "no-bitwise": false
+    "no-bitwise": false,
+    "no-unused-expression": false
   }
 }

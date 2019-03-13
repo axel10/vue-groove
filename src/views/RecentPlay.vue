@@ -34,14 +34,14 @@
       <li @click="playAll">
         <p>
           <!--<Icon type="ios-list-box-outline"/>-->
-          <Icon type="ios-play-outline" />
+          <Icon type="ios-play-outline"/>
         </p>
         <p>播放全部</p>
       </li>
       <li @click="remove">
         <p>
           <!--<Icon type="ios-list-box-outline"/>-->
-          <Icon type="ios-trash-outline" />
+          <Icon type="ios-trash-outline"/>
         </p>
         <p>删除</p>
       </li>
@@ -57,14 +57,16 @@
 </template>
 
 <script lang="ts">
-  import {Component, Vue} from "vue-property-decorator";
-  import {State, Mutation, Action, namespace} from "vuex-class";
-  import FileItem from "@/components/FileItem.vue";
-  import {File} from "../store/modules/file";
-  import SelectBottomTools from '../components/Operation/SelectBottomTools.vue';
-  import SelectContainer from '../mixins/selectContainer';
+  import {Component, Vue} from "vue-property-decorator"
+  import {State, Mutation, Action, namespace} from "vuex-class"
+  import FileItem from "@/components/FileItem.vue"
+  import {File} from "../store/modules/file"
+  import SelectBottomTools from "../components/Operation/SelectBottomTools.vue"
+  import SelectContainer from "../mixins/selectContainer"
+  import {RootState} from "@/store"
+  import {getFileId, getInvalidFile} from "@/utils/utils"
 
-  const playListModule = namespace("playList");
+  const playListModule = namespace("playList")
 
   @Component({
     components: {
@@ -73,34 +75,39 @@
     }
   })
   export default class RecentPlay extends SelectContainer {
-    @playListModule.State recentPlay !: Array<File>;
+    @playListModule.State recentPlay !: Array<File>
 
-    selectedItems:Array<File> = []
-    title:string='最近播放的内容'
+    selectedItems: Array<File> = []
+    title: string = "最近播放的内容"
 
     public created() {
-      this.$store.commit("home/isInRecentPlay", true);
-      this.$store.commit('home/setCurrentTitle',this.title)
-
+      this.$store.commit("home/isInRecentPlay", true)
+      this.$store.commit("home/setCurrentTitle", this.title)
+      // this.$store.commit({type:'playList/checkRecentPlayValid'})
+      // const rootState: RootState = this.$store.state
+      // const allFile = rootState.file.allFile
+      // 检查并删除无效文件
+      const errorFile = getInvalidFile(this.recentPlay) /*this.recentPlay.filter(o => !allFile.some(file => file.id === getFileId(o.p, o.title, o.album)))*/
+      this.$store.commit("playList/removeRecentPlay", errorFile.map(o => o.id))
     }
 
     public destroyed() {
-      this.$store.commit("home/isInRecentPlay", false);
+      this.$store.commit("home/isInRecentPlay", false)
     }
 
-    playAll(){
-      this.$store.dispatch('audio/play',this.selectedItems[0])
-      this.$store.commit('playList/addToPlayingList',this.selectedItems)
+    playAll() {
+      this.$store.dispatch("audio/play", this.selectedItems[0])
+      this.$store.commit("playList/addToPlayingList", this.selectedItems)
       this.cancelSelect()
 
     }
 
-    remove(){
-      this.$store.commit('playList/removeRecentPlay',this.selectedItems.map(o=>o.id))
+    remove() {
+      this.$store.commit("playList/removeRecentPlay", this.selectedItems.map(o => o.id))
       this.cancelSelect()
     }
 
-    selectAll(){
+    selectAll() {
       this.selectedItems = this.recentPlay
     }
 

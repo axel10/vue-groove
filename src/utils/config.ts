@@ -5,5 +5,5 @@ export default {
   coverPath: 'https://file.axel10.com:5321/cover/',
   musicPath: 'https://file.axel10.com:5321/lib/',
   musicExt: 'aac',
-  apiUrl: process.env.NODE_ENV === 'development' ? 'https://localhost:44374' : 'https://api.vcollection.org',
 }
+export const apiUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:5010' : 'https://api.vcollection.org'

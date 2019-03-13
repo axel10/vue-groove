@@ -55,7 +55,7 @@
 <script lang="ts">
   import {Component, Prop, Watch} from "vue-property-decorator"
   import DropdownList from "@/components/Common/DropdownList.vue";
-  import {dropDownMenu, editPlayListModal, fadeInFileContent, getAddFileToContextMenuItems} from "../utils/utils";
+  import {dropDownMenu, showEditPlayListModal, fadeInFileContent, getAddFileToContextMenuItems} from "../utils/utils";
   import {namespace} from "vuex-class";
   import SelectItem from "../mixins/selectItem";
   import {File} from "../store/modules/file";
@@ -119,7 +119,7 @@
     }
 
     showCreatePlayListModal() {
-      editPlayListModal({isRename: false}).then(name => {
+      showEditPlayListModal({isRename: false}).then(name => {
         if (this.item.content) {
           let allFile = this.getAllFileByContent(this.item.content);
           this.$store.dispatch("playList/createPlayList", {

@@ -1,22 +1,18 @@
 import {File} from '@/store/modules/file'
 import Vue from 'vue'
-// @ts-ignore
 import config from '@/utils/config'
-// @ts-ignore
 import Confirm from '@/components/Common/Confirm.vue'
-// @ts-ignore
 import CreatePlayListModal from '@/components/CreatePlayListModal.vue'
-
 import DropdownList from '@/components/Common/DropdownList.vue'
 import store from '@/store/index'
-import {Sortable, Plugins} from '@shopify/draggable'
+import {Plugins, Sortable} from '@shopify/draggable'
 import SelectContainer from '@/mixins/selectContainer'
 import {PlayListContentDataItem} from '@/store/modules/playList'
 import LoginModal from '@/components/LoginModal.vue'
 
-const {commit, dispatch} = store
+const {commit} = store
 
-export function rendomNum(n: number): string {
+export function randomNum(n: number): string {
   let rnd = ''
   for (let i = 0; i < n; i++) {
     rnd += Math.floor(Math.random() * 10)
@@ -24,33 +20,38 @@ export function rendomNum(n: number): string {
   return rnd
 }
 
-function _initResourceUrl(arr: File[], path: string[]) {
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i].content) {
-      _initResourceUrl(arr[i].content || [], path.concat([arr[i].title]))
+export function initResourceInfo(arr: File[]) {
+  _initResourceInfo(arr, [])
+}
+
+function _initResourceInfo(arr: File[], path: string[]) {
+  for (const file of arr) {
+    if (file.content) {
+      _initResourceInfo(file.content || [], path.concat([file.title]))
     } else {
-      const imgUrl = `${config.coverPath}/small/${path.join('/')}/${arr[i].title}.jpg`
-      const musicUrl = `${config.musicPath}${path.join('/')}/${arr[i].title}.${config.musicExt}`
-      arr[i].imgUrl = imgUrl
-      arr[i].musicUrl = musicUrl
-      const token = arr[i].p + '/' + arr[i].title
-      arr[i].token = token
-      arr[i].id = token
-      debugger
+      const pathStr = path.join('/')
+      const imgUrl = `${config.coverPath}/small/${pathStr}/${file.title}.jpg`
+      const musicUrl = `${config.musicPath}${pathStr}/${file.title}.${config.musicExt}`
+      file.imgUrl = imgUrl
+      file.musicUrl = musicUrl
+      file.album = path[0]
+      file.token = file.p + '/' + file.title
+      file.id = getFileId(file.p, file.title, file.album)
     }
   }
 }
 
-export function initResourceUrl(arr: File[]) {
-  _initResourceUrl(arr, [])
+export function getFileId(artist: string, title: string, album: string) {
+  return `${artist}/${title}/${album}`
 }
 
+
 function _convertFilesToLinearArray(arr: File[], tmp: File[]) {
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i].content) {
-      _convertFilesToLinearArray(arr[i].content || [], tmp)
+  for (const file of arr) {
+    if (file.content) {
+      _convertFilesToLinearArray(file.content || [], tmp)
     } else {
-      tmp.push(arr[i])
+      tmp.push(file)
     }
   }
 }
@@ -106,7 +107,7 @@ interface IConfirmConfig {
 
 export function confirm(opt: IConfirmConfig) {
   return new Promise(((resolve) => {
-    const confirm = Vue.extend(Confirm)
+    const confirmModal = Vue.extend(Confirm)
     const contain = document.createElement('div')
     document.body.appendChild(contain)
 
@@ -115,7 +116,7 @@ export function confirm(opt: IConfirmConfig) {
       document.body.removeChild(vm.$el)
     }
 
-    const vm = new confirm({
+    const vm = new confirmModal({
       el: contain,
       propsData: {
         cb: () => {
@@ -145,17 +146,12 @@ export function confirm(opt: IConfirmConfig) {
   }))
 }
 
-interface IEditPlayListModalConfig {
-  isRename?: boolean
-  oldName?: string
-  onCancel?: () => {}
-}
 
 export function showLoginModal() {
-  return createModel(LoginModal, 200)
+  return createModel(LoginModal, {}, 200)
 }
 
-function createModel(modal: any, animateTime: number = 200) {
+function createModel(modal: any, props?: object, animateTime: number = 200) {
   return new Promise((resolve) => {
     const contain = document.createElement('div')
     document.body.appendChild(contain)
@@ -183,20 +179,27 @@ function createModel(modal: any, animateTime: number = 200) {
             remove()
           }, animateTime)
         },
+        ...props,
       },
     })
     vm.show = true
   })
 }
 
-export function editPlayListModal(animateTime: number = 200) {
-  return createModel(CreatePlayListModal, animateTime)
+interface IEditPlayListModalConfig {
+  isRename?: boolean
+  oldName?: string
+  onCancel?: () => {}
+}
+
+export function showEditPlayListModal(options?: IEditPlayListModalConfig, animateTime: number = 200) {
+  return createModel(CreatePlayListModal, options, animateTime)
 }
 
 
 export interface DropDownMenuItem {
   label?: string
-  callback?: Function
+  callback?: () => {}
   split?: boolean
   isDisable?: boolean
   children?: DropDownMenuItem[]
@@ -229,15 +232,15 @@ export function dropDownMenu(e: Event, opts: DropDownMenuItem[], onCancel?: () =
 
 export function union(arr1: PlayListContentDataItem[], arr2: PlayListContentDataItem[]) {
   const arr = []
-  for (let i = 0; i < arr1.length; i++) {
+  for (const file of arr1) {
     // if (arr.indexOf(arr1[i]) === -1) {
-    if (arr.findIndex((o) => o.title === arr1[i].title && o.p === arr1[i].p) === -1) {
-      arr.push(arr1[i])
+    if (arr.findIndex((o) => o.title === file.title && o.p === file.p) === -1) {
+      arr.push(file)
     }
   }
-  for (let i = 0; i < arr2.length; i++) {
-    if (arr.findIndex((o) => o.title === arr2[i].title && o.p === arr2[i].p) === -1) {
-      arr.push(arr2[i])
+  for (const file of arr2) {
+    if (arr.findIndex((o) => o.title === file.title && o.p === file.p) === -1) {
+      arr.push(file)
     }
   }
   return arr
@@ -246,14 +249,14 @@ export function union(arr1: PlayListContentDataItem[], arr2: PlayListContentData
 
 export function unionFiles(arr1: File[], arr2: File[]) {
   const arr = []
-  for (let i = 0; i < arr1.length; i++) {
-    if (arr.findIndex((o) => o.id === arr1[i].id) === -1) {
-      arr.push(arr1[i])
+  for (const file of arr1) {
+    if (arr.findIndex((o) => o.id === file.id) === -1) {
+      arr.push(file)
     }
   }
-  for (let i = 0; i < arr2.length; i++) {
-    if (arr.findIndex((o) => o.id === arr2[i].id) === -1) {
-      arr.push(arr2[i])
+  for (const file of arr2) {
+    if (arr.findIndex((o) => o.id === file.id) === -1) {
+      arr.push(file)
     }
   }
   return arr
@@ -273,8 +276,8 @@ export function toggleFullScreen() {
   } else {	// 退出全屏,三目运算符
     document.exitFullscreen ? document.exitFullscreen() :
       document.mozCancelFullScreen ? document.mozCancelFullScreen() :
-        document.webkitExitFullscreen ? document.webkitExitFullscreen() : ''
-    store.commit('home/setIsFullScreen', false)
+        document.webkitExitFullscreen ? document.webkitExitFullscreen() : void
+          store.commit('home/setIsFullScreen', false)
   }
 }
 
@@ -312,20 +315,20 @@ export function fadeInFileContent() {
 }
 
 
-export function getAllFileByContent(content: File[]): File[] {
+export function getAllFileByContent(topContent: File[]): File[] {
   const tmp: File[] = []
 
   function pushItem(content: File[]) {
-    for (let i = 0; i < content.length; i++) {
-      if (content[i].content) {
-        pushItem(content[i].content)
+    for (const file of content) {
+      if (file.content) {
+        pushItem(file.content)
       } else {
-        tmp.push(content[i])
+        tmp.push(file)
       }
     }
   }
 
-  pushItem(content)
+  pushItem(topContent)
   return tmp
 }
 
@@ -345,10 +348,10 @@ export function getAddFileToContextMenuItems(files: File[], context?: SelectCont
 
   contextMenu.push({
     label: '新的播放列表', callback: () => {
-      editPlayListModal().then((name) => {
+      showEditPlayListModal().then((name) => {
         store.dispatch('playList/createPlayList', {
           name,
-          content: files.map((o: File) => new PlayListContentDataItem(o.title, o.p)),
+          content: files.map((o: File) => new PlayListContentDataItem(o.title, o.p, o.album)),
         })
         if (context) {
           context.selectedItems = []
@@ -366,7 +369,7 @@ export function getAddFileToContextMenuItems(files: File[], context?: SelectCont
         callback: () => {
           store.dispatch('playList/addToPlayList', {
             listId: o.id,
-            content: files.map((o) => new PlayListContentDataItem(o.title, o.p)),
+            content: files.map((file) => new PlayListContentDataItem(file.title, file.p, file.album)),
           })
           if (context) {
             context.selectedItems = []
@@ -390,9 +393,9 @@ export function mapDataItemsToFiles(items: PlayListContentDataItem[]): File[] {
 }
 
 export interface SortListHack {
-  onStart?: Function
-  onSort?: Function
-  onEnd?: Function
+  onStart?: (e: any) => void
+  onSort?: (e: any) => void
+  onEnd?: (e: any) => void
 }
 
 export function SortList(container: HTMLElement, hacks: SortListHack, opt?: any) {
@@ -459,7 +462,7 @@ export function beginAddTime() {
 }
 
 export function convertTimeStrToSecond(timeStr: string): number {
-  const time = timeStr.split(':').map((o) => parseInt(o))
+  const time = timeStr.split(':').map((o) => parseInt(o, 10))
   return time[0] * 60 + time[1]
 }
 
@@ -502,4 +505,20 @@ export function setPlayTimer() {
     commit('audio/syncCurrentTime', 1 / fps)
   }, 1000 / fps)
   commit('audio/setTimer', timer)
+}
+
+
+export function getCurrentPath() {
+  // return window.location.pathname.
+}
+
+export function assert(bool: boolean, msg?: string) {
+  if (!bool) {
+    throw new Error(msg)
+  }
+}
+
+
+export function getInvalidFile(files: File[]) {
+  return files.filter((o) => !store.state.file.allFile.some((file) => file.id === getFileId(o.p, o.title, o.album)))
 }

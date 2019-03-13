@@ -3,7 +3,7 @@ import {File} from '@/store/modules/file'
 import {ActionContextBasic} from '@/store'
 import {LocalStorageKeys} from '@/utils/enum/LocalStorageKeys'
 import mainApi from '@/api/mainApi'
-import {getToken} from '@/utils/utils'
+import {assert, getToken} from '@/utils/utils'
 import Message from '@/utils/Message'
 
 const initState: IState = {
@@ -53,18 +53,18 @@ const getters = {}
 
 const actions = {
 
-  init({commit, dispatch}: ActionContextBasic) {
+  init({commit, dispatch, rootState}: ActionContextBasic) {
     dispatch('file/init', {}, {root: true})
     const recentPlay = JSON.parse(localStorage.getItem(LocalStorageKeys.recentPlay) || '[]')
     const playingList = JSON.parse(localStorage.getItem(LocalStorageKeys.playingList) || '[]')
     const playLists = JSON.parse(localStorage.getItem(LocalStorageKeys.playLists) || '[]')
-    const playingFile = JSON.parse(localStorage.getItem(LocalStorageKeys.playingFile) || '{}')
+    const playingFile = JSON.parse(localStorage.getItem(LocalStorageKeys.playingFile) || '{}') as File
 
     const volume = parseInt(localStorage.getItem(LocalStorageKeys.volume) || '', 10)
     commit('playList/setRecentPlay', recentPlay, {root: true})
     commit('playList/setPlayingList', playingList, {root: true})
     commit('playList/setPlayLists', playLists, {root: true})
-    if (playingFile.title) {
+    if (playingFile.title && rootState.file.allFile.some((file) => file.id === playingFile.id)) {
       commit('setPlayingFile', playingFile)
       dispatch('getLikeRecord', {file: playingFile})
     }
@@ -79,10 +79,13 @@ const actions = {
   },
 
   getLikeRecord({commit}: ActionContextBasic, {file}: { file: File }) {
-    mainApi.getLikeRecord(file.p, file.title).then((o) => {
+    assert(!!file.album, 'album缺失')
+    mainApi.getLikeRecord(file.p, file.title, file.album).then((o) => {
       commit('setData', {key: 'liked', val: o.data.liked})
       commit('setData', {key: 'disliked', val: o.data.disliked})
       commit('setData', {key: 'likeCount', val: o.data.likeCount})
+    }).catch((e) => {
+      console.log(e)
     })
   },
 
@@ -109,7 +112,7 @@ const actions = {
         commit('setData', {key: 'liked', val: false})
         commit('setData', {key: 'likeCount', val: likeCount - 1})
         try {
-          await mainApi.like({isCancel: true, type: 2, action, token})
+          await mainApi.like({isCancel: true, type: 2, action, token, album: playingFile.album})
         } catch (e) {
           commit('setData', {key: 'liked', val: true})
           commit('setData', {key: 'likeCount', val: likeCount})
@@ -120,7 +123,7 @@ const actions = {
         commit('setData', {key: 'liked', val: true})
         commit('setData', {key: 'likeCount', val: likeCount + 1})
         try {
-          await mainApi.like({isCancel: false, type: 2, action, token})
+          await mainApi.like({isCancel: false, type: 2, action, token, album: playingFile.album})
         } catch (e) {
           commit('setData', {key: 'liked', val: false})
           commit('setData', {key: 'likeCount', val: likeCount})
@@ -132,19 +135,19 @@ const actions = {
       if (disliked) {
         commit('setData', {key: 'disliked', val: false})
         try {
-          await mainApi.like({isCancel: true, type: 2, action, token})
+          await mainApi.like({isCancel: true, type: 2, action, token, album: playingFile.album})
         } catch (e) {
           commit('setData', {key: 'disliked', val: true})
-        }finally {
+        } finally {
           commit('setData', {key: 'loading', val: false})
         }
       } else {
         commit('setData', {key: 'disliked', val: true})
         try {
-          await mainApi.like({isCancel: false, type: 2, action, token})
+          await mainApi.like({isCancel: false, type: 2, action, token, album: playingFile.album})
         } catch (e) {
           commit('setData', {key: 'disliked', val: false})
-        }finally {
+        } finally {
           commit('setData', {key: 'loading', val: false})
         }
       }

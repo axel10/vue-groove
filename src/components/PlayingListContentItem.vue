@@ -28,7 +28,7 @@
 <script lang="ts">
   import {Component, Prop, Vue} from "vue-property-decorator";
   import {State, Mutation, Action, namespace} from "vuex-class";
-  import {dropDownMenu, editPlayListModal, getAddFileToContextMenuItems} from "../utils/utils";
+  import {dropDownMenu, showEditPlayListModal, getAddFileToContextMenuItems} from "../utils/utils";
   import {File} from "../store/modules/file";
   import {PlayList, PlayListContentDataItem} from "../store/modules/playList";
   import SelectItem from '../mixins/selectItem';
@@ -92,7 +92,7 @@
     }
 
     showCreatePlayListModal() {
-      editPlayListModal({isRename: false}).then(name => {
+      showEditPlayListModal({isRename: false}).then(name => {
         this.$store.dispatch("playList/createPlayList", {name, content:new PlayListContentDataItem(this.item.title,this.item.p)});
       });
     }

@@ -100,8 +100,8 @@
   import {namespace} from "vuex-class";
   import Files from "@/views/Files.vue";
   import HomeBottom from "../components/HomeBottom.vue";
-  import {PlayList} from "../store/modules/playList";
-  import {dropDownMenu, editPlayListModal, isInSelf} from "../utils/utils";
+  import {PlayList} from '@/store/types/PlayList';
+  import {dropDownMenu, showEditPlayListModal, isInSelf} from '@/utils/utils';
   import {confirm} from "@/utils/utils";
 
   const homeModule = namespace("home");
@@ -167,7 +167,7 @@
     }
 
     showCreatePlayListModal() {
-      editPlayListModal().then((name: any) => {
+      showEditPlayListModal().then((name: any) => {
         this.$store.dispatch("playList/createPlayList", {name, content: []});
       });
     }
@@ -186,7 +186,7 @@
         },
         {
           label: "重命名", callback: () => {
-            editPlayListModal({isRename: true, oldName: item.title}).then(name => {
+            showEditPlayListModal({isRename: true, oldName: item.title}).then(name => {
               this.$store.dispatch("playList/renamePlayList", {name, id: item.id});
             });
           }

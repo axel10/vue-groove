@@ -1,9 +1,10 @@
 import * as  _ from 'lodash'
 import {File} from '@/store/modules/file'
 import {ActionContextBasic} from '@/store'
-import {guid, union, unionFiles} from '@/utils/utils'
+import {getFileId, guid, union, unionFiles} from '@/utils/utils'
 
 import Notice from '@/utils/Notice'
+import {PlayList} from '@/store/types/PlayList'
 
 export interface IState {
   recentPlay: File[]
@@ -14,24 +15,16 @@ export interface IState {
 export class PlayListContentDataItem {
   public title!: string
   public p!: string
+  public album!: string
 
-  constructor(title: string, p: string) {
+  constructor(title: string, p: string, album: string) {
     this.title = title
     this.p = p
+    this.album = album
   }
 }
 
-export class PlayList {
-  public id: string
-  public title: string
-  public content: PlayListContentDataItem[]
 
-  constructor() {
-    this.id = ''
-    this.title = ''
-    this.content = []
-  }
-}
 
 export interface AddPlayListPayload {
   playListTitle: string
@@ -65,7 +58,9 @@ const actions = {
   },
   createPlayList({commit, state}: ActionContextBasic, {name, /*fileIds*/ content}: CreatePlayListPayload) {
     const playLists = state.playLists
-    if (!name) { name = '新建播放列表' }
+    if (!name) {
+      name = '新建播放列表'
+    }
     const repeat = playLists.find((o: PlayList) => o.title === name)
     let distName = name
     let count = 1
@@ -120,7 +115,9 @@ const actions = {
     if (currentId === id) {
       const playLists: PlayList[] = state.playLists
       let prePlayListIndex = playLists.findIndex((o) => o.id === id) - 1
-      if (playLists.length < 0) { prePlayListIndex = 0 }
+      if (playLists.length < 0) {
+        prePlayListIndex = 0
+      }
       if (prePlayListIndex >= 0) {
         context.$router.replace('/playList/' + playLists[prePlayListIndex].id)
       } else {
@@ -141,41 +138,43 @@ const actions = {
   },
 
   playPlayList({dispatch, commit, state, rootState}: ActionContextBasic, id: string) {
-    const currentPlayList = state.playLists.find((o: PlayList) => o.id === id)
+    const currentPlayList = state.playLists.find((o: PlayList) => o.id === id) as PlayList
     if (!currentPlayList || Object.keys(currentPlayList).length === 0) {
       return
     }
     const currentPlayListIds = currentPlayList.content
-    const content = currentPlayListIds.map((o: number) => {
-      return rootState.file.allFile.find((file) => file.id === o)
+    const content = currentPlayListIds.map((o) => {
+      return rootState.file.allFile.find((file) => file.id === getFileId(o.p, o.title, o.album))
     }).filter((o: File) => o)
 
     commit('setPlayingList', content)
     dispatch('audio/play', content[0], {root: true})
   },
 
-  removePlayingList({commit, rootState, state, dispatch}: ActionContextBasic, ids: number[]) {
+  removePlayingList({commit, rootState, state, dispatch}: ActionContextBasic, ids: string[]) {
     const playingFile = rootState.home.playingFile
     const playingList: File[] = state.playingList
-
     if (ids.indexOf(playingFile.id) !== -1) {
-      ids.sort(function(e1, e2) {
-        if (e1 > e2) { return 1 }
-        if (e1 === e2) { return 0 }
+      ids.sort((e1, e2) => {
+        if (e1 > e2) {
+          return 1
+        }
+        if (e1 === e2) {
+          return 0
+        }
         return -1
       })
-      const newIndex  = playingList.findIndex((o) => o.id === ids[0])
+      const newIndex = playingList.findIndex((o) => o.id === ids[0])
       commit('removePlayingList', ids)
-      if (state.playingList.length === 0) { return }
+      if (state.playingList.length === 0) {
+        return
+      }
       const newFile = state.playingList[newIndex]
       commit('home/setPlayingFile', newFile, {root: true})
       dispatch('audio/stop', {}, {root: true})
     } else {
       commit('removePlayingList', ids)
     }
-
-
-
   },
 
 
@@ -195,7 +194,7 @@ const mutations = {
     localStorage.setItem('recentPlay', JSON.stringify(recentPlay))
   },
 
-  setPlayListContent(state: IState, {listId, content}: {listId: string, content: PlayListContentDataItem[]}) {
+  setPlayListContent(state: IState, {listId, content}: { listId: string, content: PlayListContentDataItem[] }) {
     const playList = state.playLists.find((o) => o.id === listId) || new PlayList()
     playList.content = content
     localStorage.setItem('playLists', JSON.stringify(state.playLists))
@@ -262,15 +261,17 @@ const mutations = {
     playingList.splice(newIndex, 0, tmp)
     localStorage.setItem('playingList', JSON.stringify(state.playingList))
   },
-  removePlayingList(state: IState, ids: number[]) {
+  removePlayingList(state: IState, ids: string[]) {
     state.playingList = state.playingList.filter((o) => ids.indexOf(o.id) === -1)
     localStorage.setItem('playingList', JSON.stringify(state.playingList))
   },
-  removeRecentPlay(state: IState, ids: number[]) {
+  removeRecentPlay(state: IState, ids: string[]) {
     state.recentPlay = state.recentPlay.filter((o) => ids.indexOf(o.id) === -1)
     localStorage.setItem('recentPlay', JSON.stringify(state.recentPlay))
   },
-
+/*  checkRecentPlayValid(state:IState){
+    state.recentPlay.filter(o=>o.)
+  }*/
 }
 
 export default {

@@ -97,12 +97,6 @@
           li.onclick = function () {
             that.execCallback(o)
           }
-          /*          li.onmouseout = function () {
-                      var ul = <HTMLElement>li.getElementsByTagName("ul")[0];
-                      console.log(li);
-                      if (ul) ul.style.display = "none";
-                    };*/
-
           ul.appendChild(li)
         })
         let x = (<HTMLElement> e.target).offsetWidth
