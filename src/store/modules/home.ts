@@ -53,8 +53,8 @@ const getters = {}
 
 const actions = {
 
-  init({commit, dispatch, rootState}: ActionContextBasic) {
-    dispatch('file/init', {}, {root: true})
+  async init({commit, dispatch, rootState}: ActionContextBasic) {
+    await dispatch('file/init', {}, {root: true})
     const recentPlay = JSON.parse(localStorage.getItem(LocalStorageKeys.recentPlay) || '[]')
     const playingList = JSON.parse(localStorage.getItem(LocalStorageKeys.playingList) || '[]')
     const playLists = JSON.parse(localStorage.getItem(LocalStorageKeys.playLists) || '[]')
@@ -73,9 +73,9 @@ const actions = {
     }
 
     // 验证是否登录
-    mainApi.isLogin().then((o) => {
+/*    mainApi.isLogin().then((o) => {
       commit('setData', {key: 'isLogin', val: o.data})
-    })
+    })*/
   },
 
   getLikeRecord({commit}: ActionContextBasic, {file}: { file: File }) {
@@ -84,8 +84,6 @@ const actions = {
       commit('setData', {key: 'liked', val: o.data.liked})
       commit('setData', {key: 'disliked', val: o.data.disliked})
       commit('setData', {key: 'likeCount', val: o.data.likeCount})
-    }).catch((e) => {
-      console.log(e)
     })
   },
 

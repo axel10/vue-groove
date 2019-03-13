@@ -330,7 +330,7 @@ const mutations = {
   onPlayerError(state: IState, {context}:{context:Vue}) {
     context.$Message.destroy()
     context.$Message.error({
-      content: '出错了😭请前往<a href="https://blog.vcollection.org/index.php/2017/08/18/hello-world-2/">留言板</a>汇报bug',
+      content: '出错了😭请前往<a target="_blank" href="https://blog.vcollection.org/index.php/2017/08/18/hello-world-2/">留言板</a>汇报bug',
       duration: 3,
     })
     state.isLoading = false

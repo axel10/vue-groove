@@ -81,11 +81,11 @@ const getters = {
 
 const actions = {
 
-  init({commit, dispatch}: ActionContextBasic) {
-    dispatch({type: 'getFiles'})
+  async init({commit, dispatch}: ActionContextBasic) {
+    await dispatch({type: 'getFiles'})
   },
 
-  getFiles({commit, dispatch}: ActionContextBasic) {
+  async getFiles({commit, dispatch}: ActionContextBasic) {
     let i = 0
     const delay = 800
     for (let j = 0; j < delay / 100; j++) {
@@ -93,26 +93,24 @@ const actions = {
         i++
       }, 100)
     }
-    mainApi.getFiles().then((o: File[]) => {
-      o.sort((e1, e2) => {
-        if (e1.sort > e2.sort) {
-          return -1
-        }
-        if (e1.sort < e2.sort) {
-          return 1
-        }
-        return 0
-      })
-      commit('setFiles', o)
-
-      if (i < delay) {
-        setTimeout(() => {
-          commit('home/setData', {key: 'loaded', val: true}, {root: true})
-        }, delay - i)
-      } else {
-        commit('home/setData', {key: 'loaded', val: true}, {root: true})
+    const files = await mainApi.getFiles()
+    files.sort((e1, e2) => {
+      if (e1.sort > e2.sort) {
+        return -1
       }
+      if (e1.sort < e2.sort) {
+        return 1
+      }
+      return 0
     })
+    commit('setFiles', files)
+    if (i < delay) {
+      setTimeout(() => {
+        commit('home/setData', {key: 'loaded', val: true}, {root: true})
+      }, delay - i)
+    } else {
+      commit('home/setData', {key: 'loaded', val: true}, {root: true})
+    }
   },
 
   randomPlayAll({dispatch, commit, state}: ActionContextBasic) {

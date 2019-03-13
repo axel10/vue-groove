@@ -19,12 +19,14 @@
     @audioModule.Action init!: any
 
     public mounted() {
+      console.log(this.serverPath)
       this.init()
     }
 
-    onError() {
-
-      this.$store.commit({type: "audio/onPlayerError", context: this})
+    onError(e) {
+      if (this.serverPath) {
+        this.$store.commit({type: "audio/onPlayerError", context: this})
+      }
     }
   }
 </script>

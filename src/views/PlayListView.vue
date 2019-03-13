@@ -14,7 +14,7 @@
       <div class="right">
         <div class="placeholder"></div>
         <div class="top-area">
-          <div class="title">{{distPlayList.title}}</div>
+          <div class="title">{{currentPlayList.title}}</div>
           <div class="list-info" ref="listInfo">
             <p>{{distPlayList.content.length}}首歌，{{totalMinute}}分钟</p>
 
@@ -168,10 +168,12 @@
 
     // 字段同playList,Content中为具体的文件
     distPlayList!: distPlayList
+    // playList!: PlayList
     distPlayListContent: Array<File> = []
     selectedItems: Array<File> = []
     guid: Function = guid
     title: string = "播放列表"
+
 
     public created() {
       this.initContent()
@@ -187,7 +189,6 @@
     }
 
     public mounted() {
-
 
       const list = <HTMLElement> this.$refs.list
       const onStart = (e: any) => {
@@ -281,10 +282,17 @@
       return Math.floor(sec / 60)
     }
 
-    initContent() {
+    get currentPlayList() {
       const id = this.$route.params["id"]
-      const currentPlayList = this.playLists.find(o => o.id === id)
+      return this.playLists.find(o => o.id === id)
+    }
+
+    initContent() {
+      // const id = this.$route.params["id"]
+      const currentPlayList = this.currentPlayList
       if (!currentPlayList || Object.keys(currentPlayList).length === 0) {
+        // return
+        this.$router.replace("/")
         return
       }
       const playListContentData: Array<PlayListContentDataItem> = currentPlayList.content
@@ -293,7 +301,7 @@
         return this.allFile.find((file: File) => file.title === o.title && file.p === o.p)
       }).filter(o => o) || []
 
-
+      // this.playList = currentPlayList
       this.distPlayList = {...currentPlayList, filesContent: content}
       this.distPlayListContent = content
     }
