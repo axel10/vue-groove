@@ -6,9 +6,12 @@ import iview from 'iview'
 import axios from 'axios'
 import VPButton from '@/components/VPButton.vue'
 import LikeBtnGroup from '@/components/LikeBtnGroup.vue'
-import mainApi from '@/api/mainApi'
+
+import "@babel/polyfill";
+
 // axios.defaults.baseURL = 'http://localhost:5321/'
 // import 'iview/dist/styles/iview.css';
+
 
 axios.defaults.withCredentials = true
 

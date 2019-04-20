@@ -398,6 +398,15 @@ export interface SortListHack {
   onEnd?: (e: any) => void
 }
 
+declare global {
+  interface Window {
+    ActiveXObject: any
+  }
+}
+export function isIE() {
+  return !!window.ActiveXObject || 'ActiveXObject' in window
+}
+
 export function SortList(container: HTMLElement, hacks: SortListHack, opt?: any) {
   const {onStart, onSort, onEnd} = hacks
   const mergeOpt = {

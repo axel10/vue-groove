@@ -126,19 +126,21 @@ const actions = {
               console.log('error')
               debugger
             }*/
+
       player.load()
       clearInterval(state.timer)
       const msg = (new Vue()).$Message.loading({
         content: '正在加载...',
         duration: 0,
       })
+
+
       player.onloadeddata = () => {
         commit('setMusicInfo', file.time)
         setPlayTimer()
         player.play()
         msg()
         commit('setLoading', false)
-
 
         // 设置当前播放文件
         dispatch('home/setPlayingFile', file, {root: true})
@@ -327,7 +329,7 @@ const mutations = {
     state.isLoading = isLoading
   },
 
-  onPlayerError(state: IState, {context}:{context:Vue}) {
+  onPlayerError(state: IState, {context}: { context: Vue }) {
     context.$Message.destroy()
     context.$Message.error({
       content: '出错了😭请前往<a target="_blank" href="https://blog.vcollection.org/index.php/2017/08/18/hello-world-2/">留言板</a>汇报bug',
