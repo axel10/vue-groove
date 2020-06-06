@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!--  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.4.3/polyfill.min.js"></script>
   <script src="https://unpkg.com/@shopify/draggable@1.0.0-beta.8/lib/es5/draggable.bundle.legacy.js"></script>
 
   <link rel="manifest" href="/manifest.json">
   <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-125412809-2"></script>
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-125412809-2"></script> -->
   <script>
     window.dataLayer = window.dataLayer || [];
 
@@ -18,7 +20,9 @@
 
     gtag('config', 'UA-125412809-2');
   </script>
-
+  <!--  <script async custom-element="amp-auto-ads"
+            src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>-->
 
   <style>
     .loading-mask {
@@ -50,7 +54,6 @@
       opacity: 0;
     }
   </style>
-
 
 
   <!--禁止横屏-->
@@ -112,7 +115,7 @@
   <!--<script src="https://cdn.bootcss.com/ionicons/4.1.2/ionicons.js"></script>-->
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
   <script src="https://unpkg.com/vue@2.5.16/dist/vue.min.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/iview@3.0.1/dist/styles/iview.css">
   <script src="https://unpkg.com/iview@3.0.1/dist/iview.min.js"></script>
@@ -175,7 +178,7 @@
 
 
 <script>
-  window.addEventListener('DOMContentLoaded',function () {
+  window.addEventListener('DOMContentLoaded', function () {
 
   })
 
@@ -194,11 +197,33 @@
   }
 </script>
 
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<script>
+<!--<script>
   (adsbygoogle = window.adsbygoogle || []).push({
     google_ad_client: "ca-pub-5807827725641721",
     enable_page_level_ads: true
   });
-</script>
+</script>-->
+<!-- 展示广告 -->
+
+<!--<style>
+  .ad-container{
+    position: fixed;
+    width: 400px;
+    height: 140px;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+</style>
+<div class="ad-container">
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-format="fluid"
+       data-ad-layout-key="-ef+6k-30-ac+ty"
+       data-ad-client="ca-pub-5807827725641721"
+       data-ad-slot="7180635880"></ins>
+</div>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>-->
 </html>

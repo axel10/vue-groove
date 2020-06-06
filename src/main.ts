@@ -9,9 +9,6 @@ import LikeBtnGroup from '@/components/LikeBtnGroup.vue'
 
 import "@babel/polyfill";
 
-// axios.defaults.baseURL = 'http://localhost:5321/'
-// import 'iview/dist/styles/iview.css';
-
 
 axios.defaults.withCredentials = true
 

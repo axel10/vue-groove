@@ -65,14 +65,14 @@
             fire(left, top)
             shake(target)
           }
-          this.$store.dispatch("home/like", {action: "like"}).finally(() => {
-            this.$store.dispatch("home/getLikeRecord", {file: this.playingFile})
-          })
+          // this.$store.dispatch("home/like", {action: "like"}).finally(() => {
+          //   this.$store.dispatch("home/getLikeRecord", {file: this.playingFile})
+          // })
         } :
         () => {
-          this.$store.dispatch("home/like", {action: "dislike"}).finally(() => {
-            this.$store.dispatch("home/getLikeRecord", {file: this.playingFile})
-          })
+          // this.$store.dispatch("home/like", {action: "dislike"}).finally(() => {
+          //   this.$store.dispatch("home/getLikeRecord", {file: this.playingFile})
+          // })
         }
 
       callLike()

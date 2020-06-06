@@ -81,7 +81,12 @@
           </div>
         </div>
 
-        <div class="right" id="router-content">
+        <div class="right" id="router-content" style="overflow-x: hidden;">
+<!--          <ins class="adsbygoogle ad-container"
+               style="display:inline-block;"
+               data-ad-client="ca-pub-5807827725641721"
+               data-ad-slot="5229615181"
+          ></ins>-->
           <router-view/>
         </div>
 
@@ -96,17 +101,16 @@
 </template>
 
 <script lang="ts">
-  import {Component, Vue, Watch} from "vue-property-decorator";
-  import {namespace} from "vuex-class";
-  import Files from "@/views/Files.vue";
-  import HomeBottom from "../components/HomeBottom.vue";
-  import {PlayList} from '@/store/types/PlayList';
-  import {dropDownMenu, showEditPlayListModal, isInSelf} from '@/utils/utils';
-  import {confirm} from "@/utils/utils";
+  import {Component, Vue, Watch} from "vue-property-decorator"
+  import {namespace} from "vuex-class"
+  import Files from "@/views/Files.vue"
+  import HomeBottom from "../components/HomeBottom.vue"
+  import {PlayList} from "@/store/types/PlayList"
+  import {confirm, dropDownMenu, isInSelf, showEditPlayListModal} from "@/utils/utils"
 
-  const homeModule = namespace("home");
-  const audioModule = namespace("audio");
-  const playListModule = namespace("playList");
+  const homeModule = namespace("home")
+  const audioModule = namespace("audio")
+  const playListModule = namespace("playList")
 
   @Component({
     components: {
@@ -115,100 +119,124 @@
     },
   })
   export default class Home extends Vue {
-    @homeModule.State isHideBottom!: boolean;
-    @homeModule.State currentTitle!: string;
-    @audioModule.State playing!: boolean;
-    @playListModule.State playLists!: Array<PlayList>;
+    @homeModule.State isHideBottom!: boolean
+    @homeModule.State currentTitle!: string
+    @audioModule.State playing!: boolean
+    @playListModule.State playLists!: Array<PlayList>
 
     commonMenu = [
       {icon: "ios-musical-notes-outline", title: "我的音乐", name: "file"},
       {icon: "ios-time-outline", title: "最近播放的内容", name: "recentPlay"},
       {icon: "ios-pulse-outline", title: "正在播放", name: "playing", params: {light: "dark"}},
-    ];
+    ]
 
-    @Watch('$route')
-    onRouteChanged(){
+/*    public mounted() {
+      //@ts-ignore
+      (adsbygoogle = window.adsbygoogle || []).push({})
+    }*/
+
+    @Watch("$route")
+    onRouteChanged() {
       this.isSideShow = false
     }
 
     get position() {
-      const route = this.$route;
+      const route = this.$route
       if (route.params["id"]) {
-        return route.params["id"];
+        return route.params["id"]
       }
-      return "";
+      return ""
     }
 
-    isSideShow: boolean = false;
-    isFold: boolean = false;
+    isSideShow: boolean = false
+    isFold: boolean = false
 
     toggleFold() {
       if (this.isSideShow) {
-        this.isSideShow = false;
-        document.body.removeEventListener('click',this.hideMobileSide)
-        return;
+        this.isSideShow = false
+        document.body.removeEventListener("click", this.hideMobileSide)
+        return
       }
-      this.isFold = !this.isFold;
+      this.isFold = !this.isFold
     }
 
-    hideMobileSide(e:MouseEvent){
+    hideMobileSide(e: MouseEvent) {
       e.stopPropagation()
-      document.body.removeEventListener('click',this.hideMobileSide)
-      if(!isInSelf(e.target as HTMLElement,'side')){
-        this.isSideShow = false;
+      document.body.removeEventListener("click", this.hideMobileSide)
+      if (!isInSelf(e.target as HTMLElement, "side")) {
+        this.isSideShow = false
       }
     }
 
-    ShowSide(e:MouseEvent) {
+    ShowSide(e: MouseEvent) {
       e.stopPropagation()
-      document.body.addEventListener('click',this.hideMobileSide)
-      this.isSideShow = true;
+      document.body.addEventListener("click", this.hideMobileSide)
+      this.isSideShow = true
       // this.isSideShow = !this.isSideShow;
     }
 
     showCreatePlayListModal() {
       showEditPlayListModal().then((name: any) => {
-        this.$store.dispatch("playList/createPlayList", {name, content: []});
-      });
+        this.$store.dispatch("playList/createPlayList", {name, content: []})
+      })
     }
 
     toPlayList(item: PlayList) {
-      this.$router.push("/playList/" + item.id);
+      this.$router.push("/playList/" + item.id)
     }
 
     showPlayListMenu(e: MouseEvent, item: PlayList) {
-      e.preventDefault();
+      e.preventDefault()
       const contextMenu: any = [
         {
           label: "播放", callback: () => {
-            this.$store.dispatch("playList/playPlayList", item.id);
+            this.$store.dispatch("playList/playPlayList", item.id)
           }
         },
         {
           label: "重命名", callback: () => {
             showEditPlayListModal({isRename: true, oldName: item.title}).then(name => {
-              this.$store.dispatch("playList/renamePlayList", {name, id: item.id});
-            });
+              this.$store.dispatch("playList/renamePlayList", {name, id: item.id})
+            })
           }
         },
         {
           label: "删除", callback: () => {
             confirm({title: "确定要删除吗?", info: "该播放列表下的所有条目都将被删除"}).then(() => {
-              this.$store.dispatch("playList/removePlayList", {id: item.id, context: this});
-            });
+              this.$store.dispatch("playList/removePlayList", {id: item.id, context: this})
+            })
           }
         }
-      ];
-      dropDownMenu(e, contextMenu);
+      ]
+      dropDownMenu(e, contextMenu)
     }
 
-     toGithub() {
-      window.open("https://github.com/axel10/Groove_online", "_blank");
+    toGithub() {
+      window.open("https://github.com/axel10/Groove_online", "_blank")
     }
   }
 </script>
 
 <style scoped lang="scss">
+
+  @import "~@/var.scss";
+
+  .ad-container {
+    position: fixed;
+    max-width: 400px;
+    height: 60px;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+
+  @media screen and (max-width: $mobileSize) {
+    .ad-container {
+      width: 100%;
+      position: relative;
+    }
+  }
+
   .mobile-top {
     display: none;
   }
@@ -227,10 +255,12 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+
     .top {
       display: flex;
       flex: 1;
       min-height: 0;
+
       .side {
         display: flex;
         flex-direction: column;
@@ -239,6 +269,7 @@
         width: 300px;
         box-sizing: border-box;
         overflow: auto;
+
         &.fold {
           width: 50px;
         }
@@ -258,6 +289,7 @@
             color: #333;
           }
         }
+
         .fold {
           width: 50px;
           height: 50px;
@@ -271,6 +303,7 @@
             background-color: rgba(255, 255, 255, .5);
           }
         }
+
         .content {
           flex: 1;
           width: 100%;
@@ -293,6 +326,7 @@
           &:hover {
             background-color: rgba(255, 255, 255, .5);
           }
+
           &.select {
             &:before {
               content: ' ';
@@ -317,12 +351,14 @@
           width: 100%;
           overflow-y: auto;
           overflow-x: hidden;
+
           li {
             a {
               color: #000;
               display: block;
               width: 100%;
             }
+
             .add {
               color: #000;
               font-size: 20px;
@@ -333,6 +369,7 @@
               align-items: center;
               justify-content: center;
               margin-left: auto;
+
               &:hover {
                 background-color: rgba(255, 255, 255, .5);
               }
@@ -345,6 +382,7 @@
               width: 80%;
               margin: 0 auto;
             }
+
             box-sizing: border-box;
             font-size: 16px;
             width: 100%;
@@ -354,18 +392,21 @@
           }
         }
       }
+
       .right {
         flex: 1;
         overflow-y: auto;
         background-color: #fff;
       }
+
       .main {
         display: flex;
         flex: 1;
         background-color: #fff;
       }
     }
-    .bottom{
+
+    .bottom {
       height: 100px;
 
     }

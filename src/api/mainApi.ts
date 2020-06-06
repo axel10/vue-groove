@@ -40,7 +40,7 @@ export default {
   isLogin() {
     return request.get(apiUrl + '/user/isLogin')
   },
-  async getLikeRecord(artist: string, title: string, album: string): Promise<Response<LikeRecord>> {
+/*   async getLikeRecord(artist: string, title: string, album: string): Promise<Response<LikeRecord>> {
     // return request.get(apiUrl + '/like/get', {token: `${artist}/${title}`})
     if (!album) {
       throw new Error('album未传')
@@ -49,7 +49,7 @@ export default {
   },
   addPlayCount(data: { artist: string, title: string, album: string }) {
     return request.post(apiUrl + '/count/AddPlayCount', data)
-  },
+  }, */
   /*  reportError(message: string) {
       return axios.post(apiUrl + '/home/reportError', {message})
     },*/

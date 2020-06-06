@@ -115,8 +115,8 @@ const actions = {
       return
     }
     commit('setLoading', true)
-    dispatch('home/getLikeRecord', {file}, {root: true}).catch((e) => {
-    })
+    // dispatch('home/getLikeRecord', {file}, {root: true}).catch((e) => {
+    // })
     const musicPath = file.musicUrl.endsWith(config.musicExt)
       ? file.musicUrl : file.musicUrl.split('.')[0] + `.${config.musicExt}`
     commit('initPlay', musicPath)
@@ -147,7 +147,7 @@ const actions = {
         if (!rootState.home.isInRecentPlay) {
           dispatch('playList/addRecentPlay', file, {root: true})
         }
-        mainApi.addPlayCount({artist: file.p, title: file.title, album: file.album})
+        // mainApi.addPlayCount({artist: file.p, title: file.title, album: file.album})
       }
 
 

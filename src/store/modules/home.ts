@@ -66,7 +66,7 @@ const actions = {
     commit('playList/setPlayLists', playLists, {root: true})
     if (playingFile.title && rootState.file.allFile.some((file) => file.id === playingFile.id)) {
       commit('setPlayingFile', playingFile)
-      dispatch('getLikeRecord', {file: playingFile})
+      // dispatch('getLikeRecord', {file: playingFile})
     }
     if (!isNaN(volume)) {
       commit('audio/initVolume', volume, {root: true})
@@ -78,14 +78,14 @@ const actions = {
     })*/
   },
 
-  getLikeRecord({commit}: ActionContextBasic, {file}: { file: File }) {
+/*   getLikeRecord({commit}: ActionContextBasic, {file}: { file: File }) {
     assert(!!file.album, 'album缺失')
     mainApi.getLikeRecord(file.p, file.title, file.album).then((o) => {
       commit('setData', {key: 'liked', val: o.data.liked})
       commit('setData', {key: 'disliked', val: o.data.disliked})
       commit('setData', {key: 'likeCount', val: o.data.likeCount})
     })
-  },
+  }, */
 
   setPlayingFile({commit, rootState}: ActionContextBasic, file: File) {
     commit('setPlayingFile', file)

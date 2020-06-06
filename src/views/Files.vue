@@ -1,5 +1,6 @@
 <template>
   <div class="Files">
+
     <div class="title">
       <div class="main-title">
         <h4>{{title}}</h4>
@@ -98,6 +99,8 @@
         this.$store.commit('file/setPath',[])
       }
     }
+
+
 
     @Watch('$route')
     onRouteChanged(){

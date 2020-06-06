@@ -17,6 +17,15 @@
 
     <!--<keep-alive>-->
     <router-view/>
+
+<!--    <div class="mobile-ad-container">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-5807827725641721"
+           data-ad-slot="5229615181"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+    </div>-->
     <!--</keep-alive>-->
 
     <Audio></Audio>
@@ -69,16 +78,21 @@
         this.$store.commit("home/setIsMobile", true)
       }
 
-      Notice.open({
+/*      Notice.open({
         title: "注意",
         desc: "为了获得最佳欣赏体验，请前往<a href=\"https://vcollection.org\" target=\"_blank\">V collection官网</a>获取完整版V collection。",
         duration: 9999
-      })
+      })*/
 
       const that = this
       window.onresize = function () {
         that.$store.commit("home/setIsFullScreen", isFullScreen())
       }
+    }
+
+    public mounted() {
+      //@ts-ignore
+      // (adsbygoogle = window.adsbygoogle || []).push({})
     }
 
     /*    @Watch('$route')
@@ -131,6 +145,9 @@
 </script>
 
 <style lang="scss">
+  .mobile-ad-container {
+    display: none;
+  }
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -144,6 +161,10 @@
     bottom: 0;
     margin: auto;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+
   }
 
   html, body {
@@ -171,6 +192,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
     .content {
       width: 20rem;
       padding: 3rem;
@@ -184,6 +206,7 @@
         padding-bottom: 3rem;
         width: 4rem;
         height: 4rem;
+
         img {
           width: 100%;
         }
@@ -261,6 +284,7 @@
 </style>
 
 <style lang="scss" scoped>
+  @import "~@/var.scss";
   .loading-mask {
     position: absolute;
     left: 0;
@@ -298,6 +322,14 @@
 
   .loading-mask-leave-to {
     opacity: 0;
+  }
+
+  @media screen and (max-width: $mobileSize) {
+    .mobile-ad-container{
+      width: 100%;
+      height: 80px;
+      display: block;
+    }
   }
 </style>
 

@@ -83,7 +83,7 @@
       </div>
     </div>
 
-    <LikeBtnGrout></LikeBtnGrout>
+    <!-- <LikeBtnGrout></LikeBtnGrout> -->
 
   </div>
 </template>
@@ -154,7 +154,7 @@
       return getTimeStr(sec)
     }
 
-    like(e: MouseEvent,a) {
+/*     like(e: MouseEvent,a) {
       if (this.disliked) {
         return
       }
@@ -177,7 +177,7 @@
       } else {
         callLike()
       }
-    }
+    } */
 
 
     public togglePlay() {

@@ -3,6 +3,4 @@ declare module 'iview' {
   export default iview
 }
 
-
-
 declare module '@shopify/draggable'

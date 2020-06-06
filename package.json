@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve --host 0.0.0.0",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "ui": "vue ui"
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.3",
@@ -18,7 +19,7 @@
     "axios": "^0.18.0",
     "iview": "^3.0.0",
     "qs": "^6.5.2",
-    "vue": "^2.5.16",
+    "vue": "^2.6.10",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
     "vue-router": "^3.0.1",
@@ -27,18 +28,20 @@
   },
   "devDependencies": {
     "@types/jest": "^23.1.4",
-    "@vue/cli-plugin-babel": "^3.5.1",
-    "@vue/cli-plugin-typescript": "^3.0.0-rc.10",
-    "@vue/cli-plugin-unit-jest": "^3.5.1",
-    "@vue/cli-service": "^3.5.1",
+    "@vue/cli-plugin-babel": "^3.7.0",
+    "@vue/cli-plugin-typescript": "^3.7.0",
+    "@vue/cli-plugin-unit-jest": "^3.7.0",
+    "@vue/cli-service": "^3.7.0",
     "@vue/test-utils": "^1.0.0-beta.20",
     "babel-core": "7.0.0-bridge.0",
     "babel-plugin-import": "^1.8.0",
     "babel-preset-env": "^1.7.0",
-    "node-sass": "^4.11.0",
+    "node-sass": "^4.13.0",
     "sass-loader": "^7.0.1",
     "ts-jest": "^23.0.0",
-    "typescript": "^3.3.3333",
-    "vue-template-compiler": "^2.5.16"
+    "typescript": "^3.4.5",
+    "vue-template-compiler": "^2.6.10",
+    "babel-plugin-transform-vue-jsx": "^3.7.0",
+    "babel-plugin-syntax-jsx": "^6.18.0"
   }
 }
