@@ -18,6 +18,7 @@
     "async-validator": "^1.10.1",
     "axios": "^0.18.0",
     "iview": "^3.0.0",
+    "node-sass": "^4.14.1",
     "qs": "^6.5.2",
     "vue": "^2.6.10",
     "vue-class-component": "^6.0.0",
@@ -35,13 +36,12 @@
     "@vue/test-utils": "^1.0.0-beta.20",
     "babel-core": "7.0.0-bridge.0",
     "babel-plugin-import": "^1.8.0",
+    "babel-plugin-syntax-jsx": "^6.18.0",
+    "babel-plugin-transform-vue-jsx": "^3.7.0",
     "babel-preset-env": "^1.7.0",
-    "node-sass": "^4.13.0",
     "sass-loader": "^7.0.1",
     "ts-jest": "^23.0.0",
     "typescript": "^3.4.5",
-    "vue-template-compiler": "^2.6.10",
-    "babel-plugin-transform-vue-jsx": "^3.7.0",
-    "babel-plugin-syntax-jsx": "^6.18.0"
+    "vue-template-compiler": "^2.6.10"
   }
 }
