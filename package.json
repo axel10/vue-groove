@@ -16,7 +16,7 @@
     "@types/qs": "^6.5.1",
     "animejs": "^2.2.0",
     "async-validator": "^1.10.1",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "iview": "^3.0.0",
     "node-sass": "^4.14.1",
     "qs": "^6.5.2",
