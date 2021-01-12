@@ -2,7 +2,7 @@
   <div class="HomeBottom" :style="{'background-color':background}">
     <div class="file-info" @click="$router.push('/playing/light')" v-if="playingFile">
       <div class="mask"></div>
-      <div class="cover">
+      <div class="cover" v-if="playingFile && playingFile.imgUrl">
         <img :src="playingFile.imgUrl" alt="">
       </div>
       <div class="info">
