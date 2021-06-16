@@ -1,7 +1,7 @@
 # Groove Music Online
 
 Typescript+vue implementation of windows10 Groove music online version  
-Preview:<a href="https://player.vcollection.org" target="_blank">https://player.vcollection.org</a>
+Preview:<a href="https://vue-groove.vercel.app" target="_blank">https://vue-groove.vercel.app</a>
 
 ## Project setup
 ```
