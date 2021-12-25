@@ -71,7 +71,6 @@ const getters = {
           files = filesTmp
         }
       }
-      console.log(filesTmp);
       // 专辑倒序排序，曲目正序排序
       if (filesTmp.length>0 && filesTmp[0].album) {
         filesTmp.sort((a, b) => {
