@@ -1,4 +1,11 @@
 module.exports = {
+  css: {
+    loaderOptions: {
+      sass: {
+        implementation: require('sass'), // This line must in sass option
+      },
+    },
+  },
   publicPath: "/",
   chainWebpack: (config) => {
     config.plugins.delete("fork-ts-checker");

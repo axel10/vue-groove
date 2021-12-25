@@ -59,7 +59,6 @@ const actions = {
     const playingList = JSON.parse(localStorage.getItem(LocalStorageKeys.playingList) || '[]')
     const playLists = JSON.parse(localStorage.getItem(LocalStorageKeys.playLists) || '[]')
     const playingFile = JSON.parse(localStorage.getItem(LocalStorageKeys.playingFile) || '{}') as File
-
     const volume = parseInt(localStorage.getItem(LocalStorageKeys.volume) || '', 10)
     commit('playList/setRecentPlay', recentPlay, {root: true})
     commit('playList/setPlayingList', playingList, {root: true})

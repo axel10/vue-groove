@@ -72,7 +72,7 @@ const getters = {
         }
       }
       filesTmp.sort((a, b) => {
-        return a.sort - b.sort
+        return b.sort - a.sort
       })
       return filesTmp
     }
