@@ -71,9 +71,19 @@ const getters = {
           files = filesTmp
         }
       }
-      filesTmp.sort((a, b) => {
-        return b.sort - a.sort
-      })
+      console.log(filesTmp);
+      // 专辑倒序排序，曲目正序排序
+      if (filesTmp.length>0 && filesTmp[0].album) {
+        filesTmp.sort((a, b) => {
+          return a.sort - b.sort
+
+        })
+      }else{
+        filesTmp.sort((a, b) => {
+          return b.sort - a.sort
+
+        })
+      }
       return filesTmp
     }
   },
