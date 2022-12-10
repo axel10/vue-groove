@@ -3,11 +3,11 @@
   "version": "0.2.0",
   "private": false,
   "scripts": {
-    "serve": "vue-cli-service serve --host 0.0.0.0",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit",
-    "ui": "vue ui"
+    "serve": "set NODE_OPTIONS=--openssl-legacy-provider & vue-cli-service serve --host 0.0.0.0",
+    "build": "set NODE_OPTIONS=--openssl-legacy-provider & vue-cli-service build",
+    "lint": "set NODE_OPTIONS=--openssl-legacy-provider & vue-cli-service lint",
+    "test:unit": "set NODE_OPTIONS=--openssl-legacy-provider & vue-cli-service test:unit",
+    "ui": "set NODE_OPTIONS=--openssl-legacy-provider & vue ui"
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.3",
