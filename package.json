@@ -18,7 +18,7 @@
     "async-validator": "^1.10.1",
     "axios": "^0.18.0",
     "iview": "^3.0.0",
-    "qs": "^6.5.2",
+    "qs": "^6.6.1",
     "vue": "^2.6.10",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
